@@ -3,7 +3,7 @@ import { pigEngine, type PigAction } from '../_example/engine.ts';
 import { Rng } from '../rng.ts';
 
 /**
- * Cross-runtime determinism scenario (docs/ARCHITECTURE.md §6, ADR-007).
+ * Cross-runtime determinism scenario (docs/ARCHITECTURE.md §6).
  * Runs the same scripted games and returns hashes. It must give identical output in
  * Node (jest + `pnpm test:determinism`), Deno, and Hermes (the app's `_dev/determinism` screen).
  * This file uses only language features available in all three: no Intl, no Date, no Math.random.

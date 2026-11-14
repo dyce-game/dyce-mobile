@@ -21,7 +21,8 @@ export type IconName =
   | 'request'
   | 'history'
   | 'bell'
-  | 'gear';
+  | 'gear'
+  | 'check';
 
 export const ICON_NAMES: IconName[] = [
   'chat',
@@ -40,6 +41,7 @@ export const ICON_NAMES: IconName[] = [
   'history',
   'bell',
   'gear',
+  'check',
 ];
 
 export type IconProps = {
@@ -89,6 +91,7 @@ export function Icon({ name, size = 24, color, strokeWidth = 2.2 }: IconProps) {
           </>
         )}
         {name === 'plus' && <Path {...p} d="M12 5v14M5 12h14" />}
+        {name === 'check' && <Path {...p} d="M5 12.5l4.5 4.5L19 7.5" />}
         {name === 'back' && <Path {...p} d="M15 5l-7 7 7 7" />}
         {name === 'menu' && <Path {...p} d="M4 7h16M4 12h16M4 17h16" />}
         {name === 'shield' && (

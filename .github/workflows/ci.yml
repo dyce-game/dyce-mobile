@@ -68,6 +68,7 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm -F @dyce/shared build && pnpm -F @dyce/games build && pnpm -F @dyce/api build
       - run: pnpm -F @dyce/api smoke
+      - run: pnpm -F @dyce/api e2e
 
   mobile-web:
     name: Mobile app bundles (web export)

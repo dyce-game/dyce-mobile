@@ -10,3 +10,5 @@ export * from './primitives/Chip.tsx';
 export * from './primitives/WalletPill.tsx';
 export * from './primitives/Screen.tsx';
 export * from './primitives/TabBar.tsx';
+export * from './primitives/TextField.tsx';
+export * from './primitives/OtpInput.tsx';

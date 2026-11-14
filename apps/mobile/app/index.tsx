@@ -1,6 +1,13 @@
-import { Redirect } from 'expo-router';
+import { Redirect, type Href } from 'expo-router';
+import { hrefForStep } from '@/features/auth/routes';
+import { useSession } from '@/features/auth/use-session';
 
-// Phase 1 replaces this with an auth gate: signed-out users go to (auth)/welcome.
+// The front door: signed-out users go to Welcome, signed-in users resume at their onboarding step
+// (or the app, when onboarding is done).
 export default function Index() {
-  return <Redirect href="/chat" />;
+  const status = useSession((s) => s.status);
+  const nextStep = useSession((s) => s.nextStep);
+  if (status === 'loading') return null;
+  if (status === 'signedOut') return <Redirect href={'/welcome' as Href} />;
+  return <Redirect href={hrefForStep(nextStep) as Href} />;
 }

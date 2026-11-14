@@ -16,3 +16,6 @@ web-build/
 supabase/.branches/
 supabase/.temp/
 supabase/functions/.env
+
+# local embedded dev database
+.dev-db/

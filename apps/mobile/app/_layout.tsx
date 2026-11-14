@@ -1,8 +1,10 @@
+import { useEffect } from 'react';
 import { Stack } from 'expo-router';
-import { AppProviders } from '@/providers/AppProviders';
-import { useAppFonts } from '@/providers/fonts';
-import { useTheme } from '@dyce/ui';
 import { StatusBar } from 'expo-status-bar';
+import { useTheme } from '@dyce/ui';
+import { useBootstrapSession } from '@/features/auth/use-session';
+import { AppProviders } from '@/providers/AppProviders';
+import { hideSplash, useAppFonts } from '@/providers/fonts';
 
 function ThemedStack() {
   const { colors, isDark } = useTheme();
@@ -18,8 +20,15 @@ function ThemedStack() {
 }
 
 export default function RootLayout() {
-  const ready = useAppFonts(); // holds the splash screen until fonts are loaded
-  if (!ready) return null;
+  const fontsReady = useAppFonts();
+  const sessionReady = useBootstrapSession();
+  const ready = fontsReady && sessionReady;
+
+  useEffect(() => {
+    if (ready) hideSplash();
+  }, [ready]);
+
+  if (!ready) return null; // splash screen is still showing
   return (
     <AppProviders>
       <ThemedStack />

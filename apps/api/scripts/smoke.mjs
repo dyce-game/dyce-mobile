@@ -46,7 +46,7 @@ try {
     PORT: String(apiPort),
     DATABASE_URL: `postgres://dyce_app:dyce_app@127.0.0.1:${pgPort}/dyce`,
     JWT_SECRET: 'x'.repeat(40),
-    PHONE_HASH_SALT: 'y'.repeat(20),
+    PHONE_HASH_SALT: 'y'.repeat(40),
   };
 
   // 1) missing config must stop the app before it listens

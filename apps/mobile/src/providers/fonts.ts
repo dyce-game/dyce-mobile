@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import * as SplashScreen from 'expo-splash-screen';
 import { useFonts } from 'expo-font';
 import {
@@ -14,9 +13,10 @@ import {
   BricolageGrotesque_800ExtraBold,
 } from '@expo-google-fonts/bricolage-grotesque';
 
+// Keep the splash up until the root layout says fonts AND the session are ready.
 void SplashScreen.preventAutoHideAsync();
 
-/** Loads Figtree + Bricolage Grotesque and releases the splash screen. A font error must not brick the app. */
+/** Loads Figtree + Bricolage Grotesque. A font error must not brick the app, so an error counts as "ready". */
 export function useAppFonts(): boolean {
   const [loaded, error] = useFonts({
     Figtree_400Regular,
@@ -28,9 +28,9 @@ export function useAppFonts(): boolean {
     BricolageGrotesque_700Bold,
     BricolageGrotesque_800ExtraBold,
   });
-  const ready = loaded || !!error;
-  useEffect(() => {
-    if (ready) void SplashScreen.hideAsync();
-  }, [ready]);
-  return ready;
+  return loaded || !!error;
+}
+
+export function hideSplash(): void {
+  void SplashScreen.hideAsync();
 }
