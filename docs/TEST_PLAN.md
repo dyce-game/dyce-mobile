@@ -12,7 +12,11 @@ Owner: qa-engineer. This is the living plan; the lead updates the "Status" colum
 | Layer | Tool | Where | Run with |
 |---|---|---|---|
 | Money, ledger, matches (SQL) | Jest + real PostgreSQL | `apps/api/db/tests` | `pnpm test:db` (embedded PG locally, service container in CI) |
-| Money utils, config | Jest | `packages/shared/src/*.test.ts` | `pnpm test` |
+| Auth: OTP limits/lockout, sessions, profile, age gate, onboarding | Jest + real PostgreSQL | `apps/api/db/tests/auth.test.ts`, `profile.test.ts` | `pnpm test:db` |
+| Auth over real HTTP (whole journey, throttling, production-safety) | script | `apps/api/scripts/auth-e2e.mjs` | `pnpm -F @dyce/api e2e` |
+| SMS providers, env validation, tokens, hashing | Jest | `apps/api/src/**/*.test.ts` | `pnpm test` |
+| App API client (single-flight refresh), session store, routing | Jest | `apps/mobile/src/features/auth/auth.test.ts` | `pnpm test` |
+| Money utils, config, phone/username/onboarding rules | Jest | `packages/shared/src/*.test.ts` | `pnpm test` |
 | Engine contract + rules + RNG | Jest + fast-check | `packages/games/src/**` | `pnpm test` |
 | Determinism (Node) | script | `packages/games/scripts/determinism.ts` | `pnpm test:determinism` |
 | Determinism (Hermes) | dev screen | `apps/mobile/app/dev/determinism.tsx` | open on a device/simulator, must read PASS |
