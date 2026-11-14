@@ -1,0 +1,10 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "jsx": "react-native",
+    "customConditions": ["dyce-source"],
+    "lib": ["ES2022"],
+    "types": ["jest", "node"]
+  },
+  "include": ["src"]
+}

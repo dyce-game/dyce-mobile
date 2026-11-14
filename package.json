@@ -1,0 +1,44 @@
+{
+  "name": "dyce",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Dyce — chat-first games with friends. Monorepo root.",
+  "packageManager": "pnpm@11.12.0",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "turbo run dev --parallel",
+    "build": "turbo run build",
+    "test": "turbo run test",
+    "db:up": "docker compose up -d postgres",
+    "db:migrate": "pnpm -F @dyce/api db:migrate",
+    "test:db": "pnpm -F @dyce/api test:db",
+    "test:determinism": "pnpm -F @dyce/games determinism",
+    "e2e": "maestro test e2e/",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "format": "prettier --write \"**/*.{ts,tsx,js,json,md,yml}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,json,md,yml}\"",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.0",
+    "@types/node": "^22.10.0",
+    "eslint": "^9.17.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.2.11",
+    "prettier": "^3.4.2",
+    "turbo": "^2.3.3",
+    "typescript": "~5.9.3",
+    "typescript-eslint": "^8.72.2"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js}": [
+      "prettier --write"
+    ],
+    "*.{json,md,yml}": [
+      "prettier --write"
+    ]
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "name": "@dyce/api",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsc -p tsconfig.build.json && node --watch --env-file-if-exists=.env dist/main.js",
+    "build": "tsc -p tsconfig.build.json",
+    "start": "node --env-file-if-exists=.env dist/main.js",
+    "smoke": "node scripts/smoke.mjs",
+    "lint": "eslint src db",
+    "typecheck": "tsc --noEmit",
+    "test": "jest --selectProjects unit",
+    "test:db": "node db/testing/run-with-pg.mjs",
+    "db:migrate": "node db/migrate.ts"
+  },
+  "dependencies": {
+    "@dyce/games": "workspace:*",
+    "@dyce/shared": "workspace:*",
+    "@nestjs/common": "^12.5.0",
+    "@nestjs/config": "^12.1.1",
+    "@nestjs/core": "^12.5.0",
+    "@nestjs/jwt": "^12.0.5",
+    "@nestjs/platform-express": "^12.5.0",
+    "@nestjs/schedule": "^12.0.4",
+    "@nestjs/throttler": "^6.7.1",
+    "pg": "^8.23.1",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.2",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@nestjs/cli": "^12.0.13",
+    "@nestjs/testing": "^12.5.0",
+    "@swc/core": "^1.16.22",
+    "@swc/jest": "^0.2.39",
+    "@types/express": "^5.0.6",
+    "@types/jest": "^29.5.14",
+    "@types/node": "^22.20.5",
+    "@types/pg": "^8.23.1",
+    "@types/supertest": "^7.2.1",
+    "embedded-postgres": "17.11.0-beta.19",
+    "jest": "^29.7.0",
+    "supertest": "^7.3.2"
+  }
+}

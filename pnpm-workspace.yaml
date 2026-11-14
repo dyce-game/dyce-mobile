@@ -1,0 +1,12 @@
+packages:
+  - apps/*
+  - packages/*
+
+# Metro (React Native) needs a flat node_modules. See ADR-006.
+nodeLinker: hoisted
+strictPeerDependencies: false
+# Don't silently run `pnpm install` before every script (it can hang on a flaky network).
+verifyDepsBeforeRun: false
+
+allowBuilds:
+  '@swc/core': true

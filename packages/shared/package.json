@@ -1,0 +1,33 @@
+{
+  "name": "@dyce/shared",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "react-native": "./src/index.ts",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "dyce-source": "./src/index.ts",
+      "react-native": "./src/index.ts",
+      "browser": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "lint": "eslint src",
+    "typecheck": "tsc --noEmit",
+    "test": "jest"
+  },
+  "dependencies": {
+    "zod": "^4.0.0"
+  },
+  "devDependencies": {
+    "@swc/core": "^1.10.0",
+    "@swc/jest": "^0.2.37",
+    "@types/jest": "^29.5.14",
+    "jest": "^29.7.0"
+  }
+}
