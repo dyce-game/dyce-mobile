@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Dyce — Mini Golf</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800;900&amp;family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; font-family: Figtree, -apple-system, system-ui, sans-serif; color: #FFFFFF; background: linear-gradient(#7FC8F0 0%, #BFE6F7 35%, #2E6A3E 36%, #1E4A2A 100%)">
+  <span style="position: absolute; inset: 0; background: radial-gradient(ellipse 90% 40% at 50% 20%, rgba(255,240,200,.35), transparent 70%)" aria-hidden="true"></span>
+  <div style="position: absolute; left: 60px; top: 205px; width: 270px; height: 490px; transform: scale(0.9); transform-origin: 50% 0" role="img" aria-label="Mini golf hole: ball at the bottom, brick wall in the middle, flag at the top, aim line banking off the left wall">
+    <div style="position: absolute; inset: 0; transform: rotateX(0deg); transform-style: preserve-3d">
+      <span style="position: absolute; inset: -16px; border-radius: 34px; background: linear-gradient(#8A5A30, #6B3E1C); box-shadow: 0 14px 0 #3B2111, 0 40px 50px rgba(0,0,0,.5)"></span>
+      <span style="position: absolute; inset: 0; border-radius: 22px; background: repeating-linear-gradient(0deg, #3BA55C 0 44px, #33944F 44px 88px)"></span>
+      <span style="position: absolute; inset: 0; border-radius: 22px; background: radial-gradient(ellipse 70% 40% at 50% 30%, rgba(255,255,220,.25), transparent 70%)"></span>
+      <span style="position: absolute; left: 20px; top: 120px; width: 90px; height: 60px; border-radius: 50%; background: radial-gradient(ellipse, #F2DDA6, #D9BE7A); box-shadow: inset 0 3px 6px rgba(0,0,0,.2)"></span>
+      <span style="position: absolute; right: 18px; top: 290px; width: 80px; height: 110px; border-radius: 45%; background: radial-gradient(ellipse at 40% 35%, #7FD3FF, #1C7AC0 70%); box-shadow: inset 0 4px 8px rgba(0,0,0,.3)"></span>
+      <span style="position: absolute; left: 92px; top: 250px; width: 130px; height: 26px; border-radius: 6px; background: repeating-linear-gradient(90deg, #B5462E 0 20px, #9A3A24 20px 22px); box-shadow: 0 12px 0 #6A2414, 0 18px 14px rgba(0,0,0,.35)"></span>
+      <span style="position: absolute; left: 136px; top: 52px; width: 28px; height: 22px; border-radius: 50%; background: radial-gradient(ellipse at 50% 30%, #000 50%, #2A3A2A); box-shadow: 0 0 0 3px #E8F5E0"></span>
+      <div style="position: absolute; left: 148px; top: 63px; width: 40px; height: 120px; transform-origin: 0 100%; transform: translate(0, -100%) rotateX(0deg)">
+        <span style="position: absolute; left: 0; bottom: 0; width: 4px; height: 120px; border-radius: 2px; background: linear-gradient(90deg, #DDD, #FFF, #AAA)"></span>
+        <span style="position: absolute; left: 4px; top: 4px; width: 36px; height: 26px; clip-path: polygon(0 0, 100% 50%, 0 100%); background: linear-gradient(#FF6B5E, #C93E1C)"></span>
+      </div>
+      <span style="position: absolute; inset: 0; clip-path: {{aim1}}; background: rgba(255,255,255,.9)"></span>
+      <span style="position: absolute; inset: 0; clip-path: {{aim2}}; background: rgba(255,255,255,.55)"></span>
+      <span style="position: absolute; left: 140px; top: 462px; width: 28px; height: 12px; border-radius: 50%; background: rgba(0,0,0,.35)"></span>
+      <div style="position: absolute; left: 143px; top: 466px; width: 22px; height: 22px; transform-origin: 50% 100%; transform: translate(0, -100%) rotateX(0deg); border-radius: 50%; background: radial-gradient(circle at 35% 30%, #FFFFFF, #E9E6DE 55%, #A9A398)"></div>
+    </div>
+  </div>
+  <div style="position: absolute; left: 20px; right: 20px; top: 168px; display: flex; justify-content: space-between; font-size: 12px; font-weight: 800"><span style="height: 26px; padding: 0 10px; border-radius: 13px; background: rgba(0,0,0,.35); display: flex; align-items: center">HOLE 4 · PAR 3</span><span style="height: 26px; padding: 0 10px; border-radius: 13px; background: rgba(0,0,0,.35); display: flex; align-items: center">Total: you 9 · Tolu 10</span></div>
+  <div style="position: absolute; left: 12px; right: 12px; top: 54px; display: flex; align-items: center; justify-content: space-between">
+    <a href="Thread.dc.html" aria-label="Back to chat" style="height: 40px; padding: 0 14px; border-radius: 20px; background: rgba(255,255,255,.12); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,.16); color: #fff; font-size: 14px; font-weight: 700; display: flex; align-items: center; gap: 4px; text-decoration: none">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>Chat</a>
+    <span style="height: 30px; padding: 0 12px; border-radius: 15px; background: {{modeBg}}; box-shadow: 0 2px 0 rgba(0,0,0,.35); font-size: 12px; font-weight: 800; letter-spacing: 0.4px; display: flex; align-items: center">{{modeLabel}}</span>
+    <a href="GameMenu.dc.html" aria-label="Game menu" style="width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,.12); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,.16); display: flex; align-items: center; justify-content: center">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
+    </a>
+  </div>
+  <div style="position: absolute; left: 50%; top: 106px; transform: translateX(-50%); height: 46px; padding: 0 16px 0 12px; border-radius: 23px; background: rgba(0,0,0,.38); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,.14); display: flex; align-items: center; gap: 8px; white-space: nowrap"><div style="display: flex"><div style="margin-left: -8px; border-radius: 50%; box-shadow: 0 0 0 2px rgba(0,0,0,.4)"><dc-import name="Avatar" size="34" skin="#C68642" hair="#2A1A12" hair-style="short" bg="#E9E9EB" shirt="#0E9F6E" hint-size="34px,34px"></dc-import></div></div><span style="font-size: 13px; font-weight: 800">Tolu · holed in 3</span></div>
+  <div style="position: absolute; left: 14px; right: 14px; bottom: 30px; display: flex; align-items: center; gap: 12px; padding: 10px 10px 10px 12px; border-radius: 30px; background: rgba(0,0,0,.38); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,.14)">
+    <div style="position: relative; flex-shrink: 0"><dc-import name="Avatar" size="42" skin="#8D5524" hair="#1C1714" hair-style="afro" bg="#C9B8FF" shirt="#6E4BFF" hint-size="42px,42px"></dc-import><span style="position: absolute; inset: -4px; border-radius: 50%; border: 3px solid #E3A93B; border-right-color: transparent"></span></div>
+    <div style="flex: 1; min-width: 0"><div style="font-size: 14px; font-weight: 800">Stroke 2 · bank off the left wall</div><div style="font-size: 12px; opacity: .82">Pull back to set power</div></div>
+    <button style="height: 50px; padding: 0 18px; border-radius: 25px; border: none; background: #C93E1C; box-shadow: 0 4px 0 #8A2410, inset 0 2px 0 rgba(255,255,255,.25); color: #FFFFFF; font: 900 15px Figtree, sans-serif; flex-shrink: 0">Putt</button>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"mode":{"editor":"enum","options":["pool","free"],"default":"free"},"$preview":{"width":390,"height":844}}'>
+const POT='₦1,000', MULTI=false;
+function poly(pts){ return 'polygon(' + pts.map(function(p){ return p[0].toFixed(1) + 'px ' + p[1].toFixed(1) + 'px'; }).join(', ') + ')'; }
+function rnd(seed){ var x = Math.sin(seed * 9301 + 49297) * 233280; return x - Math.floor(x); }
+
+function scene(){
+  function seg(a,b,wd){ const dx=b[0]-a[0], dy=b[1]-a[1], L=Math.hypot(dx,dy), nx=-dy/L*wd/2, ny=dx/L*wd/2; return poly([[a[0]+nx,a[1]+ny],[b[0]+nx,b[1]+ny],[b[0]-nx,b[1]-ny],[a[0]-nx,a[1]-ny]]); }
+  return { aim1: seg([154,455],[4,300],4), aim2: seg([4,300],[140,90],3) };
+}
+class Component extends DCLogic {
+  renderVals() {
+    const pool = this.props.mode !== 'free';
+    return Object.assign({ modeLabel: pool ? (MULTI ? 'SPACE POOL · ' : 'POOL · ') + POT + ' POT' : (MULTI ? 'FREE SPACE · XP' : 'FREE · +25 XP'), modeBg: pool ? '#C93E1C' : '#17834F' }, scene(this.props, this));
+  }
+}
+</script>
+</body>
+</html>

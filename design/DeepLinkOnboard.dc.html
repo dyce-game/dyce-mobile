@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Dyce — Sign up from an invite</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&amp;family=Bricolage+Grotesque:wght@600;700;800&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; padding: 54px 24px 34px; display: flex; flex-direction: column; font-family: Figtree, -apple-system, system-ui, sans-serif; background: {{c.bg}}; color: {{c.text}}; overflow: hidden">
+  <div style="border-radius: 24px; padding: 14px; background: linear-gradient(160deg, #2F6BEA, #12307A); color: #fff; display: flex; align-items: center; gap: 12px; margin-top: 12px">
+    <div style="position: relative">
+      <dc-import name="Avatar" size="60" skin="#8D5524" hair="#1C1714" hair-style="afro" bg="#FFC857" shirt="#C93E1C" hint-size="60px,60px"></dc-import>
+      <span style="position: absolute; right: -2px; bottom: -2px; width: 16px; height: 16px; border-radius: 50%; background: #2BB673; border: 3px solid #1E4FB8"></span>
+    </div>
+    <div style="flex: 1">
+      <div style="font-size: 12px; font-weight: 800; letter-spacing: 0.4px; opacity: .85">WAITING FOR YOU</div>
+      <div style="font-size: 16px; font-weight: 800">Kemdi · Cup Pong</div>
+      <div style="font-size: 13px; opacity: .9">Free game · your first shot after signup</div>
+    </div>
+  </div>
+
+  <h1 style="margin: 26px 0 8px; font-family: 'Bricolage Grotesque', Figtree, sans-serif; font-size: 30px; line-height: 1.1; font-weight: 700; letter-spacing: -0.5px">Hey Tolu, one step and you're in</h1>
+  <p style="margin: 0 0 20px; font-size: 15px; line-height: 1.45; color: {{c.sub}}">We filled in what Kemdi's invite told us. Check your number and we'll text a code.</p>
+
+  <label for="nm2" style="font-size: 13px; font-weight: 600; color: {{c.sub}}; margin-bottom: 8px">Name</label>
+  <input id="nm2" value="Tolu" style="height: 54px; padding: 0 16px; border-radius: 16px; border: none; background: {{c.field}}; color: {{c.text}}; font: 500 17px Figtree, sans-serif; box-sizing: border-box">
+  <label for="ph2" style="font-size: 13px; font-weight: 600; color: {{c.sub}}; margin: 16px 0 8px">Phone</label>
+  <div style="display: flex; gap: 8px">
+    <span style="height: 54px; padding: 0 14px; border-radius: 16px; background: {{c.field}}; font-size: 17px; font-weight: 600; display: flex; align-items: center">+234</span>
+    <input id="ph2" value="812 559 0034" style="flex: 1; min-width: 0; height: 54px; padding: 0 16px; border-radius: 16px; border: 2px solid #C93E1C; background: {{c.bg}}; color: {{c.text}}; font: 600 18px Figtree, sans-serif; box-sizing: border-box">
+  </div>
+
+  <div style="margin-top: 18px; border-radius: 16px; padding: 12px 14px; background: {{c.bg2}}; display: flex; flex-direction: column; gap: 8px">
+    <sc-for list="{{steps}}" as="s" hint-placeholder-count="3">
+      <div style="display: flex; align-items: center; gap: 10px; font-size: 14px">
+        <span style="width: 22px; height: 22px; border-radius: 50%; background: {{s.bg}}; color: #fff; font-size: 11px; font-weight: 800; display: flex; align-items: center; justify-content: center">{{s.n}}</span>
+        <span style="color: {{s.fg}}; font-weight: {{s.w}}">{{s.t}}</span>
+      </div>
+    </sc-for>
+  </div>
+
+  <a href="Phone.dc.html" style="margin-top: auto; height: 54px; border-radius: 16px; background: #C93E1C; color: #fff; font-size: 17px; font-weight: 700; display: flex; align-items: center; justify-content: center; text-decoration: none">Text me a code</a>
+  <p style="margin: 10px 0 0; font-size: 12px; color: {{c.sub}}; text-align: center">Already played in the browser? Your result and XP come with you.</p>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"$preview":{"width":390,"height":844}}'>
+const T={light:{bg:'#FBF8F3',bg2:'#F2ECE3',text:'#1B140F',sub:'#6F655B',field:'#EEE7DC'},dark:{bg:'#0F0D0B',bg2:'#1D1916',text:'#F7F1E8',sub:'#ABA196',field:'#1D1916'}};
+class Component extends DCLogic {
+  renderVals() {
+    const c = T[this.props.theme === 'dark' ? 'dark' : 'light'];
+    const S = (n, t, on) => ({ n, t, bg: on ? '#C93E1C' : '#9A9AA3', fg: on ? c.text : c.sub, w: on ? '700' : '500' });
+    return { c, steps: [S('1', 'Confirm your number', true), S('2', 'Pick a @username (we suggest one)', false), S('3', 'Straight into Kemdi’s game, avatar later', false)] };
+  }
+}
+</script>
+</body>
+</html>

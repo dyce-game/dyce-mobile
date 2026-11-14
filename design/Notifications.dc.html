@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Dyce — Push notification designs</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&amp;family=Bricolage+Grotesque:wght@600;700;800&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; padding: 40px 12px 30px; display: flex; flex-direction: column; gap: 10px; font-family: Figtree, -apple-system, system-ui, sans-serif; background: radial-gradient(circle at 30% 20%, #5B4BA8, #2A2152 45%, #120E26); color: #1B140F; overflow: hidden">
+  <div style="color: #fff; text-align: center; padding: 10px 0 14px">
+    <div style="font-family: 'Bricolage Grotesque', Figtree, sans-serif; font-size: 30px; font-weight: 700; letter-spacing: -0.5px">Push notifications</div>
+    <div style="font-size: 14px; opacity: .85; margin-top: 4px">Lock-screen set · actions work without opening the app</div>
+  </div>
+  <sc-for list="{{items}}" as="n" hint-placeholder-count="6">
+    <div style="border-radius: 22px; background: {{k.notif}}; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); color: {{k.text}}; padding: 12px; display: flex; gap: 10px; align-items: flex-start">
+      <div style="position: relative; flex-shrink: 0">
+        <dc-import name="Avatar" size="40" skin="{{n.skin}}" hair="{{n.hair}}" hair-style="{{n.hs}}" bg="{{n.bg}}" shirt="{{n.shirt}}" hint-size="40px,40px"></dc-import>
+        <span style="position: absolute; right: -4px; bottom: -4px; width: 18px; height: 18px; border-radius: 6px; background: #C93E1C; border: 2px solid {{k.bg2}}"></span>
+      </div>
+      <div style="flex: 1; min-width: 0">
+        <div style="display: flex; justify-content: space-between; gap: 8px"><b style="font-size: 14px">{{n.t}}</b><span style="font-size: 12px; color: {{k.sub}}">{{n.time}}</span></div>
+        <div style="font-size: 13px; line-height: 1.35; color: {{k.body}}">{{n.d}}</div>
+        <sc-if value="{{n.actions}}" hint-placeholder-val="{{false}}">
+          <div style="display: flex; gap: 6px; margin-top: 8px">
+            <sc-for list="{{n.actions}}" as="a" hint-placeholder-count="2">
+              <span style="height: 28px; padding: 0 12px; border-radius: 14px; background: {{a.bg}}; color: {{a.fg}}; font-size: 12px; font-weight: 700; display: flex; align-items: center">{{a.l}}</span>
+            </sc-for>
+          </div>
+        </sc-if>
+      </div>
+    </div>
+  </sc-for>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"$preview":{"width":390,"height":844}}'>
+const P={
+ amaka:{skin:'#8D5524',hair:'#1C1714',hs:'bun',bg:'#FFC857',shirt:'#E0453A'},
+ tunde:{skin:'#5C3A21',hair:'#111111',hs:'waves',bg:'#8FD3FF',shirt:'#1F2937'},
+ zee:{skin:'#C68642',hair:'#2A1A12',hs:'long',bg:'#B8F2C8',shirt:'#C93E1C'},
+ ngozi:{skin:'#A0662F',hair:'#3B2219',hs:'long',bg:'#FFB4C6',shirt:'#FFB020'},
+ shark:{skin:'#5C3A21',hair:'#111111',hs:'short',bg:'#8FD3FF',shirt:'#0E9F6E'}
+};
+const G={bg:'#E3E3EA',fg:'#1B140F'};
+
+const KT={light:{name:'light',card:'#FFFFFF',text:'#1B140F',sub:'#62584E',sub2:'#6F655B',bg2:'#F2ECE3',field:'#EEE7DC',notif:'rgba(245,245,250,.88)',body:'#2A2A30',sec:'#E3E3EA',money:'#0E7C47'},dark:{name:'dark',card:'#1D1916',text:'#F7F1E8',sub:'#ABA196',sub2:'#ABA196',bg2:'#2A2420',field:'#2A2420',notif:'rgba(30,26,34,.82)',body:'#D9D2C8',sec:'#3A343C',money:'#3DDC84'}};
+class Component extends DCLogic {
+  renderVals() { const k = KT[this.props.theme === 'dark' ? 'dark' : 'light']; this.k = k; return Object.assign({ k }, this.rv()); }
+  rv() {
+    const k = this.k; const act = (l, primary) => primary ? { l, bg: '#C93E1C', fg: '#FFFFFF' } : { l, bg: k.sec, fg: k.text };
+    const N = (p, t, d, time, actions) => Object.assign({ t, d, time, actions: actions || false }, P[p]);
+    return {
+      items: [
+        N('amaka', 'Your move, Kemdi', 'Amaka sank two in 8 Ball. Free game.', 'now', [act('Play', true), act('Later')]),
+        N('tunde', 'Tunde matched ₦1,000', 'Sea Battle pot is ₦2,000. He went first.', '4m', [act('Open', true)]),
+        N('zee', '1 hour left', 'Your Word Hunt pool expires at 10:41. Play now or it refunds.', '18m'),
+        N('shark', 'Counter-offer', '@lagos_shark wants ₦500 each instead of ₦1,000.', '32m', [act('Accept', true), act('Decline')]),
+        N('ngozi', 'Space is starting', 'Doodle Guess fills in 1 seat. ₦300 to join.', '1h', [act('Take seat', true)]),
+        N('zee', 'Refund · ₦500', 'Zainab didn’t answer in 24h. It’s back in your wallet.', '3h')
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

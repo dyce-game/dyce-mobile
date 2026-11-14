@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Dyce — Group chat</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&amp;family=Bricolage+Grotesque:wght@600;700;800&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; padding-top: 54px; display: flex; flex-direction: column; font-family: Figtree, -apple-system, system-ui, sans-serif; background: {{c.bg}}; color: {{c.text}}; overflow: hidden">
+  <header style="display: flex; align-items: flex-start; justify-content: space-between; padding: 0 8px 8px; border-bottom: 1px solid {{c.line}}; background: {{c.bg2}}">
+    <a href="Chats.dc.html" aria-label="Back to chats" style="height: 44px; width: 64px; display: flex; align-items: center; color: {{c.brandText}}">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
+    </a>
+    <div style="display: flex; flex-direction: column; align-items: center; gap: 3px">
+      <div style="display: flex">
+        <sc-for list="{{members}}" as="m" hint-placeholder-count="4">
+          <div style="margin: 0 -7px; border-radius: 50%; border: 2px solid {{c.bg2}}">
+            <dc-import name="Avatar" size="32" skin="{{m.skin}}" hair="{{m.hair}}" hair-style="{{m.hs}}" bg="{{m.bg}}" shirt="{{m.shirt}}" hint-size="32px,32px"></dc-import>
+          </div>
+        </sc-for>
+      </div>
+      <div style="font-size: 12px; font-weight: 600; margin-top: 2px">Sunday Game Night</div>
+      <div style="font-size: 11px; color: {{c.sub}}">5 people · 3 active</div>
+    </div>
+    <a href="Lobby.dc.html" aria-label="Open space" style="width: 64px; height: 44px; display: flex; align-items: center; justify-content: flex-end; padding-right: 8px; box-sizing: border-box; color: {{c.brandText}}">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><circle cx="8" cy="9" r="3"/><circle cx="16" cy="9" r="3"/><path d="M3 19c.6-2.8 2.6-4.5 5-4.5s4.4 1.7 5 4.5M11 19c.6-2.8 2.6-4.5 5-4.5s4.4 1.7 5 4.5"/></svg>
+    </a>
+  </header>
+
+  <div style="flex: 1; display: flex; flex-direction: column; justify-content: flex-end; gap: 6px; padding: 12px 12px 10px; overflow: hidden">
+    <div style="align-self: center; display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 14px; background: {{c.bg2}}; font-size: 13px">
+      <span style="padding: 2px 7px; border-radius: 6px; background: #C93E1C; color: #fff; font-size: 10px; font-weight: 800">POOL</span>
+      Ifeoma won Ludo · took the ₦1,500 pot
+    </div>
+
+    <div style="display: flex; gap: 6px; align-items: flex-end; margin-top: 6px">
+      <dc-import name="Avatar" size="28" skin="#A0662F" hair="#3B2219" hair-style="afro" bg="#FFB4C6" shirt="#0E9F6E" hint-size="28px,28px"></dc-import>
+      <div>
+        <div style="font-size: 11px; color: {{c.sub}}; margin: 0 0 2px 12px">Ifeoma</div>
+        <div style="padding: 9px 14px; border-radius: 20px; border-bottom-left-radius: 6px; background: {{c.recv}}; font-size: 16px; max-width: 250px">who's next? I'm feeling generous</div>
+      </div>
+    </div>
+
+    <div style="align-self: stretch; margin: 6px 20px 0 34px; border-radius: 20px; background: {{c.bg2}}; padding: 14px; border: 1px solid {{c.line}}">
+      <div style="font-size: 12px; font-weight: 700; color: {{c.sub}}">POLL · Tunde asked</div>
+      <div style="font-size: 16px; font-weight: 700; margin: 4px 0 10px">What are we playing at 9?</div>
+      <sc-for list="{{poll}}" as="o" hint-placeholder-count="3">
+        <button onClick="{{o.pick}}" style="width: 100%; height: 42px; margin-bottom: 6px; border-radius: 12px; border: 2px solid {{o.ring}}; background: {{c.bg}}; position: relative; overflow: hidden; padding: 0 12px; display: flex; align-items: center; justify-content: space-between; font: 600 14px Figtree, sans-serif; color: {{c.text}}">
+          <span style="position: absolute; left: 0; top: 0; bottom: 0; width: {{o.pct}}; background: {{c.brandSoft}}"></span>
+          <span style="position: relative">{{o.label}}</span><span style="position: relative; font-weight: 800">{{o.votes}}</span>
+        </button>
+      </sc-for>
+    </div>
+
+    <div style="align-self: flex-end; margin-top: 6px; width: 260px; border-radius: 20px; overflow: hidden; background: radial-gradient(circle at 80% 20%, #F06A3A, #B23A12); color: #fff; padding: 14px">
+      <div style="display: flex; justify-content: space-between; align-items: center">
+        <span style="font-size: 16px; font-weight: 800">Crazy Cards space</span>
+        <span style="padding: 3px 8px; border-radius: 999px; background: rgba(0,0,0,.28); font-size: 12px; font-weight: 700">3 / 4</span>
+      </div>
+      <div style="font-size: 13px; opacity: .95; margin-top: 4px">Pool · ₦500 a seat · winner takes all</div>
+      <a href="Lobby.dc.html" style="margin-top: 10px; height: 38px; border-radius: 12px; background: #fff; color: #B23A12; font-size: 14px; font-weight: 800; display: flex; align-items: center; justify-content: center; text-decoration: none">Take the last seat</a>
+    </div>
+
+    <div style="display: flex; gap: 6px; align-items: flex-end; margin-top: 6px">
+      <dc-import name="Avatar" size="28" skin="#8D5524" hair="#1C1714" hair-style="bun" bg="#FFC857" shirt="#E0453A" hint-size="28px,28px"></dc-import>
+      <div>
+        <div style="font-size: 11px; color: {{c.sub}}; margin: 0 0 2px 12px">Amaka</div>
+        <div style="padding: 9px 14px; border-radius: 20px; border-bottom-left-radius: 6px; background: {{c.recv}}; font-size: 16px; max-width: 250px">make it free this round, payday is friday</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display: flex; align-items: center; gap: 8px; padding: 8px 10px 34px">
+    <a href="Games.dc.html" aria-label="Open games" style="width: 36px; height: 36px; border-radius: 11px; background: #C93E1C; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); padding: 7px; box-sizing: border-box; gap: 1px; flex-shrink: 0">
+      <span style="width: 5px; height: 5px; border-radius: 50%; background: #fff"></span><span></span><span style="width: 5px; height: 5px; border-radius: 50%; background: #fff; justify-self: end"></span>
+      <span></span><span style="width: 5px; height: 5px; border-radius: 50%; background: #fff; justify-self: center"></span><span></span>
+      <span style="width: 5px; height: 5px; border-radius: 50%; background: #fff"></span><span></span><span style="width: 5px; height: 5px; border-radius: 50%; background: #fff; justify-self: end"></span>
+    </a>
+    <div style="flex: 1; height: 38px; border-radius: 19px; border: 1px solid {{c.line}}; display: flex; align-items: center; padding: 0 14px">
+      <label for="gm" style="position: absolute; left: -9999px">Message</label>
+      <input id="gm" placeholder="Message the group" style="flex: 1; min-width: 0; border: none; background: none; font: 400 16px Figtree, sans-serif; color: {{c.text}}; outline: none">
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"$preview":{"width":390,"height":844}}'>
+const T={light:{bg:'#FBF8F3',bg2:'#F6F1EA',text:'#1B140F',sub:'#6F655B',line:'#E6DDD0',recv:'#ECE4D8',brandText:'#B33416',brandSoft:'#F8DDD2'},
+dark:{bg:'#0F0D0B',bg2:'#15120F',text:'#F7F1E8',sub:'#ABA196',line:'#2E2823',recv:'#2A2420',brandText:'#FF8F6B',brandSoft:'#4A1E10'}};
+const OPTS=[['Crazy Cards',2],['Whot!',2],['Doodle Guess',1]];
+class Component extends DCLogic {
+  constructor(p){ super(p); this.state = { vote: null }; }
+  renderVals() {
+    const c = T[this.props.theme === 'dark' ? 'dark' : 'light'];
+    const v = this.state.vote;
+    const tot = OPTS.reduce((a, o) => a + o[1], 0) + (v ? 1 : 0);
+    return {
+      c,
+      members: [
+        { skin: '#A0662F', hair: '#3B2219', hs: 'afro', bg: '#FFB4C6', shirt: '#0E9F6E' },
+        { skin: '#8D5524', hair: '#1C1714', hs: 'bun', bg: '#FFC857', shirt: '#E0453A' },
+        { skin: '#5C3A21', hair: '#111111', hs: 'waves', bg: '#8FD3FF', shirt: '#1F2937' },
+        { skin: '#C68642', hair: '#2A1A12', hs: 'long', bg: '#B8F2C8', shirt: '#C93E1C' }
+      ],
+      poll: OPTS.map(([label, n]) => { const votes = n + (v === label ? 1 : 0); return { label, votes: String(votes), pct: Math.round(votes / tot * 100) + '%', ring: v === label ? '#C93E1C' : 'transparent', pick: () => this.setState({ vote: label }) }; })
+    };
+  }
+}
+</script>
+</body>
+</html>

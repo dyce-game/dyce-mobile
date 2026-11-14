@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Dyce — Invite page</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&amp;family=Bricolage+Grotesque:wght@600;700;800&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; padding: 54px 20px 30px; display: flex; flex-direction: column; font-family: Figtree, -apple-system, system-ui, sans-serif; background: {{c.page}}; color: {{c.text}}">
+  <div style="display: flex; align-items: center; justify-content: space-between; height: 44px">
+    <div style="display: flex; align-items: center; gap: 8px">
+      <div style="width: 30px; height: 30px; border-radius: 9px; background: #C93E1C; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); padding: 6px; box-sizing: border-box; gap: 1px" aria-hidden="true">
+        <span style="width: 4px; height: 4px; border-radius: 50%; background: #fff"></span><span></span><span style="width: 4px; height: 4px; border-radius: 50%; background: #fff; justify-self: end"></span>
+        <span></span><span style="width: 4px; height: 4px; border-radius: 50%; background: #fff; justify-self: center"></span><span></span>
+        <span style="width: 4px; height: 4px; border-radius: 50%; background: #fff"></span><span></span><span style="width: 4px; height: 4px; border-radius: 50%; background: #fff; justify-self: end"></span>
+      </div>
+      <span style="font-family: 'Bricolage Grotesque', Figtree, sans-serif; font-size: 22px; font-weight: 800">dyce</span>
+    </div>
+    <a href="#" style="font-size: 14px; font-weight: 600; color: {{c.brandText}}; text-decoration: none">Open in app</a>
+  </div>
+
+  <div style="margin-top: 18px; border-radius: 30px; background: {{c.card}}; padding: 26px 22px 22px; display: flex; flex-direction: column; align-items: center; gap: 14px; text-align: center; box-shadow: 0 12px 40px rgba(90,30,10,.10)">
+    <div style="position: relative">
+      <dc-import name="Avatar" size="128" skin="#8D5524" hair="#1C1714" hair-style="afro" bg="#FFC857" shirt="#C93E1C" hint-size="128px,128px"></dc-import>
+      <span style="position: absolute; right: -22px; bottom: 6px; padding: 6px 10px; border-radius: 14px; border-bottom-left-radius: 4px; background: #C93E1C; color: #fff; font-size: 13px; font-weight: 700">your turn</span>
+    </div>
+    <div style="font-size: 14px; font-weight: 600; color: {{c.sub}}">@kemdi.plays</div>
+    <h1 style="margin: 0; font-family: 'Bricolage Grotesque', Figtree, sans-serif; font-size: 28px; line-height: 1.1; font-weight: 700; letter-spacing: -0.4px">Kemdi wants to play Cup Pong with you</h1>
+    <div style="padding: 10px 14px; border-radius: 14px; background: {{c.bg2}}; font-size: 15px; font-style: italic">"Loser buys suya."</div>
+    <div style="display: flex; gap: 8px; flex-wrap: wrap; justify-content: center">
+      <span style="padding: 6px 12px; border-radius: 999px; background: {{c.moneySoft}}; color: {{c.money}}; font-size: 13px; font-weight: 700">Winner gets ₦1,000</span>
+      <span style="padding: 6px 12px; border-radius: 999px; background: {{c.bg2}}; color: {{c.text}}; font-size: 13px; font-weight: 600">2 min game</span>
+    </div>
+  </div>
+
+  <div style="margin-top: auto; display: flex; flex-direction: column; gap: 10px">
+    <div style="display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-radius: 16px; background: {{c.brandSoft}}; font-size: 14px; line-height: 1.4">
+      <span style="font-family: 'Bricolage Grotesque', Figtree, sans-serif; font-size: 18px; font-weight: 800; color: {{c.brandText}}; white-space: nowrap">₦200k</span>
+      <span>Every new player starts with ₦200k in Dyce Cash to play with.</span>
+    </div>
+    <a href="WebGame.dc.html" style="height: 54px; border-radius: 16px; background: #C93E1C; color: #fff; font-size: 17px; font-weight: 700; display: flex; align-items: center; justify-content: center; text-decoration: none">Play now in browser</a>
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
+      <a href="#" style="height: 50px; border-radius: 16px; background: {{c.ink}}; color: {{c.inkText}}; font-size: 15px; font-weight: 600; display: flex; align-items: center; justify-content: center; text-decoration: none">Get it on iPhone</a>
+      <a href="#" style="height: 50px; border-radius: 16px; background: {{c.ink}}; color: {{c.inkText}}; font-size: 15px; font-weight: 600; display: flex; align-items: center; justify-content: center; text-decoration: none">Get it on Android</a>
+    </div>
+    <p style="margin: 2px 0 0; font-size: 12px; color: {{c.sub}}; text-align: center">Your result goes back to Kemdi as a message.</p>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"$preview":{"width":390,"height":844}}'>
+const T={light:{page:'#F4F1FF',bg:'#FBF8F3',bg2:'#F2ECE3',card:'#FFFFFF',text:'#1B140F',sub:'#6F655B',line:'#E6DDD0',brandText:'#B33416',brandSoft:'#F8DDD2',money:'#0E7C47',moneySoft:'#E3F6EA',ink:'#1B140F',inkText:'#FFFFFF'},
+dark:{page:'#0B0814',bg:'#0F0D0B',bg2:'#2A2420',card:'#1D1916',text:'#F7F1E8',sub:'#ABA196',line:'#2E2823',brandText:'#FF8F6B',brandSoft:'#3A170C',money:'#3DDC84',moneySoft:'#11301F',ink:'#F7F1E8',inkText:'#1B140F'}};
+class Component extends DCLogic {
+  renderVals() { return { c: T[this.props.theme === 'dark' ? 'dark' : 'light'] }; }
+}
+</script>
+</body>
+</html>

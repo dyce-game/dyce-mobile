@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Dyce — Anagrams</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800;900&amp;family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; font-family: Figtree, -apple-system, system-ui, sans-serif; color: #FFFFFF; background: radial-gradient(ellipse at 50% 30%, #3A2416, #120A06 75%)">
+  <span style="position: absolute; inset: 0; background: radial-gradient(ellipse 80% 40% at 50% 50%, rgba(255,200,120,.25), transparent 70%)" aria-hidden="true"></span>
+  <div style="position: absolute; left: 50%; top: 178px; transform: translateX(-50%); width: 92px; height: 92px; border-radius: 50%; background: conic-gradient(#E3A93B 0 62%, rgba(255,255,255,.12) 62%); display: flex; align-items: center; justify-content: center"><span style="width: 76px; height: 76px; border-radius: 50%; background: #2A1A10; display: flex; flex-direction: column; align-items: center; justify-content: center"><span style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 28px; font-weight: 800; line-height: 1">37</span><span style="font-size: 10px; font-weight: 800; opacity: .7">SEC</span></span></div>
+  <div style="position: absolute; left: 0; right: 0; top: 300px; height: 300px; perspective: 800px" role="img" aria-label="Anagram letters G A N R O E, word RANGE being built">
+    <div style="position: absolute; inset: 0; transform: rotateX(0deg); transform-style: preserve-3d">
+      <div style="position: absolute; left: 0; right: 0; top: 0; display: flex; justify-content: center; gap: 8px">
+        <sc-for list="{{slots}}" as="s" hint-placeholder-count="6">
+          <span style="width: 50px; height: 56px; border-radius: 10px; background: {{s.bg}}; box-shadow: {{s.sh}}; color: #3A2A14; font-family: 'Bricolage Grotesque', sans-serif; font-size: 28px; font-weight: 800; display: flex; align-items: center; justify-content: center">{{s.ch}}</span>
+        </sc-for>
+      </div>
+      <span style="position: absolute; left: 20px; right: 20px; top: 150px; height: 120px; border-radius: 24px; background: linear-gradient(#7A4A22, #5A3418); box-shadow: 0 12px 0 #3A200C, 0 30px 40px rgba(0,0,0,.5)"></span>
+      <div style="position: absolute; left: 0; right: 0; top: 176px; display: flex; justify-content: center; gap: 8px">
+        <sc-for list="{{pool}}" as="t" hint-placeholder-count="6">
+          <span style="width: 50px; height: 56px; border-radius: 10px; background: {{t.bg}}; box-shadow: 0 7px 0 #A57A3C, 0 12px 12px rgba(0,0,0,.45), inset 0 1px 0 #fff; color: #3A2A14; font-family: 'Bricolage Grotesque', sans-serif; font-size: 28px; font-weight: 800; display: flex; align-items: center; justify-content: center; opacity: {{t.op}}">{{t.ch}}</span>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+  <div style="position: absolute; left: 16px; right: 16px; top: 620px; display: flex; flex-wrap: wrap; gap: 6px; justify-content: center">
+    <sc-for list="{{found}}" as="f" hint-placeholder-count="6"><span style="height: 26px; padding: 0 10px; border-radius: 13px; background: rgba(255,255,255,.14); font-size: 12px; font-weight: 800; display: flex; align-items: center">{{f}}</span></sc-for>
+  </div>
+  <div style="position: absolute; left: 12px; right: 12px; top: 54px; display: flex; align-items: center; justify-content: space-between">
+    <a href="Thread.dc.html" aria-label="Back to chat" style="height: 40px; padding: 0 14px; border-radius: 20px; background: rgba(255,255,255,.12); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,.16); color: #fff; font-size: 14px; font-weight: 700; display: flex; align-items: center; gap: 4px; text-decoration: none">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>Chat</a>
+    <span style="height: 30px; padding: 0 12px; border-radius: 15px; background: {{modeBg}}; box-shadow: 0 2px 0 rgba(0,0,0,.35); font-size: 12px; font-weight: 800; letter-spacing: 0.4px; display: flex; align-items: center">{{modeLabel}}</span>
+    <a href="GameMenu.dc.html" aria-label="Game menu" style="width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,.12); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,.16); display: flex; align-items: center; justify-content: center">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
+    </a>
+  </div>
+  <div style="position: absolute; left: 50%; top: 106px; transform: translateX(-50%); height: 46px; padding: 0 16px 0 12px; border-radius: 23px; background: rgba(0,0,0,.38); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,.14); display: flex; align-items: center; gap: 8px; white-space: nowrap"><div style="display: flex"><div style="margin-left: -8px; border-radius: 50%; box-shadow: 0 0 0 2px rgba(0,0,0,.4)"><dc-import name="Avatar" size="34" skin="#C68642" hair="#2A1A12" hair-style="long" bg="#B8F2C8" shirt="#6E4BFF" hint-size="34px,34px"></dc-import></div></div><span style="font-size: 13px; font-weight: 800">Zainab · played · 5,800</span></div>
+  <div style="position: absolute; left: 14px; right: 14px; bottom: 30px; display: flex; align-items: center; gap: 12px; padding: 10px 10px 10px 12px; border-radius: 30px; background: rgba(0,0,0,.38); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,.14)">
+    <div style="position: relative; flex-shrink: 0"><dc-import name="Avatar" size="42" skin="#8D5524" hair="#1C1714" hair-style="afro" bg="#C9B8FF" shirt="#6E4BFF" hint-size="42px,42px"></dc-import><span style="position: absolute; inset: -4px; border-radius: 50%; border: 3px solid #E3A93B; border-right-color: transparent"></span></div>
+    <div style="flex: 1; min-width: 0"><div style="font-size: 14px; font-weight: 800">4,900 points · 6 words</div><div style="font-size: 12px; opacity: .82">Tap letters to build · RANG + E?</div></div>
+    <button style="height: 50px; padding: 0 18px; border-radius: 25px; border: none; background: #C93E1C; box-shadow: 0 4px 0 #8A2410, inset 0 2px 0 rgba(255,255,255,.25); color: #FFFFFF; font: 900 15px Figtree, sans-serif; flex-shrink: 0">Enter</button>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"mode":{"editor":"enum","options":["pool","free"],"default":"free"},"$preview":{"width":390,"height":844}}'>
+const POT='₦1,000', MULTI=false;
+function poly(pts){ return 'polygon(' + pts.map(function(p){ return p[0].toFixed(1) + 'px ' + p[1].toFixed(1) + 'px'; }).join(', ') + ')'; }
+function rnd(seed){ var x = Math.sin(seed * 9301 + 49297) * 233280; return x - Math.floor(x); }
+
+function scene(){
+  const word='RANG', letters=['G','A','N','R','O','E'], used={0:1,1:1,2:1,3:1};
+  return {
+    slots:[0,1,2,3,4,5].map(function(i){ const ch=word[i]||''; return {ch:ch, bg: ch?'linear-gradient(160deg, #FFF3D6, #E8C988)':'rgba(255,255,255,.10)', sh: ch?'0 6px 0 #A57A3C, 0 10px 10px rgba(0,0,0,.4)':'inset 0 0 0 2px rgba(255,255,255,.25)'}; }),
+    pool: letters.map(function(ch,i){ return {ch:ch, bg:'linear-gradient(160deg, #FFF3D6, #E8C988)', op: used[i]?'0.25':'1'}; }),
+    found:['ORANGE · 2000','RANGE · 1200','ANGER · 1200','GONE · 400','EARN · 400','AGO · 100']
+  };
+}
+class Component extends DCLogic {
+  renderVals() {
+    const pool = this.props.mode !== 'free';
+    return Object.assign({ modeLabel: pool ? (MULTI ? 'SPACE POOL · ' : 'POOL · ') + POT + ' POT' : (MULTI ? 'FREE SPACE · XP' : 'FREE · +25 XP'), modeBg: pool ? '#C93E1C' : '#17834F' }, scene(this.props, this));
+  }
+}
+</script>
+</body>
+</html>

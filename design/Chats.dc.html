@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Dyce — Chat</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800;900&amp;family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; padding-top: 54px; position: relative; overflow: hidden; display: flex; flex-direction: column; font-family: Figtree, -apple-system, system-ui, sans-serif; background: {{c.bg}}; color: {{c.text}}">
+  <div style="position: absolute; left: -80px; top: -120px; width: 320px; height: 320px; border-radius: 50%; background: radial-gradient(circle, {{c.glowA}}, transparent 70%)" aria-hidden="true"></div>
+  <div style="position: absolute; right: -120px; top: 40px; width: 300px; height: 300px; border-radius: 50%; background: radial-gradient(circle, {{c.glowB}}, transparent 70%)" aria-hidden="true"></div>
+
+  <div style="position: relative; display: flex; align-items: center; justify-content: space-between; padding: 0 16px; height: 48px">
+    <a href="Profile.dc.html" aria-label="My profile and notifications" style="position: relative; display: flex; border-radius: 50%; box-shadow: 0 0 0 2px {{c.bg}}, 0 0 0 4px #C93E1C">
+      <dc-import name="Avatar" size="38" skin="#8D5524" hair="#1C1714" hair-style="afro" bg="#C9B8FF" shirt="#6E4BFF" hint-size="38px,38px"></dc-import>
+      <span style="position: absolute; right: -4px; top: -4px; min-width: 16px; height: 16px; padding: 0 4px; box-sizing: border-box; border-radius: 8px; background: #C93E1C; border: 2px solid {{c.bg}}; color: #fff; font-size: 9px; font-weight: 900; display: flex; align-items: center; justify-content: center">2</span>
+    </a>
+    <a href="{{plus.href}}" aria-label="{{plus.label}}" style="width: 42px; height: 42px; border-radius: 50%; background: #C93E1C; box-shadow: 0 3px 0 #8A2410, 0 8px 18px rgba(201,62,28,.32), inset 0 2px 0 rgba(255,255,255,.25); display: flex; align-items: center; justify-content: center; color: #fff">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+    </a>
+  </div>
+
+  <div style="position: relative; display: flex; align-items: flex-end; justify-content: space-between; padding: 12px 18px 0">
+    <h1 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-size: 38px; font-weight: 800; letter-spacing: -1px; line-height: 1">{{title}}</h1>
+    <span style="margin-bottom: 6px; display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 700; color: {{c.sub}}"><span style="width: 8px; height: 8px; border-radius: 50%; background: #2BB673"></span>1,284 playing</span>
+  </div>
+
+  <div role="tablist" aria-label="Filter" style="position: relative; display: flex; gap: 18px; padding: 12px 18px 0; border-bottom: 1px solid {{c.line}}; white-space: nowrap; flex-shrink: 0">
+    <sc-for list="{{tabs}}" as="t" hint-placeholder-count="5">
+      <button role="tab" aria-selected="{{t.sel}}" onClick="{{t.pick}}" style="position: relative; height: 40px; padding: 0; border: none; background: none; font: {{t.weight}} 15px Figtree, sans-serif; color: {{t.fg}}; display: flex; align-items: center; gap: 6px; flex-shrink: 0">
+        {{t.label}}
+        <sc-if value="{{t.count}}" hint-placeholder-val="{{false}}"><span style="min-width: 18px; height: 18px; padding: 0 5px; box-sizing: border-box; border-radius: 9px; background: #C93E1C; color: #fff; font-size: 11px; font-weight: 800; display: inline-flex; align-items: center; justify-content: center">{{t.count}}</span></sc-if>
+        <span style="position: absolute; left: 0; right: 0; bottom: -1px; height: 3px; border-radius: 3px 3px 0 0; background: {{t.bar}}"></span>
+      </button>
+    </sc-for>
+  </div>
+
+  <div style="position: relative; flex: 1; overflow: hidden; padding: 6px 0 120px">
+
+    <sc-if value="{{show.list}}" hint-placeholder-val="{{true}}">
+      <sc-if value="{{show.live}}" hint-placeholder-val="{{true}}">
+        <div style="display: flex; gap: 14px; padding: 10px 18px 8px; overflow: hidden">
+          <sc-for list="{{live}}" as="p" hint-placeholder-count="5">
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 5px; width: 60px; flex-shrink: 0">
+              <div style="border-radius: 50%; padding: 2px; background: conic-gradient(#C93E1C, #E3A93B, #C93E1C)"><div style="border-radius: 50%; padding: 2px; background: {{c.bg}}">
+                <dc-import name="Avatar" size="52" skin="{{p.skin}}" hair="{{p.hair}}" hair-style="{{p.hs}}" bg="{{p.bg}}" shirt="{{p.shirt}}" hint-size="52px,52px"></dc-import>
+              </div></div>
+              <span style="font-size: 12px; font-weight: 600; white-space: nowrap">{{p.name}}</span>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+      <sc-for list="{{rows}}" as="r" hint-placeholder-count="6">
+        <a href="{{r.href}}" style="display: flex; align-items: center; gap: 13px; padding: 0 18px; height: 78px; text-decoration: none; color: {{c.text}}">
+          <div style="position: relative; flex-shrink: 0">
+            <sc-if value="{{r.isPerson}}" hint-placeholder-val="{{true}}"><dc-import name="Avatar" size="54" skin="{{r.skin}}" hair="{{r.hair}}" hair-style="{{r.hs}}" bg="{{r.bg}}" shirt="{{r.shirt}}" hint-size="54px,54px"></dc-import></sc-if>
+            <sc-if value="{{r.isGroup}}" hint-placeholder-val="{{false}}">
+              <div style="position: relative; width: 54px; height: 54px">
+                <div style="position: absolute; left: 0; top: 0; border-radius: 50%; box-shadow: 0 0 0 2px {{c.bg}}"><dc-import name="Avatar" size="34" skin="{{r.g1.skin}}" hair="{{r.g1.hair}}" hair-style="{{r.g1.hs}}" bg="{{r.g1.bg}}" shirt="{{r.g1.shirt}}" hint-size="34px,34px"></dc-import></div>
+                <div style="position: absolute; right: 0; top: 6px; border-radius: 50%; box-shadow: 0 0 0 2px {{c.bg}}"><dc-import name="Avatar" size="28" skin="{{r.g2.skin}}" hair="{{r.g2.hair}}" hair-style="{{r.g2.hs}}" bg="{{r.g2.bg}}" shirt="{{r.g2.shirt}}" hint-size="28px,28px"></dc-import></div>
+                <div style="position: absolute; left: 14px; bottom: 0; border-radius: 50%; box-shadow: 0 0 0 2px {{c.bg}}"><dc-import name="Avatar" size="30" skin="{{r.g3.skin}}" hair="{{r.g3.hair}}" hair-style="{{r.g3.hs}}" bg="{{r.g3.bg}}" shirt="{{r.g3.shirt}}" hint-size="30px,30px"></dc-import></div>
+              </div>
+            </sc-if>
+            <sc-if value="{{r.isSms}}" hint-placeholder-val="{{false}}"><span style="width: 54px; height: 54px; border-radius: 50%; background: {{c.chip}}; color: {{c.sub}}; font-size: 18px; font-weight: 700; display: flex; align-items: center; justify-content: center">{{r.ini}}</span></sc-if>
+            <sc-if value="{{r.isBot}}" hint-placeholder-val="{{false}}"><span style="width: 54px; height: 54px; border-radius: 18px; background: {{r.botBg}}; box-shadow: inset 0 -4px 0 rgba(0,0,0,.18), inset 0 2px 0 rgba(255,255,255,.3); display: flex; align-items: center; justify-content: center; gap: 8px"><span style="width: 9px; height: 13px; border-radius: 5px; background: #fff"></span><span style="width: 9px; height: 13px; border-radius: 5px; background: #fff"></span></span></sc-if>
+            <sc-if value="{{r.online}}" hint-placeholder-val="{{false}}"><span style="position: absolute; right: 1px; bottom: 1px; width: 14px; height: 14px; border-radius: 50%; background: #2BB673; border: 3px solid {{c.bg}}"></span></sc-if>
+          </div>
+          <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px">
+            <div style="display: flex; align-items: center; gap: 8px"><span style="font-size: 16px; font-weight: 700; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{r.name}}</span><span style="font-size: 12px; color: {{c.sub}}; font-weight: 600">{{r.time}}</span></div>
+            <div style="display: flex; align-items: center; gap: 8px">
+              <span style="font-size: 14px; color: {{r.prevColor}}; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: {{r.prevWeight}}">{{r.preview}}</span>
+              <sc-if value="{{r.tag}}" hint-placeholder-val="{{false}}"><span style="height: 22px; padding: 0 9px; border-radius: 11px; font-size: 11px; font-weight: 800; color: {{r.tagFg}}; background: {{r.tagBg}}; box-shadow: 0 2px 0 {{r.tagEdge}}; display: flex; align-items: center">{{r.tag}}</span></sc-if>
+            </div>
+          </div>
+        </a>
+      </sc-for>
+    </sc-if>
+
+    <sc-if value="{{show.req}}" hint-placeholder-val="{{false}}">
+      <div style="margin: 10px 16px 0; padding: 12px 14px; border-radius: 18px; background: {{c.card}}; border: 1px solid {{c.line}}; display: flex; gap: 12px; align-items: flex-start">
+        <span style="width: 34px; height: 34px; border-radius: 11px; background: {{c.brandSoft}}; display: flex; align-items: center; justify-content: center; flex-shrink: 0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="{{c.accent}}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 3v6c0 4.5-3.4 8-8 9-4.6-1-8-4.5-8-9V6z"/></svg></span>
+        <div style="flex: 1"><div style="font-size: 13px; line-height: 1.45">From people outside your contacts. They can't see your number or whether you've opened these.</div><a href="Settings.dc.html" style="font-size: 13px; font-weight: 800; color: {{c.accent}}; text-decoration: none">Who can reach me</a></div>
+      </div>
+      <div style="display: flex; gap: 8px; padding: 14px 16px 6px">
+        <span style="height: 32px; padding: 0 12px; border-radius: 16px; background: {{c.ink}}; color: {{c.inkText}}; font-size: 13px; font-weight: 800; display: flex; align-items: center">Game invites · 3</span>
+        <span style="height: 32px; padding: 0 12px; border-radius: 16px; background: {{c.chip}}; font-size: 13px; font-weight: 700; display: flex; align-items: center">Messages · 1</span>
+      </div>
+      <sc-for list="{{reqs}}" as="q" hint-placeholder-count="2">
+        <div style="margin: 8px 16px 0; border-radius: 22px; background: {{c.card}}; border: 1px solid {{c.line}}; box-shadow: 0 6px 18px {{c.glassShadow}}; overflow: hidden">
+          <div style="display: flex; align-items: center; gap: 10px; padding: 12px 12px 0">
+            <dc-import name="Avatar" size="42" skin="{{q.skin}}" hair="{{q.hair}}" hair-style="{{q.hs}}" bg="{{q.bg}}" shirt="{{q.shirt}}" hint-size="42px,42px"></dc-import>
+            <div style="flex: 1; min-width: 0"><div style="font-size: 15px; font-weight: 800">{{q.h}}</div><div style="font-size: 12px; color: {{c.sub}}">{{q.meta}}</div></div>
+            <span style="font-size: 12px; color: {{c.sub}}; font-weight: 600">{{q.time}}</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 12px; margin: 10px 12px 0; padding: 10px; border-radius: 16px; background: {{c.chip}}">
+            <span style="width: 46px; height: 46px; border-radius: 13px; background: {{q.gbg}}; box-shadow: inset 0 -4px 0 rgba(0,0,0,.2); color: #fff; font-family: 'Bricolage Grotesque', sans-serif; font-size: 16px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0">{{q.gm}}</span>
+            <div style="flex: 1; min-width: 0"><div style="font-size: 15px; font-weight: 800">{{q.game}}</div><div style="font-size: 12px; color: {{c.sub}}">“{{q.note}}”</div></div>
+            <span style="height: 24px; padding: 0 9px; border-radius: 12px; background: {{q.modeBg}}; color: {{q.modeFg}}; box-shadow: 0 2px 0 {{q.modeEdge}}; font-size: 11px; font-weight: 900; display: flex; align-items: center; white-space: nowrap">{{q.mode}}</span>
+          </div>
+          <div style="display: grid; grid-template-columns: 1.4fr 1fr 44px; gap: 8px; padding: 10px 12px 12px">
+            <a href="{{q.href}}" style="height: 42px; border-radius: 21px; background: #C93E1C; box-shadow: 0 3px 0 #8A2410; color: #fff; font-size: 14px; font-weight: 900; display: flex; align-items: center; justify-content: center; text-decoration: none">{{q.accept}}</a>
+            <button style="height: 42px; border-radius: 21px; border: none; background: {{c.chip}}; color: {{c.text}}; font: 700 14px Figtree, sans-serif">Decline</button>
+            <a href="Report.dc.html" aria-label="Block or report" style="height: 42px; border-radius: 50%; background: {{c.chip}}; color: {{c.sub}}; display: flex; align-items: center; justify-content: center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M6 18L18 6"/></svg></a>
+          </div>
+        </div>
+      </sc-for>
+      <div style="margin: 12px 16px 0; display: flex; align-items: center; gap: 10px; color: {{c.sub}}; font-size: 13px; font-weight: 700"><span style="flex: 1; height: 1px; background: {{c.line}}"></span>2 filtered as spam · view<span style="flex: 1; height: 1px; background: {{c.line}}"></span></div>
+    </sc-if>
+
+  </div>
+
+  <div style="position: absolute; left: 0; right: 0; bottom: 0; height: 150px; background: linear-gradient(transparent, {{c.bg}} 70%); pointer-events: none" aria-hidden="true"></div>
+  <div style="position: absolute; left: 14px; right: 14px; bottom: 26px">
+    <dc-import name="TabBar" active="chat" search="SearchRecent.dc.html" theme="{{c.name}}" hint-size="362px,68px"></dc-import>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"filter":{"editor":"enum","options":["all","friends","groups","requests","bots"],"default":"all"},"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"$preview":{"width":390,"height":844}}'>
+const T={light:{name:'light',bg:'#FBF8F3',card:'#FFFFFF',text:'#1B140F',sub:'#6F655B',faint:'#C9BEB1',line:'#E6DDD0',chip:'#EEE7DC',chipEdge:'#D8CEC1',ink:'#1B140F',inkText:'#FFFFFF',accent:'#B33416',brandSoft:'#FBE7DF',glass:'rgba(255,255,255,.62)',glassEdge:'rgba(255,255,255,.9)',glassShadow:'rgba(90,40,10,.12)',glowA:'rgba(227,169,59,.22)',glowB:'rgba(201,62,28,.14)',money:'#17834F',moneySoft:'#DDF1E5'},
+dark:{name:'dark',bg:'#0F0D0B',card:'#1D1916',text:'#F7F1E8',sub:'#ABA196',faint:'#4A423A',line:'#2E2823',chip:'#2A2420',chipEdge:'#15120F',ink:'#F7F1E8',inkText:'#1B140F',accent:'#FF8F6B',brandSoft:'#3A170C',glass:'rgba(42,36,32,.6)',glassEdge:'rgba(255,255,255,.10)',glassShadow:'rgba(0,0,0,.45)',glowA:'rgba(227,169,59,.12)',glowB:'rgba(201,62,28,.16)',money:'#3DDC84',moneySoft:'#11301F'}};
+const P={
+ amaka:{name:'Amaka',skin:'#8D5524',hair:'#1C1714',hs:'bun',bg:'#FFC857',shirt:'#E0453A'},
+ tunde:{name:'Tunde',skin:'#5C3A21',hair:'#111111',hs:'waves',bg:'#8FD3FF',shirt:'#1F2937'},
+ zee:{name:'Zainab',skin:'#C68642',hair:'#2A1A12',hs:'long',bg:'#B8F2C8',shirt:'#6E4BFF'},
+ ife:{name:'Ifeoma',skin:'#A0662F',hair:'#3B2219',hs:'afro',bg:'#FFB4C6',shirt:'#0E9F6E'},
+ dayo:{name:'Dayo',skin:'#F1C27D',hair:'#7A4A2A',hs:'short',bg:'#C9B8FF',shirt:'#FFB020'},
+ shark:{skin:'#5C3A21',hair:'#111111',hs:'short',bg:'#8FD3FF',shirt:'#0E9F6E'},
+ ngozi:{skin:'#A0662F',hair:'#3B2219',hs:'long',bg:'#FFB4C6',shirt:'#FFB020'},
+ bayo:{skin:'#F1C27D',hair:'#1C1714',hs:'waves',bg:'#FFC857',shirt:'#1F2937'}
+};
+const TAG={pool:['POOL','#FFFFFF','#C93E1C','#8A2410'],turn:['YOUR TURN','#3A2400','#E3A93B','#A86F12'],free:['FREE','#FFFFFF','#17834F','#0C5A34'],space:['SPACE','#FFFFFF','#1B140F','#000000'],sms:['SMS','#FFFFFF','#0A66D1','#064A99'],bot:['BOT','#FFFFFF','#5A4FCF','#3A30A0'],req:['REQUEST','#3A2400','#E3A93B','#A86F12']};
+const TITLES={all:'Chat',friends:'Friends',groups:'Groups',requests:'Requests',bots:'Bots'};
+class Component extends DCLogic {
+  constructor(p){ super(p); this.state = { f: p.filter || 'all' }; }
+  renderVals() {
+    const c = T[this.props.theme === 'dark' ? 'dark' : 'light'];
+    const f = this.state.f;
+    const row = (kind, p, o) => { const t = o.tag ? TAG[o.tag] : null; return Object.assign({ isPerson: kind === 'p', isSms: kind === 's', isBot: kind === 'b', isGroup: kind === 'g', online: false, href: 'Thread.dc.html', prevColor: o.unread ? c.text : c.sub, prevWeight: o.unread ? '700' : '500', tag: t ? t[0] : false, tagFg: t ? t[1] : '', tagBg: t ? t[2] : '', tagEdge: t ? t[3] : '' }, p || {}, o); };
+    const L = {
+      friends: [
+        row('p', P.amaka, { name: 'Amaka Obi', preview: 'Sank two. Your move, oga', time: '4:41', tag: 'turn', unread: true, online: true }),
+        row('p', P.tunde, { name: 'Tunde Bakare', preview: 'You won Word Hunt · +₦1,500', time: '2:05', tag: 'pool', online: true }),
+        row('p', P.zee, { name: 'Zainab M.', preview: 'Sent you ₦5,000', time: 'Yday', href: 'MoneyInChat.dc.html' }),
+        row('s', null, { ini: 'TA', name: 'Tolu Ade', preview: 'Invite sent · Cup Pong', time: '1:30', tag: 'sms', href: 'Invite.dc.html' }),
+        row('p', P.dayo, { name: 'Dayo', preview: 'gg. rematch tomorrow', time: 'Tue', tag: 'free' })
+      ],
+      groups: [
+        row('g', { g1: P.ife, g2: P.amaka, g3: P.tunde }, { name: 'Sunday Game Night', preview: 'Ifeoma: who’s next? · Crazy Cards 3/4', time: '4:12', tag: 'space', unread: true, href: 'GroupChat.dc.html' }),
+        row('g', { g1: P.zee, g2: P.dayo, g3: P.tunde }, { name: 'Office Doodles', preview: 'Doodle Guess · round 2 live', time: '3:50', tag: 'free', href: 'GroupChat.dc.html' }),
+        row('g', { g1: P.amaka, g2: P.ife, g3: P.zee }, { name: 'Obi Family', preview: 'Mummy: who taught Dad Whot?', time: 'Yday', href: 'GroupChat.dc.html' }),
+        row('g', { g1: P.dayo, g2: P.tunde, g3: P.amaka }, { name: 'Babcock ’24', preview: 'Ludo pool tonight? ₦1,000 a seat', time: 'Mon', tag: 'pool', href: 'GroupChat.dc.html' })
+      ],
+      bots: [
+        row('b', { botBg: '#5A4FCF' }, { name: 'Coach Cue', preview: '8 Ball drills · beat my bank shot', time: 'Bot', tag: 'bot' }),
+        row('b', { botBg: '#17834F' }, { name: 'Quiz Mama', preview: 'Naija trivia · 10 questions a day', time: 'Bot', tag: 'bot' }),
+        row('b', { botBg: '#C98500' }, { name: 'Word Hunt Trainer', preview: 'Warm up before you play Zainab', time: 'Bot', tag: 'bot' }),
+        row('b', { botBg: '#0A3A6B' }, { name: 'Admiral Ade', preview: 'Sea Battle practice, 3 levels', time: 'Bot', tag: 'bot' })
+      ]
+    };
+    const all = [L.friends[0], row('p', P.shark, { name: '@lagos_shark', preview: 'Wants a Sea Battle pool', time: '5m', tag: 'req', href: 'Requests.dc.html' }), L.friends[1], L.groups[0], L.friends[3], L.bots[0], L.friends[2]];
+    const POOLM = ['POOL','#3A2400','#E3A93B','#A86F12'], FREEM = ['FREE','#FFFFFF','#17834F','#0C5A34'];
+    const RQ = (p, o, m) => Object.assign({}, p, o, { mode: o.mode || m[0], modeFg: m[1], modeBg: m[2], modeEdge: m[3] });
+    const show = { list: ['all','friends','groups','bots'].indexOf(f) >= 0, live: f === 'all' || f === 'friends', req: f === 'requests' };
+    const TABS = [['all','All',false],['friends','Friends',false],['groups','Groups',false],['requests','Requests','3'],['bots','Bots',false]];
+    return {
+      c, show, title: TITLES[f],
+      rows: f === 'all' ? all : (L[f] || []),
+      live: [P.amaka, P.tunde, P.zee, P.ife, P.dayo],
+      reqs: [
+        RQ(P.shark, { h: '@lagos_shark', meta: 'Level 14 · 214 wins · 0 mutual', time: '5m', game: 'Sea Battle', gm: 'SB', gbg: '#0B2A55', note: 'run it, ₦1k each?', mode: 'POOL ₦1,000', accept: 'Match ₦1,000', href: 'PoolInvite.dc.html' }, POOLM),
+        RQ(P.ngozi, { h: '@ngozi.k', meta: 'Played with you once · 2 mutual', time: '22m', game: 'Doodle Guess space', gm: 'Aa', gbg: '#C93E1C', note: 'one seat left, you in?', mode: '5/8 · ₦300', accept: 'Take seat', href: 'Lobby.dc.html' }, POOLM),
+        RQ(P.bayo, { h: '@bayo_spins', meta: 'New on Dyce · 1 mutual', time: '1h', game: 'Word Hunt', gm: 'WH', gbg: '#C98500', note: 'friendly one', accept: 'Play free', href: 'PlayWordHunt.dc.html' }, FREEM)
+      ],
+      plus: { href: 'NewChat.dc.html', label: 'New chat' },
+      tabs: TABS.map(([id, label, count]) => ({ label, count, sel: f === id ? 'true' : 'false', weight: f === id ? '800' : '600', fg: f === id ? c.text : c.sub, bar: f === id ? '#C93E1C' : 'transparent', pick: () => this.setState({ f: id }) }))
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Dyce — Level up and streak moments</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&amp;family=Bricolage+Grotesque:wght@600;700;800&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; font-family: Figtree, -apple-system, system-ui, sans-serif; color: {{k.text}}; background: {{k.card}}">
+  <div style="position: absolute; inset: 0" aria-hidden="true">
+    <dc-import name="FreeResult" theme="{{k.name}}" hint-size="390px,844px"></dc-import>
+  </div>
+  <div style="position: absolute; inset: 0; background: rgba(8,6,20,.62)"></div>
+
+  <div style="position: absolute; left: 22px; right: 22px; top: 150px; border-radius: 32px; background: {{k.card}}; overflow: hidden">
+    <div style="height: 210px; background: {{v.bg}}; position: relative; display: flex; align-items: center; justify-content: center">
+      <sc-for list="{{rays}}" as="r" hint-placeholder-count="8">
+        <span style="position: absolute; left: 50%; top: 50%; width: 6px; height: 120px; margin: -120px 0 0 -3px; border-radius: 3px; background: rgba(255,255,255,.18); transform-origin: 50% 100%; transform: rotate({{r}})" aria-hidden="true"></span>
+      </sc-for>
+      <sc-if value="{{isLevel}}" hint-placeholder-val="{{true}}">
+        <div style="position: relative; width: 120px; height: 120px; border-radius: 36px; transform: rotate(-8deg); background: linear-gradient(135deg, #FFD27A, #E8A317); box-shadow: 0 16px 30px rgba(0,0,0,.3); display: flex; flex-direction: column; align-items: center; justify-content: center; color: #3A2400">
+          <span style="font-size: 12px; font-weight: 800; letter-spacing: 1px">LEVEL</span>
+          <span style="font-family: 'Bricolage Grotesque', Figtree, sans-serif; font-size: 56px; font-weight: 800; line-height: 1">8</span>
+        </div>
+      </sc-if>
+      <sc-if value="{{isStreak}}" hint-placeholder-val="{{false}}">
+        <div style="position: relative; display: flex; align-items: center; gap: 4px">
+          <svg width="70" height="96" viewBox="0 0 24 32" aria-hidden="true" style="transform: rotate(-10deg)"><path d="M12 1c1.3 4.6 6.5 7.2 6.5 13.7A6.6 6.6 0 0 1 12 21l-1-6 3-3-4-1 2-10z" fill="#9AA0AE"/></svg>
+          <svg width="64" height="88" viewBox="0 0 24 32" aria-hidden="true" style="transform: rotate(12deg); margin-top: 24px"><path d="M10 9l3 2-3 3 1 7A6.6 6.6 0 0 1 5.5 14.7C5.5 12 7 10.2 8.3 8.9 8.7 11 9.8 12 10 9z" fill="#C3C7D0"/></svg>
+        </div>
+      </sc-if>
+    </div>
+    <div style="padding: 20px 20px 18px; text-align: center">
+      <div style="font-family: 'Bricolage Grotesque', Figtree, sans-serif; font-size: 28px; font-weight: 800; letter-spacing: -0.5px">{{v.title}}</div>
+      <div style="font-size: 15px; color: {{k.sub}}; margin-top: 4px; line-height: 1.45">{{v.body}}</div>
+      <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 16px; text-align: left">
+        <sc-for list="{{v.items}}" as="i" hint-placeholder-count="2">
+          <div style="display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 14px; background: {{k.bg2}}">
+            <span style="width: 36px; height: 36px; border-radius: 10px; background: {{i.bg}}; color: #fff; font-size: 13px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0">{{i.m}}</span>
+            <div><div style="font-size: 14px; font-weight: 700">{{i.t}}</div><div style="font-size: 12px; color: {{k.sub}}">{{i.d}}</div></div>
+          </div>
+        </sc-for>
+      </div>
+      <a href="{{v.href}}" style="margin-top: 16px; height: 52px; border-radius: 16px; background: {{v.ctaBg}}; color: #fff; font-size: 16px; font-weight: 700; display: flex; align-items: center; justify-content: center; text-decoration: none">{{v.cta}}</a>
+      <a href="Chats.dc.html" style="height: 40px; display: flex; align-items: center; justify-content: center; color: {{k.sub}}; font-size: 14px; font-weight: 600; text-decoration: none">{{v.alt}}</a>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"variant":{"editor":"enum","options":["levelup","streaklost"],"default":"levelup"},"$preview":{"width":390,"height":844}}'>
+const V={
+  levelup:{bg:'radial-gradient(circle at 50% 50%, #F07A4A, #A8321A 60%, #4A150A)',title:'You hit Level 8',body:'500 XP from free games and pools. Two things unlocked:',
+    items:[{m:'BG',bg:'#FFB020',t:'Sunset avatar backdrop',d:'Equip it in the avatar builder'},{m:'Aa',bg:'#B33416',t:'Custom space names',d:'Name the spaces you host'}],cta:'Show off my avatar',ctaBg:'#C93E1C',href:'AvatarBuilder.dc.html',alt:'Later'},
+  streaklost:{bg:'radial-gradient(circle at 50% 50%, #4A4A58, #26262E 65%, #141418)',title:'Streak ended at 4',body:'Amaka broke it. Your best is still 7 in a row.',
+    items:[{m:'24h',bg:'#FF7A1A',t:'Streak saver',d:'Win your next free game within 24h and the 4 comes back'},{m:'4',bg:'#9AA0AE',t:'Streak this week',d:'Longest among your friends: Zainab, 6'}],cta:'Rematch Amaka · free',ctaBg:'#0E7C47',href:'Play8Ball.dc.html',alt:'Not now'}
+};
+const KT={light:{name:'light',card:'#FFFFFF',text:'#1B140F',sub:'#62584E',bg2:'#F2ECE3',field:'#EEE7DC',line:'#E6DDD0'},dark:{name:'dark',card:'#1D1916',text:'#F7F1E8',sub:'#ABA196',bg2:'#2A2420',field:'#2A2420',line:'#2E2823'}};
+class Component extends DCLogic {
+  renderVals() { return Object.assign({ k: KT[this.props.theme === 'dark' ? 'dark' : 'light'] }, this.rv()); }
+  rv() {
+    const k = V[this.props.variant] ? this.props.variant : 'levelup';
+    return { v: V[k], isLevel: k === 'levelup', isStreak: k !== 'levelup', rays: k === 'levelup' ? ['0deg','45deg','90deg','135deg','180deg','225deg','270deg','315deg'] : [] };
+  }
+}
+</script>
+</body>
+</html>

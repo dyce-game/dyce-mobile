@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Dyce — Edit profile</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&amp;family=Bricolage+Grotesque:wght@600;700;800&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; padding: 54px 0 34px; display: flex; flex-direction: column; font-family: Figtree, -apple-system, system-ui, sans-serif; background: {{c.bg2}}; color: {{c.text}}; overflow: hidden">
+  <div style="display: flex; align-items: center; justify-content: space-between; height: 44px; padding: 0 16px">
+    <a href="Profile.dc.html" style="height: 44px; display: flex; align-items: center; color: {{c.brandText}}; font-size: 17px; text-decoration: none">Cancel</a>
+    <span style="font-size: 17px; font-weight: 600">Edit profile</span>
+    <a href="Profile.dc.html" style="height: 44px; display: flex; align-items: center; color: {{c.brandText}}; font-size: 17px; font-weight: 700; text-decoration: none">Save</a>
+  </div>
+
+  <div style="display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 10px 0 6px">
+    <dc-import name="Avatar" size="104" skin="#8D5524" hair="#1C1714" hair-style="afro" bg="#C9B8FF" shirt="#C93E1C" hint-size="104px,104px"></dc-import>
+    <a href="AvatarBuilder.dc.html" style="font-size: 15px; font-weight: 700; color: {{c.brandText}}; text-decoration: none">Edit avatar</a>
+  </div>
+
+  <div style="flex: 1; overflow: hidden; padding: 0 16px; display: flex; flex-direction: column; gap: 6px">
+    <div style="font-size: 13px; font-weight: 600; color: {{c.sub}}; padding: 8px 4px 2px">Profile</div>
+    <div style="border-radius: 16px; background: {{c.card}}; overflow: hidden">
+      <div style="display: flex; align-items: center; min-height: 52px; padding: 0 14px; border-bottom: 1px solid {{c.line}}">
+        <label for="dn" style="width: 100px; font-size: 15px; color: {{c.sub}}">Name</label>
+        <input id="dn" value="Kemdi" style="flex: 1; border: none; background: none; font: 500 15px Figtree, sans-serif; color: {{c.text}}; outline: none">
+      </div>
+      <div style="display: flex; align-items: center; min-height: 52px; padding: 0 14px; border-bottom: 1px solid {{c.line}}">
+        <label for="un2" style="width: 100px; font-size: 15px; color: {{c.sub}}">Username</label>
+        <input id="un2" value="@kemdi.plays" style="flex: 1; border: none; background: none; font: 500 15px Figtree, sans-serif; color: {{c.text}}; outline: none">
+        <span style="font-size: 12px; color: {{c.sub}}">29 days</span>
+      </div>
+      <div style="display: flex; align-items: center; min-height: 52px; padding: 0 14px">
+        <label for="st" style="width: 100px; font-size: 15px; color: {{c.sub}}">Status</label>
+        <input id="st" value="8 Ball shark. Fear me." style="flex: 1; border: none; background: none; font: 500 15px Figtree, sans-serif; color: {{c.text}}; outline: none">
+      </div>
+    </div>
+    <div style="font-size: 12px; color: {{c.sub}}; padding: 0 4px; line-height: 1.45">You changed your username yesterday. You can change it again in 29 days; your old @ stays reserved for you for 14.</div>
+
+    <div style="font-size: 13px; font-weight: 600; color: {{c.sub}}; padding: 12px 4px 2px">Show on my profile</div>
+    <div style="display: flex; flex-wrap: wrap; gap: 8px">
+      <sc-for list="{{favs}}" as="f" hint-placeholder-count="5">
+        <button onClick="{{f.pick}}" style="height: 38px; padding: 0 14px; border-radius: 19px; border: 2px solid {{f.ring}}; background: {{c.card}}; color: {{c.text}}; font: 600 14px Figtree, sans-serif">{{f.label}}</button>
+      </sc-for>
+    </div>
+
+    <div style="font-size: 13px; font-weight: 600; color: {{c.sub}}; padding: 12px 4px 2px">Sign-in methods</div>
+    <div style="border-radius: 16px; background: {{c.card}}; overflow: hidden">
+      <sc-for list="{{links}}" as="l" hint-placeholder-count="3">
+        <div style="display: flex; align-items: center; min-height: 52px; padding: 0 14px; border-bottom: 1px solid {{c.line}}">
+          <span style="flex: 1; font-size: 15px">{{l.t}}</span>
+          <span style="font-size: 14px; font-weight: 600; color: {{l.color}}">{{l.v}}</span>
+        </div>
+      </sc-for>
+    </div>
+    <a href="DeleteAccount.dc.html" style="margin-top: 10px; text-align: center; font-size: 15px; color: {{c.danger}}; font-weight: 600; text-decoration: none; padding: 10px">Delete account</a>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"$preview":{"width":390,"height":844}}'>
+const T={light:{bg2:'#F2ECE3',card:'#FFFFFF',text:'#1B140F',sub:'#6F655B',line:'#E6DDD0',brandText:'#B33416',money:'#0E7C47',danger:'#C4314B'},
+dark:{bg2:'#0F0D0B',card:'#1D1916',text:'#F7F1E8',sub:'#ABA196',line:'#2E2823',brandText:'#FF8F6B',money:'#3DDC84',danger:'#FF6B81'}};
+const G=['8 Ball','Sea Battle','Word Hunt','Cup Pong','Whot!','Ludo'];
+class Component extends DCLogic {
+  constructor(p){ super(p); this.state = { fav: ['8 Ball','Whot!'] }; }
+  renderVals() {
+    const c = T[this.props.theme === 'dark' ? 'dark' : 'light'];
+    const fav = this.state.fav;
+    return {
+      c,
+      favs: G.map((label) => ({ label, ring: fav.indexOf(label) >= 0 ? '#C93E1C' : 'transparent', pick: () => this.setState({ fav: fav.indexOf(label) >= 0 ? fav.filter((x) => x !== label) : fav.concat(label).slice(-3) }) })),
+      links: [
+        { t: 'Phone', v: '+234 803 ··· 7781', color: c.sub },
+        { t: 'Apple', v: 'Connected', color: c.money },
+        { t: 'Google', v: 'Connect', color: c.brandText }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

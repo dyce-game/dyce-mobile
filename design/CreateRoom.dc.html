@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Dyce — New space</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&amp;family=Bricolage+Grotesque:wght@600;700;800&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; padding: 54px 0 34px; display: flex; flex-direction: column; font-family: Figtree, -apple-system, system-ui, sans-serif; background: {{c.bg2}}; color: {{c.text}}">
+  <div style="display: flex; align-items: center; justify-content: space-between; height: 44px; padding: 0 16px">
+    <a href="Space.dc.html" style="height: 44px; display: flex; align-items: center; color: {{c.brandText}}; font-size: 17px; text-decoration: none">Cancel</a>
+    <div style="font-size: 17px; font-weight: 600">New space</div>
+    <span style="width: 54px"></span>
+  </div>
+
+  <div style="flex: 1; overflow: hidden; padding: 8px 16px 0; display: flex; flex-direction: column; gap: 18px">
+    <div>
+      <div style="font-size: 13px; font-weight: 600; color: {{c.sub}}; margin-bottom: 8px">Game</div>
+      <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px">
+        <sc-for list="{{games}}" as="g" hint-placeholder-count="4">
+          <button onClick="{{g.pick}}" style="border: 3px solid {{g.ring}}; border-radius: 18px; padding: 6px 4px 8px; background: {{c.card}}; display: flex; flex-direction: column; align-items: center; gap: 6px; font-family: Figtree, sans-serif; color: {{c.text}}; box-sizing: border-box">
+            <span style="width: 54px; height: 54px; border-radius: 14px; background: {{g.bg}}; color: #fff; font-size: 18px; font-weight: 800; display: flex; align-items: center; justify-content: center">{{g.mark}}</span>
+            <span style="font-size: 12px; font-weight: 600; line-height: 1.2; text-align: center">{{g.name}}</span>
+          </button>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="padding: 3px; border-radius: 14px; background: {{c.field}}; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 3px">
+      <button onClick="{{toFree}}" style="height: 40px; border-radius: 11px; border: none; font: 700 15px Figtree, sans-serif; background: {{m.freeBg}}; color: {{m.freeFg}}">Free space</button>
+      <button onClick="{{toPool}}" style="height: 40px; border-radius: 11px; border: none; font: 700 15px Figtree, sans-serif; background: {{m.poolBg}}; color: {{m.poolFg}}">Pool space</button>
+    </div>
+
+    <div style="border-radius: 18px; background: {{c.card}}; overflow: hidden">
+      <div style="display: flex; align-items: center; justify-content: space-between; padding: 0 14px; height: 60px; border-bottom: 1px solid {{c.line}}">
+        <div>
+          <div style="font-size: 16px; font-weight: 600">Players</div>
+          <div style="font-size: 12px; color: {{c.sub}}">{{range}}</div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 4px; background: {{c.field}}; border-radius: 12px; padding: 3px">
+          <button onClick="{{dec}}" aria-label="Fewer players" style="width: 44px; height: 38px; border: none; border-radius: 9px; background: {{c.card}}; color: {{c.text}}; font: 600 20px Figtree, sans-serif">−</button>
+          <span style="width: 34px; text-align: center; font-size: 18px; font-weight: 700">{{players}}</span>
+          <button onClick="{{inc}}" aria-label="More players" style="width: 44px; height: 38px; border: none; border-radius: 9px; background: {{c.card}}; color: {{c.text}}; font: 600 20px Figtree, sans-serif">+</button>
+        </div>
+      </div>
+      <sc-if value="{{isPool}}" hint-placeholder-val="{{true}}">
+        <div style="padding: 12px 14px 0">
+          <div style="font-size: 16px; font-weight: 600; margin-bottom: 10px">Entry per seat</div>
+          <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px">
+            <sc-for list="{{entries}}" as="e" hint-placeholder-count="4">
+              <button onClick="{{e.pick}}" style="height: 40px; border-radius: 12px; border: 2px solid {{e.ring}}; background: {{e.bgc}}; color: {{c.text}}; font: 700 14px Figtree, sans-serif">{{e.label}}</button>
+            </sc-for>
+          </div>
+        </div>
+        <div style="padding: 12px 14px 14px">
+          <div style="font-size: 16px; font-weight: 600; margin-bottom: 10px">Payout</div>
+          <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px">
+            <sc-for list="{{splits}}" as="sp" hint-placeholder-count="3">
+              <button onClick="{{sp.pick}}" style="height: 40px; border-radius: 12px; border: 2px solid {{sp.ring}}; background: {{sp.bgc}}; color: {{c.text}}; font: 700 13px Figtree, sans-serif">{{sp.label}}</button>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+      <sc-if value="{{isFree}}" hint-placeholder-val="{{false}}">
+        <div style="padding: 12px 14px 14px; font-size: 13px; line-height: 1.45; color: {{c.sub}}">No entry, no cash. Top three earn XP: 60 · 30 · 15. Anyone can join with a ₦0 balance.</div>
+      </sc-if>
+    </div>
+
+    <sc-if value="{{isPool}}" hint-placeholder-val="{{true}}">
+      <div style="border-radius: 18px; padding: 14px 16px; background: #1B140F; color: #FFFFFF">
+        <div style="display: flex; align-items: baseline; justify-content: space-between">
+          <span style="font-size: 13px; color: #C9C9D1; font-weight: 600">Pool when full</span>
+          <span style="font-family: 'Bricolage Grotesque', Figtree, sans-serif; font-size: 30px; font-weight: 800; letter-spacing: -0.5px; color: #9DF2BE">{{pool}}</span>
+        </div>
+        <div style="display: flex; gap: 6px; margin-top: 8px">
+          <sc-for list="{{payouts}}" as="po" hint-placeholder-count="3">
+            <span style="flex: 1; border-radius: 10px; background: rgba(255,255,255,.1); padding: 6px 8px; font-size: 12px"><b style="display: block; font-size: 14px">{{po.amt}}</b>{{po.place}}</span>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+
+    <div>
+      <div style="font-size: 13px; font-weight: 600; color: {{c.sub}}; margin-bottom: 8px">Who can join</div>
+      <div style="padding: 3px; border-radius: 12px; background: {{c.field}}; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 3px">
+        <button onClick="{{setFriends}}" style="height: 36px; border-radius: 9px; border: none; font: 600 14px Figtree, sans-serif; background: {{fBg}}; color: {{c.text}}">Friends only</button>
+        <button onClick="{{setAnyone}}" style="height: 36px; border-radius: 9px; border: none; font: 600 14px Figtree, sans-serif; background: {{aBg}}; color: {{c.text}}">Anyone in Space</button>
+      </div>
+    </div>
+
+    <div>
+      <div style="font-size: 13px; font-weight: 600; color: {{c.sub}}; margin-bottom: 8px">Invite</div>
+      <div style="display: flex; gap: 14px">
+        <sc-for list="{{invite}}" as="p" hint-placeholder-count="4">
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 4px; position: relative">
+            <dc-import name="Avatar" size="52" skin="{{p.skin}}" hair="{{p.hair}}" hair-style="{{p.hs}}" bg="{{p.bg}}" shirt="{{p.shirt}}" hint-size="52px,52px"></dc-import>
+            <span style="position: absolute; right: -2px; top: -2px; width: 20px; height: 20px; border-radius: 50%; background: #C93E1C; border: 2px solid {{c.bg2}}; display: flex; align-items: center; justify-content: center">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
+            </span>
+            <span style="font-size: 12px">{{p.name}}</span>
+          </div>
+        </sc-for>
+        <button aria-label="Add people" style="width: 52px; height: 52px; border-radius: 50%; border: 2px dashed {{c.line}}; background: none; color: {{c.sub}}; display: flex; align-items: center; justify-content: center; padding: 0">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div style="padding: 12px 16px 0">
+    <a href="Lobby.dc.html" style="height: 54px; border-radius: 16px; background: {{ctaBg}}; color: #fff; font-size: 17px; font-weight: 700; display: flex; align-items: center; justify-content: center; text-decoration: none">{{ctaLabel}}</a>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"$preview":{"width":390,"height":844}}'>
+const T={light:{bg:'#FBF8F3',bg2:'#F2ECE3',card:'#FFFFFF',text:'#1B140F',sub:'#6F655B',line:'#E6DDD0',recv:'#ECE4D8',field:'#E6E6EC',brand:'#C93E1C',brandText:'#B33416',brandSoft:'#FBE7DF',money:'#0E7C47',moneySoft:'#E3F6EA',ink:'#1B140F',inkText:'#FFFFFF'},
+dark:{bg:'#0F0D0B',bg2:'#0F0D0B',card:'#1D1916',text:'#F7F1E8',sub:'#ABA196',line:'#3A3A3E',recv:'#2A2420',field:'#2E2823',brand:'#C93E1C',brandText:'#FF8F6B',brandSoft:'#3A170C',money:'#3DDC84',moneySoft:'#11301F',ink:'#F7F1E8',inkText:'#1B140F'}};
+const GAMES=[{name:'Crazy Cards',mark:'+4',bg:'#C2410C',min:2,max:6},{name:'Doodle Guess',mark:'Aa',bg:'#C93E1C',min:3,max:8},{name:'Whot!',mark:'W',bg:'#8C2A43',min:2,max:6},{name:'Ludo',mark:'L',bg:'#2457D6',min:2,max:4}];
+const ENTRIES=[200,500,1000,2000];
+const SPLITS=[['all','Winner all',[1]],['two','70 / 30',[0.7,0.3]],['three','50/30/20',[0.5,0.3,0.2]]];
+const PLACES=['1st','2nd','3rd'];
+const fmt=(n)=>'₦'+n.toLocaleString('en-NG');
+class Component extends DCLogic {
+  constructor(p){ super(p); this.state = { game: 'Crazy Cards', players: 4, entry: 500, anyone: false, mode: 'pool', split: 'all' }; }
+  renderVals() {
+    const c = T[this.props.theme === 'dark' ? 'dark' : 'light'];
+    const s = this.state;
+    const g = GAMES.find((x) => x.name === s.game);
+    const players = Math.max(g.min, Math.min(g.max, s.players));
+    return {
+      c, players,
+      range: g.min + '–' + g.max + ' players for ' + g.name,
+      games: GAMES.map((x) => Object.assign({}, x, { ring: x.name === s.game ? '#C93E1C' : 'transparent', pick: () => this.setState({ game: x.name }) })),
+      isPool: s.mode === 'pool', isFree: s.mode !== 'pool',
+      toFree: () => this.setState({ mode: 'free' }), toPool: () => this.setState({ mode: 'pool' }),
+      m: { freeBg: s.mode === 'pool' ? 'transparent' : c.card, freeFg: s.mode === 'pool' ? c.sub : c.money, poolBg: s.mode === 'pool' ? c.card : 'transparent', poolFg: s.mode === 'pool' ? c.brandText : c.sub },
+      entries: ENTRIES.map((e) => ({ label: fmt(e), ring: e === s.entry ? '#C93E1C' : 'transparent', bgc: e === s.entry ? c.brandSoft : c.field, pick: () => this.setState({ entry: e }) })),
+      splits: SPLITS.map(([id, label]) => ({ label, ring: id === s.split ? '#C93E1C' : 'transparent', bgc: id === s.split ? c.brandSoft : c.field, pick: () => this.setState({ split: id }) })),
+      pool: fmt(s.entry * players),
+      payouts: (SPLITS.find((x) => x[0] === s.split) || SPLITS[0])[2].slice(0, Math.max(1, players - 1)).map((f, i) => ({ place: PLACES[i], amt: fmt(Math.round(s.entry * players * f)) })),
+      ctaLabel: s.mode === 'pool' ? 'Create space · pay ' + fmt(s.entry) : 'Create free space',
+      ctaBg: s.mode === 'pool' ? '#C93E1C' : '#0E7C47',
+      dec: () => this.setState({ players: Math.max(g.min, players - 1) }),
+      inc: () => this.setState({ players: Math.min(g.max, players + 1) }),
+      fBg: s.anyone ? 'transparent' : c.card, aBg: s.anyone ? c.card : 'transparent',
+      setFriends: () => this.setState({ anyone: false }), setAnyone: () => this.setState({ anyone: true }),
+      invite: [
+        { name: 'Amaka', skin: '#8D5524', hair: '#1C1714', hs: 'bun', bg: '#FFC857', shirt: '#E0453A' },
+        { name: 'Tunde', skin: '#5C3A21', hair: '#111111', hs: 'waves', bg: '#8FD3FF', shirt: '#1F2937' },
+        { name: 'Ifeoma', skin: '#A0662F', hair: '#3B2219', hs: 'afro', bg: '#FFB4C6', shirt: '#0E9F6E' }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

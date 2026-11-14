@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Dyce — Build your avatar</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&amp;family=Bricolage+Grotesque:wght@600;700;800&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; padding: 54px 0 34px; display: flex; flex-direction: column; font-family: Figtree, -apple-system, system-ui, sans-serif; background: {{c.bg}}; color: {{c.text}}">
+  <div style="display: flex; align-items: center; justify-content: space-between; height: 44px; padding: 0 16px">
+    <a href="Contacts.dc.html" aria-label="Back" style="width: 44px; height: 44px; display: flex; align-items: center; color: {{c.text}}">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
+    </a>
+    <div style="font-size: 17px; font-weight: 600">Make your avatar</div>
+    <button onClick="{{shuffle}}" aria-label="Randomize" style="width: 44px; height: 44px; border: none; background: none; color: {{c.brandText}}; display: flex; align-items: center; justify-content: flex-end; padding: 0">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="4"/><circle cx="9" cy="9" r="1.2" fill="currentColor"/><circle cx="15" cy="15" r="1.2" fill="currentColor"/><circle cx="15" cy="9" r="1.2" fill="currentColor"/><circle cx="9" cy="15" r="1.2" fill="currentColor"/></svg>
+    </button>
+  </div>
+
+  <div style="position: relative; height: 290px; display: flex; align-items: center; justify-content: center; flex-shrink: 0">
+    <div style="position: absolute; left: 70px; right: 70px; bottom: 26px; height: 26px; border-radius: 50%; background: rgba(90,30,10,.14)"></div>
+    <dc-import name="Avatar" size="240" skin="#8D5524" hair="#1C1714" hair-style="afro" bg="#C9B8FF" shirt="#6E4BFF" hint-size="240px,240px"></dc-import>
+    <span style="position: absolute; right: 70px; bottom: 30px; height: 30px; padding: 0 12px; border-radius: 15px; background: rgba(27,20,15,.75); color: #fff; font-size: 12px; font-weight: 800; display: flex; align-items: center">Re-renders as you pick</span>
+  </div>
+
+  <div style="display: flex; gap: 6px; padding: 0 16px; overflow-x: auto">
+    <sc-for list="{{tabs}}" as="t" hint-placeholder-count="5">
+      <button onClick="{{t.pick}}" style="height: 40px; padding: 0 16px; border-radius: 999px; border: none; font: 600 15px Figtree, sans-serif; flex-shrink: 0; background: {{t.bgc}}; color: {{t.fg}}">{{t.label}}</button>
+    </sc-for>
+  </div>
+
+  <div style="flex: 1; margin: 14px 16px 0; padding: 18px; border-radius: 24px; background: {{c.bg2}}; display: flex; flex-direction: column; gap: 16px; overflow: hidden">
+    <sc-if value="{{show.skin}}" hint-placeholder-val="{{true}}">
+      <div style="font-size: 13px; font-weight: 600; color: {{c.sub}}">Skin tone</div>
+      <div style="display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px">
+        <sc-for list="{{skins}}" as="s" hint-placeholder-count="6">
+          <button onClick="{{s.pick}}" aria-label="{{s.label}}" style="aspect-ratio: 1; border-radius: 50%; border: 3px solid {{s.ring}}; padding: 3px; background: none; box-sizing: border-box">
+            <span style="display: block; width: 100%; height: 100%; border-radius: 50%; background: {{s.grad}}"></span>
+          </button>
+        </sc-for>
+      </div>
+      <div style="font-size: 13px; font-weight: 600; color: {{c.sub}}">Glasses</div>
+      <div style="display: flex; gap: 10px">
+        <button onClick="{{glassesOff}}" style="flex: 1; height: 48px; border-radius: 14px; font: 600 15px Figtree, sans-serif; border: 2px solid {{gOffRing}}; background: {{c.card}}; color: {{c.text}}">None</button>
+        <button onClick="{{glassesOn}}" style="flex: 1; height: 48px; border-radius: 14px; font: 600 15px Figtree, sans-serif; border: 2px solid {{gOnRing}}; background: {{c.card}}; color: {{c.text}}">Round frames</button>
+      </div>
+    </sc-if>
+    <sc-if value="{{show.hair}}" hint-placeholder-val="{{false}}">
+      <div style="font-size: 13px; font-weight: 600; color: {{c.sub}}">Style</div>
+      <div style="display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px">
+        <sc-for list="{{styles}}" as="h" hint-placeholder-count="5">
+          <button onClick="{{h.pick}}" aria-label="{{h.label}}" style="border-radius: 16px; border: 3px solid {{h.ring}}; background: {{c.card}}; padding: 4px; display: flex; flex-direction: column; align-items: center; gap: 2px; box-sizing: border-box">
+            <dc-import name="Avatar" mode="css" size="48" skin="{{a.skin}}" hair="{{a.hair}}" hair-style="{{h.id}}" bg="{{c.card}}" shirt="{{a.shirt}}" hint-size="48px,48px"></dc-import>
+            <span style="font-size: 11px; font-weight: 600; color: {{c.text}}">{{h.label}}</span>
+          </button>
+        </sc-for>
+      </div>
+      <div style="font-size: 13px; font-weight: 600; color: {{c.sub}}">Colour</div>
+      <div style="display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px">
+        <sc-for list="{{hairs}}" as="s" hint-placeholder-count="6">
+          <button onClick="{{s.pick}}" aria-label="{{s.label}}" style="aspect-ratio: 1; border-radius: 50%; border: 3px solid {{s.ring}}; padding: 3px; background: none; box-sizing: border-box">
+            <span style="display: block; width: 100%; height: 100%; border-radius: 50%; background: {{s.grad}}"></span>
+          </button>
+        </sc-for>
+      </div>
+    </sc-if>
+    <sc-if value="{{show.outfit}}" hint-placeholder-val="{{false}}">
+      <div style="font-size: 13px; font-weight: 600; color: {{c.sub}}">Top</div>
+      <div style="display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px">
+        <sc-for list="{{shirts}}" as="s" hint-placeholder-count="6">
+          <button onClick="{{s.pick}}" aria-label="{{s.label}}" style="aspect-ratio: 1; border-radius: 50%; border: 3px solid {{s.ring}}; padding: 3px; background: none; box-sizing: border-box">
+            <span style="display: block; width: 100%; height: 100%; border-radius: 50%; background: {{s.grad}}"></span>
+          </button>
+        </sc-for>
+      </div>
+    </sc-if>
+    <sc-if value="{{show.backdrop}}" hint-placeholder-val="{{false}}">
+      <div style="font-size: 13px; font-weight: 600; color: {{c.sub}}">Backdrop</div>
+      <div style="display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px">
+        <sc-for list="{{bgs}}" as="s" hint-placeholder-count="6">
+          <button onClick="{{s.pick}}" aria-label="{{s.label}}" style="aspect-ratio: 1; border-radius: 50%; border: 3px solid {{s.ring}}; padding: 3px; background: none; box-sizing: border-box">
+            <span style="display: block; width: 100%; height: 100%; border-radius: 50%; background: {{s.grad}}"></span>
+          </button>
+        </sc-for>
+      </div>
+    </sc-if>
+  </div>
+
+  <div style="padding: 14px 16px 0">
+    <a href="Bonus.dc.html" style="height: 54px; border-radius: 16px; background: #C93E1C; color: #FFFFFF; font-size: 17px; font-weight: 600; display: flex; align-items: center; justify-content: center; text-decoration: none">Looks like me · Claim ₦200k</a>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"$preview":{"width":390,"height":844}}'>
+const T={light:{bg:'#FBF8F3',bg2:'#F2ECE3',card:'#FFFFFF',text:'#1B140F',sub:'#6F655B',line:'#E6DDD0',recv:'#ECE4D8',field:'#EEE7DC',brand:'#C93E1C',brandText:'#B33416',brandSoft:'#FBE7DF',sms:'#0067D6',money:'#0E7C47',moneySoft:'#E3F6EA',danger:'#C4314B',ink:'#1B140F',inkText:'#FFFFFF'},
+dark:{bg:'#0F0D0B',bg2:'#15120F',card:'#1D1916',text:'#F7F1E8',sub:'#ABA196',line:'#2E2823',recv:'#2A2420',field:'#1D1916',brand:'#C93E1C',brandText:'#FF8F6B',brandSoft:'#3A170C',sms:'#0067D6',money:'#3DDC84',moneySoft:'#11301F',danger:'#FF6B81',ink:'#F7F1E8',inkText:'#1B140F'}};
+const SKINS=[['#FFDBB4','Light'],['#F1C27D','Light medium'],['#C68642','Medium'],['#A0662F','Medium deep'],['#8D5524','Deep'],['#5C3A21','Very deep']];
+const HAIRS=[['#1C1714','Black'],['#3B2219','Dark brown'],['#7A4A2A','Brown'],['#C9A15B','Blonde'],['#B7412E','Red'],['#C93E1C','Violet']];
+const SHIRTS=[['#C93E1C','Violet'],['#E0453A','Red'],['#1F2937','Charcoal'],['#0E9F6E','Green'],['#FFB020','Gold'],['#F7F1E8','White']];
+const BGS=[['#C9B8FF','Lilac'],['#FFC857','Sun'],['#8FD3FF','Sky'],['#B8F2C8','Mint'],['#FFB4C6','Pink'],['#ECE4D8','Grey']];
+const STYLES=[['afro','Afro'],['waves','Waves'],['short','Short'],['bun','Bun'],['long','Long']];
+const TABS=[['skin','Face'],['hair','Hair'],['outfit','Outfit'],['backdrop','Backdrop']];
+function g(h){return 'radial-gradient(circle at 35% 30%, rgba(255,255,255,.55), '+h+' 55%)';}
+class Component extends DCLogic {
+  constructor(p){ super(p); this.state = { tab: 'hair', skin: '#8D5524', hair: '#1C1714', hairStyle: 'afro', shirt: '#C93E1C', bg: '#C9B8FF', glasses: false }; }
+  renderVals() {
+    const c = T[this.props.theme === 'dark' ? 'dark' : 'light'];
+    const s = this.state;
+    const sel = (on) => on ? '#C93E1C' : 'transparent';
+    const sw = (list, key) => list.map(([h, label]) => ({ label, grad: g(h), ring: sel(s[key] === h), pick: () => this.setState({ [key]: h }) }));
+    const show = {}; TABS.forEach(([id]) => { show[id] = s.tab === id; });
+    return {
+      c, show,
+      a: { skin: s.skin, hair: s.hair, hairStyle: s.hairStyle, shirt: s.shirt, bg: s.bg, glassesStr: s.glasses ? 'true' : 'false' },
+      tabs: TABS.map(([id, label]) => ({ label, bgc: s.tab === id ? c.ink : c.bg2, fg: s.tab === id ? c.inkText : c.text, pick: () => this.setState({ tab: id }) })),
+      skins: sw(SKINS, 'skin'), hairs: sw(HAIRS, 'hair'), shirts: sw(SHIRTS, 'shirt'), bgs: sw(BGS, 'bg'),
+      styles: STYLES.map(([id, label]) => ({ id, label, ring: sel(s.hairStyle === id), pick: () => this.setState({ hairStyle: id }) })),
+      gOnRing: s.glasses ? '#C93E1C' : c.line, gOffRing: s.glasses ? c.line : '#C93E1C',
+      glassesOn: () => this.setState({ glasses: true }), glassesOff: () => this.setState({ glasses: false }),
+      shuffle: () => { const r = (l) => l[Math.floor(Math.random() * l.length)][0]; this.setState({ skin: r(SKINS), hair: r(HAIRS), hairStyle: r(STYLES), shirt: r(SHIRTS), bg: r(BGS), glasses: Math.random() < 0.3 }); }
+    };
+  }
+}
+</script>
+</body>
+</html>

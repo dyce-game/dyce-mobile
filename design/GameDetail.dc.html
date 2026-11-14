@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Dyce — Cup Pong details</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&amp;family=Bricolage+Grotesque:wght@600;700;800&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; display: flex; flex-direction: column; font-family: Figtree, -apple-system, system-ui, sans-serif; background: {{c.bg}}; color: {{c.text}}; overflow: hidden">
+  <div style="height: 330px; position: relative; flex-shrink: 0; background: linear-gradient(160deg, #2F6BEA, #12307A); overflow: hidden">
+    <span style="position: absolute; left: 0; right: 0; bottom: 0; height: 140px; background: linear-gradient(transparent, rgba(0,0,0,.45))"></span>
+    <sc-for list="{{cups}}" as="k" hint-placeholder-count="6">
+      <span style="position: absolute; left: {{k.x}}; top: {{k.y}}; width: 44px; height: 44px; border-radius: 50%; background: radial-gradient(circle, #fff 0 22%, #E0453A 26% 62%, #fff 66%); box-shadow: 0 6px 12px rgba(0,0,0,.3)"></span>
+    </sc-for>
+    <span style="position: absolute; left: 70px; top: 196px; width: 22px; height: 22px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #fff, #E8E8E8 60%, #B8B8B8); box-shadow: 0 6px 10px rgba(0,0,0,.35)"></span>
+    <span style="position: absolute; left: 92px; top: 130px; width: 150px; height: 70px; border-top: 3px dashed rgba(255,255,255,.6); border-radius: 50% 50% 0 0" aria-hidden="true"></span>
+    <a href="Games.dc.html" aria-label="Back" style="position: absolute; left: 14px; top: 54px; width: 40px; height: 40px; border-radius: 50%; background: rgba(0,0,0,.35); color: #fff; display: flex; align-items: center; justify-content: center">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
+    </a>
+    <button style="position: absolute; left: 50%; top: 150px; margin-left: -30px; width: 60px; height: 60px; border-radius: 50%; border: none; background: rgba(255,255,255,.92); display: flex; align-items: center; justify-content: center; padding: 0" aria-label="Play preview">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="#12307A" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+    </button>
+    <div style="position: absolute; left: 18px; right: 18px; bottom: 16px; color: #fff">
+      <div style="font-family: 'Bricolage Grotesque', Figtree, sans-serif; font-size: 32px; font-weight: 800; letter-spacing: -0.5px">Cup Pong</div>
+      <div style="font-size: 13px; opacity: .9">2 players · about 3 min · flick to throw</div>
+    </div>
+  </div>
+
+  <div style="display: flex; gap: 6px; padding: 14px 16px 0">
+    <sc-for list="{{tabs}}" as="t" hint-placeholder-count="3">
+      <button onClick="{{t.pick}}" style="height: 36px; padding: 0 14px; border-radius: 999px; border: none; font: 600 14px Figtree, sans-serif; background: {{t.bgc}}; color: {{t.fg}}">{{t.label}}</button>
+    </sc-for>
+  </div>
+
+  <div style="flex: 1; overflow: hidden; padding: 14px 16px 0">
+    <sc-if value="{{show.how}}" hint-placeholder-val="{{true}}">
+      <sc-for list="{{steps}}" as="s" hint-placeholder-count="3">
+        <div style="display: flex; gap: 12px; padding: 10px 0; border-bottom: 1px solid {{c.line}}">
+          <span style="width: 32px; height: 32px; border-radius: 10px; background: #2457D6; color: #fff; font-size: 14px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0">{{s.n}}</span>
+          <div><div style="font-size: 15px; font-weight: 700">{{s.t}}</div><div style="font-size: 13px; color: {{c.sub}}; line-height: 1.45">{{s.d}}</div></div>
+        </div>
+      </sc-for>
+    </sc-if>
+    <sc-if value="{{show.modes}}" hint-placeholder-val="{{false}}">
+      <div style="display: flex; flex-direction: column; gap: 10px">
+        <div style="border-radius: 18px; padding: 14px; background: {{c.freeSoft}}">
+          <div style="display: flex; justify-content: space-between"><b style="color: {{c.free}}">Free</b><span style="font-size: 13px; font-weight: 700">19 W · 11 L</span></div>
+          <div style="font-size: 13px; line-height: 1.45; margin-top: 4px">+25 XP a win. Counts toward the Sharpshooter badge (14 / 25 cups sunk in one throw streak).</div>
+        </div>
+        <div style="border-radius: 18px; padding: 14px; background: {{c.brandSoft}}">
+          <div style="display: flex; justify-content: space-between"><b style="color: {{c.brandText}}">Pool</b><span style="font-size: 13px; font-weight: 700">Net +₦4,500</span></div>
+          <div style="font-size: 13px; line-height: 1.45; margin-top: 4px">Stakes from ₦100. Most people play ₦500. Biggest pot this week: ₦40,000.</div>
+        </div>
+      </div>
+    </sc-if>
+    <sc-if value="{{show.friends}}" hint-placeholder-val="{{false}}">
+      <sc-for list="{{friends}}" as="f" hint-placeholder-count="3">
+        <div style="display: flex; align-items: center; gap: 12px; height: 60px; border-bottom: 1px solid {{c.line}}">
+          <dc-import name="Avatar" size="40" skin="{{f.skin}}" hair="{{f.hair}}" hair-style="{{f.hs}}" bg="{{f.bg}}" shirt="{{f.shirt}}" hint-size="40px,40px"></dc-import>
+          <div style="flex: 1"><div style="font-size: 15px; font-weight: 600">{{f.name}}</div><div style="font-size: 12px; color: {{c.sub}}">{{f.rec}}</div></div>
+          <button style="height: 34px; padding: 0 12px; border-radius: 999px; border: none; background: {{c.field}}; color: {{c.text}}; font: 700 13px Figtree, sans-serif">Challenge</button>
+        </div>
+      </sc-for>
+    </sc-if>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; padding: 12px 16px 34px">
+    <a href="Thread.dc.html" style="height: 52px; border-radius: 16px; background: #0E7C47; color: #fff; font-size: 16px; font-weight: 700; display: flex; align-items: center; justify-content: center; text-decoration: none">Play free</a>
+    <a href="ModeSheet.dc.html" style="height: 52px; border-radius: 16px; background: #C93E1C; color: #fff; font-size: 16px; font-weight: 700; display: flex; align-items: center; justify-content: center; text-decoration: none">Start a pool</a>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"$preview":{"width":390,"height":844}}'>
+const T={light:{bg:'#FBF8F3',text:'#1B140F',sub:'#6F655B',line:'#E6DDD0',field:'#EEE7DC',brandText:'#B33416',brandSoft:'#FBE7DF',free:'#0E7C47',freeSoft:'#E3F6EA',ink:'#1B140F',inkText:'#FFFFFF'},
+dark:{bg:'#0F0D0B',text:'#F7F1E8',sub:'#ABA196',line:'#2E2823',field:'#1D1916',brandText:'#FF8F6B',brandSoft:'#3A170C',free:'#3DDC84',freeSoft:'#11301F',ink:'#F7F1E8',inkText:'#1B140F'}};
+const TABS=[['how','How to play'],['modes','Free & Pool'],['friends','Friends who play']];
+class Component extends DCLogic {
+  constructor(p){ super(p); this.state = { tab: 'how' }; }
+  renderVals() {
+    const c = T[this.props.theme === 'dark' ? 'dark' : 'light'];
+    const tab = this.state.tab; const show = {}; TABS.forEach(([id]) => show[id] = tab === id);
+    return {
+      c, show,
+      tabs: TABS.map(([id, label]) => ({ label, bgc: tab === id ? c.ink : c.field, fg: tab === id ? c.inkText : c.text, pick: () => this.setState({ tab: id }) })),
+      cups: [[230,70],[230,120],[230,170],[274,95],[274,145],[318,120]].map(([x,y])=>({x:x+'px',y:y+'px'})),
+      steps: [
+        { n: '1', t: 'Flick the ball', d: 'Swipe up. Speed sets distance, angle sets direction.' },
+        { n: '2', t: 'Sink two in a row for a re-rack', d: 'Pull the remaining cups into a tighter shape once per game.' },
+        { n: '3', t: 'Clear all six to win', d: 'Each player gets two throws a turn. Bounce shots count double.' }
+      ],
+      friends: [
+        { name: 'Tolu Ade', rec: 'Invited · hasn’t played yet', skin: '#C68642', hair: '#2A1A12', hs: 'short', bg: '#ECE4D8', shirt: '#0E9F6E' },
+        { name: 'Zainab', rec: 'You lead 5–3', skin: '#C68642', hair: '#2A1A12', hs: 'long', bg: '#B8F2C8', shirt: '#C93E1C' },
+        { name: 'Dayo', rec: 'Dayo leads 4–1', skin: '#F1C27D', hair: '#7A4A2A', hs: 'short', bg: '#C9B8FF', shirt: '#FFB020' }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

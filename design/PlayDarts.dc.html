@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Dyce — Darts in 3D</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&amp;family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; font-family: Figtree, -apple-system, system-ui, sans-serif; color: #FFFFFF; background: repeating-linear-gradient(90deg, #2A1A10 0 62px, #22150D 62px 64px, #2E1D12 64px 126px, #1E120B 126px 128px)">
+  <span style="position: absolute; inset: 0; background: radial-gradient(ellipse 70% 42% at 50% 40%, rgba(255,214,150,.35), transparent 70%), linear-gradient(transparent 70%, rgba(0,0,0,.6))" aria-hidden="true"></span>
+
+  <div style="position: absolute; left: 50%; top: 200px; width: 330px; height: 330px; margin-left: -165px; perspective: 900px" role="img" aria-label="Dartboard with two darts in the treble 20 and 19">
+    <div style="position: absolute; inset: 0; transform: rotateX(16deg) rotateY(-12deg); transform-style: preserve-3d">
+      <span style="position: absolute; inset: -14px; border-radius: 50%; background: radial-gradient(circle, #3A2414 60%, #1A0E06); box-shadow: 0 30px 50px rgba(0,0,0,.6)"></span>
+      <span style="position: absolute; inset: 0; border-radius: 50%; background: #141010; box-shadow: inset 0 0 0 4px #C9C2B4"></span>
+      <sc-for list="{{nums}}" as="n" hint-placeholder-count="20">
+        <span style="position: absolute; left: {{n.x}}; top: {{n.y}}; width: 24px; height: 18px; margin: -9px 0 0 -12px; text-align: center; font-size: 13px; font-weight: 800; color: #EDE6D6; transform: rotate({{n.r}})">{{n.v}}</span>
+      </sc-for>
+      <span style="position: absolute; inset: 30px; border-radius: 50%; background: repeating-conic-gradient(from -9deg, #C62828 0deg 18deg, #1E7A3E 18deg 36deg)"></span>
+      <span style="position: absolute; inset: 38px; border-radius: 50%; background: repeating-conic-gradient(from -9deg, #151515 0deg 18deg, #EFE3C2 18deg 36deg)"></span>
+      <span style="position: absolute; inset: 88px; border-radius: 50%; background: repeating-conic-gradient(from -9deg, #C62828 0deg 18deg, #1E7A3E 18deg 36deg)"></span>
+      <span style="position: absolute; inset: 96px; border-radius: 50%; background: repeating-conic-gradient(from -9deg, #151515 0deg 18deg, #EFE3C2 18deg 36deg)"></span>
+      <span style="position: absolute; inset: 147px; border-radius: 50%; background: #1E7A3E; box-shadow: 0 0 0 1.5px #BDBDBD"></span>
+      <span style="position: absolute; inset: 158px; border-radius: 50%; background: #C62828; box-shadow: 0 0 0 1.5px #BDBDBD"></span>
+      <span style="position: absolute; inset: 30px; border-radius: 50%; background: repeating-conic-gradient(from -9.4deg, rgba(200,200,200,.75) 0deg 0.8deg, transparent 0.8deg 18deg)"></span>
+      <span style="position: absolute; inset: 30px; border-radius: 50%; background: radial-gradient(circle at 38% 30%, rgba(255,255,255,.14), transparent 55%)"></span>
+      <span style="position: absolute; left: 196px; top: 128px; width: 34px; height: 34px; border-radius: 50%; border: 2px solid rgba(255,255,255,.9); box-shadow: 0 0 0 2px rgba(0,0,0,.4)"></span>
+      <span style="position: absolute; left: 212px; top: 120px; width: 2px; height: 50px; background: rgba(255,255,255,.7)"></span>
+      <span style="position: absolute; left: 188px; top: 144px; width: 50px; height: 2px; background: rgba(255,255,255,.7)"></span>
+    </div>
+  </div>
+
+  <sc-for list="{{darts}}" as="d" hint-placeholder-count="2">
+    <div style="position: absolute; left: {{d.x}}; top: {{d.y}}; width: 14px; height: 96px; transform-origin: 50% 0; transform: rotate({{d.r}}) scale({{d.s}})" aria-hidden="true">
+      <span style="position: absolute; left: 6px; top: 0; width: 2px; height: 14px; background: linear-gradient(90deg, #888, #EEE, #888)"></span>
+      <span style="position: absolute; left: 3px; top: 14px; width: 8px; height: 30px; border-radius: 3px; background: repeating-linear-gradient(#9AA0AA 0 2px, #D9DDE3 2px 4px)"></span>
+      <span style="position: absolute; left: 5px; top: 44px; width: 4px; height: 22px; background: #1B140F"></span>
+      <span style="position: absolute; left: -6px; top: 58px; width: 26px; height: 38px; clip-path: polygon(50% 0, 100% 100%, 50% 80%, 0 100%); background: linear-gradient(#FF8F6B, #C93E1C)"></span>
+    </div>
+  </sc-for>
+
+  <div style="position: absolute; left: 210px; top: 560px; width: 34px; height: 250px; transform-origin: 50% 0; transform: rotate(-14deg)" aria-label="Your dart, ready to throw" role="img">
+    <span style="position: absolute; left: 15px; top: 0; width: 4px; height: 36px; background: linear-gradient(90deg, #777, #F5F5F5, #777); clip-path: polygon(50% 0, 100% 100%, 0 100%)"></span>
+    <span style="position: absolute; left: 8px; top: 36px; width: 18px; height: 80px; border-radius: 7px; background: repeating-linear-gradient(#8E949E 0 3px, #E3E6EA 3px 6px); box-shadow: inset -4px 0 6px rgba(0,0,0,.35)"></span>
+    <span style="position: absolute; left: 13px; top: 116px; width: 8px; height: 56px; background: linear-gradient(90deg, #000, #3A3029, #000)"></span>
+    <span style="position: absolute; left: -16px; top: 150px; width: 66px; height: 100px; clip-path: polygon(50% 0, 100% 100%, 50% 82%, 0 100%); background: linear-gradient(#FFB08F, #C93E1C 70%, #8A2410)"></span>
+  </div>
+
+  <div style="position: absolute; left: 12px; right: 12px; top: 54px; display: flex; align-items: center; justify-content: space-between">
+    <a href="Thread.dc.html" aria-label="Back to chat" style="height: 40px; padding: 0 14px; border-radius: 20px; background: rgba(255,255,255,.12); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,.16); color: #fff; font-size: 14px; font-weight: 700; display: flex; align-items: center; gap: 4px; text-decoration: none">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>Chat</a>
+    <span style="height: 30px; padding: 0 12px; border-radius: 15px; background: {{modeBg}}; box-shadow: 0 2px 0 rgba(0,0,0,.35); font-size: 12px; font-weight: 800; letter-spacing: 0.4px; display: flex; align-items: center">{{modeLabel}}</span>
+    <a href="GameMenu.dc.html" aria-label="Game menu" style="width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,.12); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,.16); display: flex; align-items: center; justify-content: center">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
+    </a>
+  </div>
+
+  <div style="position: absolute; left: 14px; right: 14px; top: 108px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px">
+    <div style="padding: 8px 12px; border-radius: 18px; background: rgba(201,62,28,.9); box-shadow: 0 3px 0 #8A2410; display: flex; align-items: center; gap: 8px">
+      <dc-import name="Avatar" size="34" skin="#8D5524" hair="#1C1714" hair-style="afro" bg="#C9B8FF" shirt="#6E4BFF" hint-size="34px,34px"></dc-import>
+      <div><div style="font-size: 11px; font-weight: 800; opacity: .9">YOU · THROWING</div><div style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 24px; font-weight: 800; line-height: 1">141</div></div>
+    </div>
+    <div style="padding: 8px 12px; border-radius: 18px; background: rgba(0,0,0,.4); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border: 1px solid rgba(255,255,255,.12); display: flex; align-items: center; gap: 8px">
+      <dc-import name="Avatar" size="34" skin="#F1C27D" hair="#7A4A2A" hair-style="short" bg="#C9B8FF" shirt="#FFB020" hint-size="34px,34px"></dc-import>
+      <div><div style="font-size: 11px; font-weight: 800; opacity: .8">DAYO</div><div style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 24px; font-weight: 800; line-height: 1">177</div></div>
+    </div>
+  </div>
+
+  <div style="position: absolute; left: 14px; bottom: 30px; width: 180px; padding: 12px 14px; border-radius: 22px; background: rgba(0,0,0,.42); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,.12)">
+    <div style="font-size: 11px; font-weight: 800; letter-spacing: 0.5px; opacity: .8">THIS TURN · 301</div>
+    <div style="display: flex; gap: 6px; margin-top: 6px">
+      <span style="height: 30px; padding: 0 10px; border-radius: 10px; background: #C62828; font-size: 14px; font-weight: 800; display: flex; align-items: center">T20</span>
+      <span style="height: 30px; padding: 0 10px; border-radius: 10px; background: #EFE3C2; color: #1B140F; font-size: 14px; font-weight: 800; display: flex; align-items: center">19</span>
+      <span style="height: 30px; width: 34px; border-radius: 10px; border: 2px dashed rgba(255,255,255,.4); box-sizing: border-box"></span>
+    </div>
+    <div style="font-size: 12px; margin-top: 8px; opacity: .85">79 scored · 62 to finish</div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"mode":{"editor":"enum","options":["free","pool"],"default":"pool"},"$preview":{"width":390,"height":844}}'>
+const ORDER=[20,1,18,4,13,6,10,15,2,17,3,19,7,16,8,11,14,9,12,5];
+class Component extends DCLogic {
+  renderVals() {
+    const pool = this.props.mode !== 'free';
+    const R = 150, rN = 140;
+    return {
+      modeLabel: pool ? 'POOL · ₦2,000 POT' : 'FREE · +25 XP', modeBg: pool ? '#C93E1C' : '#17834F',
+      nums: ORDER.map((v, i) => { const a = i * 18 * Math.PI / 180; return { v: String(v), x: (165 + Math.sin(a) * rN) + 'px', y: (165 - Math.cos(a) * rN) + 'px', r: (i * 18) + 'deg' }; }),
+      darts: [ { x: '204px', y: '248px', r: '168deg', s: '0.9' }, { x: '128px', y: '420px', r: '196deg', s: '0.85' } ]
+    };
+  }
+}
+</script>
+</body>
+</html>

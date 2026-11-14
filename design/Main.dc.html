@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Dyce — Welcome</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&amp;family=Bricolage+Grotesque:wght@600;700;800&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; position: relative; overflow: hidden; display: flex; flex-direction: column; font-family: Figtree, -apple-system, system-ui, sans-serif; background: {{c.bg}}; color: {{c.text}}">
+  <div style="position: relative; height: 380px; margin-top: 54px; flex-shrink: 0">
+    <div style="position: absolute; left: 20px; right: 20px; top: 0; bottom: 0; border-radius: 36px; background: {{c.brandSoft}}"></div>
+    <div style="position: absolute; left: 44px; top: 34px">
+      <dc-import name="Avatar" size="104" skin="#8D5524" hair="#1C1714" hair-style="afro" bg="#FFC857" shirt="#C93E1C" hint-size="104px,104px"></dc-import>
+    </div>
+    <div style="position: absolute; left: 156px; top: 52px; padding: 9px 14px; border-radius: 20px; border-bottom-left-radius: 6px; background: #C93E1C; color: #FFFFFF; font-size: 15px; font-weight: 500">8 Ball? Loser buys suya</div>
+    <div style="position: absolute; left: 270px; top: 112px">
+      <dc-import name="Avatar" size="80" skin="#C68642" hair="#3B2219" hair-style="bun" bg="#8FD3FF" shirt="#FF7A59" hint-size="80px,80px"></dc-import>
+    </div>
+    <div style="position: absolute; left: 44px; top: 176px; width: 148px; border-radius: 18px; overflow: hidden; background: {{c.card}}; box-shadow: 0 10px 30px rgba(90,30,10,.18); transform: rotate(-5deg)">
+      <div style="height: 92px; position: relative; background: radial-gradient(circle at 50% 40%, #1E8E5A, #0F5C3A)">
+        <div style="position: absolute; left: 22px; top: 30px; width: 22px; height: 22px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #fff, #F5C518 45%, #B38A00)"></div>
+        <div style="position: absolute; left: 52px; top: 44px; width: 22px; height: 22px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #fff, #E0453A 45%, #9C1F17)"></div>
+        <div style="position: absolute; left: 86px; top: 28px; width: 22px; height: 22px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #777, #111 55%)"></div>
+        <div style="position: absolute; left: 104px; top: 54px; width: 22px; height: 22px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #fff, #E8E8E8 50%, #A8A8A8)"></div>
+      </div>
+      <div style="padding: 8px 12px 10px; display: flex; flex-direction: column; gap: 2px">
+        <div style="font-size: 14px; font-weight: 700">8 Ball</div>
+        <div style="font-size: 12px; color: {{c.sub}}">Your move</div>
+      </div>
+    </div>
+    <div style="position: absolute; left: 232px; top: 226px">
+      <dc-import name="Avatar" size="92" skin="#F1C27D" hair="#2A1A12" hair-style="short" bg="#B8F2C8" shirt="#1F2937" glasses="true" hint-size="92px,92px"></dc-import>
+    </div>
+    <div style="position: absolute; left: 196px; top: 318px; padding: 9px 14px; border-radius: 20px; border-bottom-right-radius: 6px; background: {{c.recv}}; color: {{c.text}}; font-size: 15px">bring it</div>
+    <div style="position: absolute; left: 222px; top: 190px; padding: 6px 12px; border-radius: 999px; background: {{c.moneySoft}}; color: {{c.money}}; font-size: 13px; font-weight: 700">+₦2,000</div>
+  </div>
+
+  <div style="padding: 28px 28px 0; display: flex; flex-direction: column; gap: 10px">
+    <div style="display: flex; align-items: center; gap: 10px">
+      <div style="width: 36px; height: 36px; border-radius: 11px; background: #C93E1C; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); padding: 7px; box-sizing: border-box; gap: 2px" aria-hidden="true">
+        <span style="width: 5px; height: 5px; border-radius: 50%; background: #fff"></span><span></span><span style="width: 5px; height: 5px; border-radius: 50%; background: #fff; justify-self: end"></span>
+        <span></span><span style="width: 5px; height: 5px; border-radius: 50%; background: #fff; justify-self: center"></span><span></span>
+        <span style="width: 5px; height: 5px; border-radius: 50%; background: #fff"></span><span></span><span style="width: 5px; height: 5px; border-radius: 50%; background: #fff; justify-self: end"></span>
+      </div>
+      <div style="font-family: 'Bricolage Grotesque', Figtree, sans-serif; font-size: 28px; font-weight: 800; letter-spacing: -0.5px">dyce</div>
+    </div>
+    <h1 style="margin: 4px 0 0; font-family: 'Bricolage Grotesque', Figtree, sans-serif; font-size: 32px; line-height: 1.08; font-weight: 700; letter-spacing: -0.6px">Game night lives in your chats.</h1>
+    <p style="margin: 0; font-size: 16px; line-height: 1.45; color: {{c.sub}}">Send a game like a text. Play anyone, iPhone or Android.</p>
+  </div>
+
+  <div style="margin-top: auto; padding: 0 20px 34px; display: flex; flex-direction: column; gap: 10px">
+    <a href="Phone.dc.html" style="height: 52px; border-radius: 16px; background: #C93E1C; color: #FFFFFF; font-size: 17px; font-weight: 600; display: flex; align-items: center; justify-content: center; text-decoration: none">Continue with phone number</a>
+    <div style="display: flex; gap: 10px">
+      <button style="flex: 1; height: 52px; border-radius: 16px; border: none; background: {{c.ink}}; color: {{c.inkText}}; font: 600 16px Figtree, sans-serif">Apple</button>
+      <button style="flex: 1; height: 52px; border-radius: 16px; border: 1px solid {{c.line}}; background: {{c.bg}}; color: {{c.text}}; font: 600 16px Figtree, sans-serif">Google</button>
+    </div>
+    <div style="text-align: center; font-size: 15px; color: {{c.sub}}; padding-top: 6px">On Dyce already? <a href="Phone.dc.html" style="color: {{c.brandText}}; font-weight: 600; text-decoration: none">Log in</a></div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"$preview":{"width":390,"height":844}}'>
+const T={light:{bg:'#FBF8F3',bg2:'#F2ECE3',card:'#FFFFFF',text:'#1B140F',sub:'#6F655B',line:'#E6DDD0',recv:'#ECE4D8',field:'#EEE7DC',brand:'#C93E1C',brandText:'#B33416',brandSoft:'#FBE7DF',sms:'#0067D6',money:'#0E7C47',moneySoft:'#E3F6EA',danger:'#C4314B',ink:'#1B140F',inkText:'#FFFFFF'},
+dark:{bg:'#0F0D0B',bg2:'#15120F',card:'#1D1916',text:'#F7F1E8',sub:'#ABA196',line:'#2E2823',recv:'#2A2420',field:'#1D1916',brand:'#C93E1C',brandText:'#FF8F6B',brandSoft:'#3A170C',sms:'#0067D6',money:'#3DDC84',moneySoft:'#11301F',danger:'#FF6B81',ink:'#F7F1E8',inkText:'#1B140F'}};
+class Component extends DCLogic {
+  renderVals() { return { c: T[this.props.theme === 'dark' ? 'dark' : 'light'] }; }
+}
+</script>
+</body>
+</html>

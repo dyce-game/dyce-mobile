@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Dyce — Help and legal</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&amp;family=Bricolage+Grotesque:wght@600;700;800&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; padding: 54px 0 34px; display: flex; flex-direction: column; font-family: Figtree, -apple-system, system-ui, sans-serif; background: {{c.bg2}}; color: {{c.text}}; overflow: hidden">
+  <div style="display: flex; align-items: center; height: 44px; padding: 0 12px">
+    <a href="Settings.dc.html" style="height: 44px; display: flex; align-items: center; gap: 2px; color: {{c.brandText}}; font-size: 17px; text-decoration: none">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>Settings</a>
+  </div>
+  <h1 style="margin: 2px 16px 10px; font-family: 'Bricolage Grotesque', Figtree, sans-serif; font-size: 32px; font-weight: 700; letter-spacing: -0.6px">Help</h1>
+  <div style="margin: 0 16px; height: 42px; border-radius: 12px; background: {{c.card}}; display: flex; align-items: center; gap: 8px; padding: 0 12px; color: {{c.sub}}">
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+    <label for="hq" style="position: absolute; left: -9999px">Search help</label>
+    <input id="hq" placeholder="Search: refund, forfeit, username…" style="flex: 1; border: none; background: none; font: 400 16px Figtree, sans-serif; color: {{c.text}}; outline: none">
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin: 12px 16px 0">
+    <sc-for list="{{topics}}" as="t" hint-placeholder-count="4">
+      <div style="border-radius: 16px; background: {{c.card}}; padding: 12px; display: flex; align-items: center; gap: 10px">
+        <span style="width: 32px; height: 32px; border-radius: 10px; background: {{t.bg}}; color: #fff; font-size: 13px; font-weight: 800; display: flex; align-items: center; justify-content: center">{{t.m}}</span>
+        <span style="font-size: 14px; font-weight: 700">{{t.t}}</span>
+      </div>
+    </sc-for>
+  </div>
+
+  <div style="font-size: 13px; font-weight: 600; color: {{c.sub}}; padding: 16px 20px 6px">Common questions</div>
+  <div style="margin: 0 16px; border-radius: 16px; background: {{c.card}}; overflow: hidden">
+    <sc-for list="{{faq}}" as="f" hint-placeholder-count="4">
+      <button onClick="{{f.toggle}}" aria-expanded="{{f.exp}}" style="width: 100%; border: none; border-bottom: 1px solid {{c.line}}; background: none; padding: 14px; text-align: left; font-family: Figtree, sans-serif; color: {{c.text}}; display: flex; flex-direction: column; gap: 6px">
+        <span style="display: flex; justify-content: space-between; gap: 10px; font-size: 15px; font-weight: 600">{{f.q}}<span style="color: {{c.sub}}; font-weight: 700">{{f.sign}}</span></span>
+        <sc-if value="{{f.open}}" hint-placeholder-val="{{false}}"><span style="font-size: 13px; line-height: 1.45; color: {{c.sub}}">{{f.a}}</span></sc-if>
+      </button>
+    </sc-for>
+  </div>
+
+  <a href="#" style="margin: 12px 16px 0; height: 52px; border-radius: 16px; background: #C93E1C; color: #fff; font-size: 16px; font-weight: 700; display: flex; align-items: center; justify-content: center; text-decoration: none">Chat with support · replies in ~2h</a>
+
+  <div style="margin-top: auto; display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 16px; padding: 14px 16px 0">
+    <sc-for list="{{legal}}" as="l" hint-placeholder-count="4">
+      <a href="#" style="font-size: 13px; color: {{c.sub}}; text-decoration: underline">{{l}}</a>
+    </sc-for>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"$preview":{"width":390,"height":844}}'>
+const T={light:{bg2:'#F2ECE3',card:'#FFFFFF',text:'#1B140F',sub:'#6F655B',line:'#E6DDD0',brandText:'#B33416'},dark:{bg2:'#0F0D0B',card:'#1D1916',text:'#F7F1E8',sub:'#ABA196',line:'#2E2823',brandText:'#FF8F6B'}};
+const FAQ=[
+ ['Where did my pool stake go?','It’s locked in the pot until the game ends. If the other player doesn’t answer in 24 hours, it comes back automatically.'],
+ ['I lost connection. Did I forfeit?','You get one 60-second grace period per game. After that the pot goes to the other player.'],
+ ['Can I withdraw Dyce Cash?','No. Dyce Cash is virtual and only for play. It can’t be bought, sold or cashed out.'],
+ ['Someone cheated in a pool','Report them from their profile. The pool is held while a person reviews the game.']
+];
+class Component extends DCLogic {
+  constructor(p){ super(p); this.state = { open: 0 }; }
+  renderVals() {
+    const c = T[this.props.theme === 'dark' ? 'dark' : 'light'];
+    return {
+      c,
+      topics: [{ m: '₦', bg: '#C93E1C', t: 'Pools & refunds' }, { m: '4+', bg: '#C2410C', t: 'Spaces' }, { m: '@', bg: '#2457D6', t: 'Account' }, { m: '!', bg: '#0E7C47', t: 'Safety' }],
+      faq: FAQ.map(([q, a], i) => { const o = this.state.open === i; return { q, a, open: o, exp: o ? 'true' : 'false', sign: o ? '−' : '+', toggle: () => this.setState({ open: o ? -1 : i }) }; }),
+      legal: ['Terms', 'Privacy', 'Community rules', 'Responsible play']
+    };
+  }
+}
+</script>
+</body>
+</html>

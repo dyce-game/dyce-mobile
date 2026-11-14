@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Dyce — Badges</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&amp;family=Bricolage+Grotesque:wght@600;700;800&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; padding-top: 54px; display: flex; flex-direction: column; font-family: Figtree, -apple-system, system-ui, sans-serif; background: {{c.bg}}; color: {{c.text}}; overflow: hidden; position: relative">
+  <div style="display: flex; align-items: center; justify-content: space-between; height: 44px; padding: 0 12px">
+    <a href="Profile.dc.html" style="height: 44px; display: flex; align-items: center; gap: 2px; color: {{c.brandText}}; font-size: 17px; text-decoration: none">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>Profile</a>
+    <span style="font-size: 14px; font-weight: 700; color: {{c.sub}}">6 of 40</span>
+  </div>
+  <h1 style="margin: 2px 16px 10px; font-family: 'Bricolage Grotesque', Figtree, sans-serif; font-size: 32px; font-weight: 700; letter-spacing: -0.6px">Badges</h1>
+
+  <div style="flex: 1; overflow: hidden; padding: 0 16px">
+    <sc-for list="{{groups}}" as="g" hint-placeholder-count="3">
+      <div style="font-size: 13px; font-weight: 700; color: {{c.sub}}; padding: 10px 0 8px">{{g.label}}</div>
+      <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px">
+        <sc-for list="{{g.items}}" as="b" hint-placeholder-count="4">
+          <button onClick="{{b.pick}}" aria-label="{{b.n}}" style="border: none; background: none; padding: 0; display: flex; flex-direction: column; align-items: center; gap: 6px; font-family: Figtree, sans-serif; color: {{c.text}}">
+            <span style="width: 70px; height: 70px; border-radius: 50%; background: conic-gradient({{b.ringC}} 0 {{b.pct}}, {{c.field}} {{b.pct}}); display: flex; align-items: center; justify-content: center">
+              <span style="width: 58px; height: 58px; border-radius: 18px; transform: rotate(-6deg); background: {{b.bg}}; color: #fff; font-size: 17px; font-weight: 800; display: flex; align-items: center; justify-content: center; opacity: {{b.op}}">{{b.m}}</span>
+            </span>
+            <span style="font-size: 11px; font-weight: 600; text-align: center; line-height: 1.2; min-height: 26px">{{b.n}}</span>
+          </button>
+        </sc-for>
+      </div>
+    </sc-for>
+  </div>
+
+  <sc-if value="{{hasSel}}" hint-placeholder-val="{{false}}">
+    <button onClick="{{close}}" aria-label="Close badge" style="position: absolute; inset: 0; border: none; background: rgba(0,0,0,.4); padding: 0"></button>
+    <section aria-label="{{sel.n}}" style="position: absolute; left: 0; right: 0; bottom: 0; border-radius: 26px 26px 0 0; background: {{c.bg}}; padding: 8px 20px 34px; display: flex; flex-direction: column; align-items: center; text-align: center">
+      <div style="width: 40px; height: 5px; border-radius: 3px; background: {{c.line}}"></div>
+      <span style="margin-top: 22px; width: 110px; height: 110px; border-radius: 32px; transform: rotate(-6deg); background: {{sel.bg}}; color: #fff; font-family: 'Bricolage Grotesque', Figtree, sans-serif; font-size: 34px; font-weight: 800; display: flex; align-items: center; justify-content: center; opacity: {{sel.op}}; box-shadow: 0 14px 30px rgba(0,0,0,.2)">{{sel.m}}</span>
+      <div style="font-family: 'Bricolage Grotesque', Figtree, sans-serif; font-size: 26px; font-weight: 800; margin-top: 18px">{{sel.n}}</div>
+      <div style="font-size: 15px; color: {{c.sub}}; margin-top: 4px; line-height: 1.45">{{sel.how}}</div>
+      <div style="width: 100%; margin-top: 18px">
+        <div style="display: flex; justify-content: space-between; font-size: 13px; font-weight: 700"><span>{{sel.state}}</span><span style="color: {{c.sub}}">{{sel.prog}}</span></div>
+        <div style="height: 10px; border-radius: 5px; background: {{c.field}}; margin-top: 6px; overflow: hidden"><div style="width: {{sel.pct}}; height: 100%; background: {{sel.ringC}}"></div></div>
+      </div>
+      <div style="font-size: 13px; color: {{c.sub}}; margin-top: 12px">{{sel.rarity}}</div>
+      <div style="width: 100%; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 18px">
+        <button style="height: 50px; border-radius: 14px; border: none; background: {{c.field}}; color: {{c.text}}; font: 700 15px Figtree, sans-serif">Pin to profile</button>
+        <button style="height: 50px; border-radius: 14px; border: none; background: #C93E1C; color: #fff; font: 700 15px Figtree, sans-serif">Share</button>
+      </div>
+    </section>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"variant":{"editor":"enum","options":["grid","detail"],"default":"grid"},"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"$preview":{"width":390,"height":844}}'>
+const T={light:{bg:'#FBF8F3',text:'#1B140F',sub:'#6F655B',line:'#E6DDD0',field:'#EEE7DC',brandText:'#B33416'},dark:{bg:'#0F0D0B',text:'#F7F1E8',sub:'#ABA196',line:'#2E2823',field:'#1D1916',brandText:'#FF8F6B'}};
+const B=[
+ ['Skill',[['cs','CS','Clean Sweep','#2BB673',1,1,'Win 8 Ball without a foul','12% of players have it'],['sh','SS','Sharpshooter','#2457D6',14,25,'Sink 25 cups in Cup Pong without missing twice in a row','4% of players have it'],['wd','Aa','Wordsmith','#C98500',3,10,'Find a 7-letter word in Word Hunt 10 times','7% of players have it'],['sb','SB','Admiral','#0B2A55',0,1,'Sink a whole fleet with no misses','Under 1% of players have it']]],
+ ['Social',[['ph','4+','Party Host','#C2410C',1,1,'Host a space that fills every seat','21% of players have it'],['ic','IC','Icebreaker','#E0453A',3,5,'Beat 5 strangers from Space','9% of players have it'],['rc','RC','Recruiter','#C93E1C',1,3,'Bring 3 friends to Dyce by invite link','6% of players have it'],['gn','GN','Game Night','#8C2A43',0,4,'Play 4 Sundays in a row with the same group','5% of players have it']]],
+ ['Pools and hills',[['fp','₦','First Pool','#C93E1C',1,1,'Win your first pool','38% of players have it'],['hh','♛','Hill Holder','#B37A00',1,1,'Hold a hill for 24 hours','3% of players have it'],['dn','2x','Double Down','#A8321A',0,3,'Win 3 run-it-back rematches','2% of players have it'],['cl','CL','Cool Head','#0E7C47',1,1,'Set a daily pool limit','44% of players have it']]]
+];
+class Component extends DCLogic {
+  constructor(p){ super(p); this.state = { sel: p.variant === 'detail' ? 'sh' : null }; }
+  renderVals() {
+    const c = T[this.props.theme === 'dark' ? 'dark' : 'light'];
+    const all = {};
+    const groups = B.map(([label, items]) => ({ label, items: items.map(([id, m, n, bg, have, need, how, rarity]) => {
+      const done = have >= need, pct = Math.round(Math.min(1, have / need) * 100) + '%';
+      const o = { id, m, n, bg: done ? bg : '#9AA0AE', op: done ? '1' : '0.7', ringC: done ? bg : '#C93E1C', pct, how, rarity, state: done ? 'Unlocked' : 'In progress', prog: have + ' / ' + need, pick: () => this.setState({ sel: id }) };
+      if (!done) o.bg = bg; o.op = done ? '1' : '0.45';
+      all[id] = o; return o; }) }));
+    const sel = this.state.sel ? all[this.state.sel] : null;
+    return { c, groups, hasSel: !!sel, sel: sel || {}, close: () => this.setState({ sel: null }) };
+  }
+}
+</script>
+</body>
+</html>

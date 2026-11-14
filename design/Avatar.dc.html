@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Dyce avatar</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>body{margin:0}</style>
+</helmet>
+<div style="width: {{px}}; height: {{px}}; font-size: {{em}}; position: relative; overflow: hidden; border-radius: 50%; background: {{bgGrad}}; flex-shrink: 0; font-family: Figtree, sans-serif; color: #000" role="img" aria-label="Avatar">
+  <sc-if value="{{useImg}}" hint-placeholder-val="{{false}}">
+    <img src="{{img}}" alt="" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; border-radius: 50%">
+  </sc-if>
+  <sc-if value="{{useCss}}" hint-placeholder-val="{{true}}">
+  <sc-if value="{{isLong}}" hint-placeholder-val="{{false}}">
+    <div style="position: absolute; left: 1.75em; top: 2.3em; width: 6.5em; height: 7.2em; border-radius: 3.25em 3.25em 1.6em 1.6em; background: {{hairGrad}}"></div>
+  </sc-if>
+  <div style="position: absolute; left: 0.9em; top: 8.25em; width: 8.2em; height: 3.6em; border-radius: 4em 4em 0 0; background: {{shirtGrad}}"></div>
+  <div style="position: absolute; left: 4.05em; top: 7.2em; width: 1.9em; height: 1.6em; border-radius: 0 0 0.95em 0.95em; background: {{skinDark}}"></div>
+  <div style="position: absolute; left: 2.05em; top: 4.85em; width: 1em; height: 1.4em; border-radius: 50%; background: {{skinGrad}}"></div>
+  <div style="position: absolute; left: 6.95em; top: 4.85em; width: 1em; height: 1.4em; border-radius: 50%; background: {{skinGrad}}"></div>
+  <sc-if value="{{isAfro}}" hint-placeholder-val="{{true}}">
+    <div style="position: absolute; left: 1.3em; top: 0.75em; width: 7.4em; height: 5.5em; border-radius: 50%; background: {{hairGrad}}"></div>
+  </sc-if>
+  <div style="position: absolute; left: 2.45em; top: 2.6em; width: 5.1em; height: 5.6em; border-radius: 2.55em 2.55em 2.35em 2.35em; background: {{skinGrad}}; box-shadow: inset -0.25em -0.35em 0.6em rgba(0,0,0,.16)"></div>
+  <sc-if value="{{isAfro}}" hint-placeholder-val="{{true}}">
+    <div style="position: absolute; left: 2.3em; top: 2.15em; width: 5.4em; height: 1.85em; border-radius: 2.7em 2.7em 0.9em 0.9em; background: {{hairGrad}}"></div>
+  </sc-if>
+  <sc-if value="{{isShort}}" hint-placeholder-val="{{false}}">
+    <div style="position: absolute; left: 2.25em; top: 2.05em; width: 5.5em; height: 2.15em; border-radius: 2.75em 2.75em 1.1em 0.7em; background: {{hairGrad}}"></div>
+  </sc-if>
+  <sc-if value="{{isWaves}}" hint-placeholder-val="{{false}}">
+    <div style="position: absolute; left: 2.4em; top: 2.4em; width: 5.2em; height: 1.55em; border-radius: 2.6em 2.6em 0.8em 0.8em; background: {{wavesGrad}}"></div>
+  </sc-if>
+  <sc-if value="{{isBun}}" hint-placeholder-val="{{false}}">
+    <div style="position: absolute; left: 3.95em; top: 0.75em; width: 2.1em; height: 1.9em; border-radius: 50%; background: {{hairGrad}}"></div>
+    <div style="position: absolute; left: 2.3em; top: 2.2em; width: 5.4em; height: 1.9em; border-radius: 2.7em 2.7em 0.9em 0.9em; background: {{hairGrad}}"></div>
+  </sc-if>
+  <sc-if value="{{isLong}}" hint-placeholder-val="{{false}}">
+    <div style="position: absolute; left: 2.2em; top: 2.1em; width: 5.6em; height: 2.3em; border-radius: 2.8em 2.8em 0.5em 2.4em; background: {{hairGrad}}"></div>
+  </sc-if>
+  <div style="position: absolute; left: 3.55em; top: 4.5em; width: 1.05em; height: 0.22em; border-radius: 0.2em; background: {{browColor}}; transform: rotate(-6deg)"></div>
+  <div style="position: absolute; left: 5.4em; top: 4.5em; width: 1.05em; height: 0.22em; border-radius: 0.2em; background: {{browColor}}; transform: rotate(6deg)"></div>
+  <div style="position: absolute; left: 3.82em; top: 5em; width: 0.64em; height: 0.8em; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #FFFFFF 0 16%, #17131A 22%)"></div>
+  <div style="position: absolute; left: 5.54em; top: 5em; width: 0.64em; height: 0.8em; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #FFFFFF 0 16%, #17131A 22%)"></div>
+  <div style="position: absolute; left: 4.7em; top: 5.85em; width: 0.6em; height: 0.55em; border-radius: 50%; background: {{noseGrad}}"></div>
+  <div style="position: absolute; left: 3.25em; top: 6.1em; width: 0.85em; height: 0.5em; border-radius: 50%; background: rgba(255,96,110,.22)"></div>
+  <div style="position: absolute; left: 5.9em; top: 6.1em; width: 0.85em; height: 0.5em; border-radius: 50%; background: rgba(255,96,110,.22)"></div>
+  <div style="position: absolute; left: 4.35em; top: 6.55em; width: 1.3em; height: 0.66em; border-radius: 0.1em 0.1em 0.7em 0.7em; background: linear-gradient(#FFFFFF 0 32%, #5A1A24 32%)"></div>
+  <sc-if value="{{glasses}}" hint-placeholder-val="{{false}}">
+    <div style="position: absolute; left: 3.45em; top: 4.78em; width: 1.35em; height: 1.15em; border-radius: 40%; border: 0.14em solid #17131A; box-sizing: border-box; background: rgba(255,255,255,.12)"></div>
+    <div style="position: absolute; left: 5.2em; top: 4.78em; width: 1.35em; height: 1.15em; border-radius: 40%; border: 0.14em solid #17131A; box-sizing: border-box; background: rgba(255,255,255,.12)"></div>
+    <div style="position: absolute; left: 4.78em; top: 5.2em; width: 0.44em; height: 0.14em; background: #17131A"></div>
+  </sc-if>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"size":{"editor":"int","min":24,"max":400,"default":200},"skin":{"editor":"color","options":["#F1C27D","#C68642","#8D5524","#5C3A21"],"default":"#8D5524"},"hair":{"editor":"color","default":"#1C1714"},"hairStyle":{"editor":"enum","options":["afro","short","waves","bun","long"],"default":"afro"},"bg":{"editor":"color","default":"#C9B8FF"},"shirt":{"editor":"color","default":"#C93E1C"},"glasses":{"editor":"boolean","default":false},"mode":{"editor":"enum","options":["photo","css"],"default":"photo"},"$preview":{"width":200,"height":200}}'>
+const IMG={'#8D5524|afro|#1C1714':'/_blob/a7106925db1972f9379f61a90151e88c','#8D5524|bun|#1C1714':'/_blob/473aadf31a90333b76e25e0553b755f6','#5C3A21|waves|#111111':'/_blob/d49aff24b39b06c7872117b089e8a23c','#C68642|long|#2A1A12':'/_blob/03406736cf9b207ff5096809f308884a','#A0662F|afro|#3B2219':'/_blob/a40bdf68b5ccf6300afc7731df4f9c32','#C68642|short|#2A1A12':'/_blob/ef9d90b994ac3afc1ef63dccb1a4140a','#F1C27D|short|#7A4A2A':'/_blob/2e35ceffb68cadee7259f2960429165a','#5C3A21|short|#111111':'/_blob/9c8c4c6e5b2fd4d714eb18640fe0bcbf','#A0662F|long|#3B2219':'/_blob/3190f67e81c46bb33baed1e2856ec3ba','#F1C27D|waves|#1C1714':'/_blob/54d0f0290c332737caec926156c416ac'};
+const POOL=['/_blob/473aadf31a90333b76e25e0553b755f6','/_blob/d49aff24b39b06c7872117b089e8a23c','/_blob/03406736cf9b207ff5096809f308884a','/_blob/a40bdf68b5ccf6300afc7731df4f9c32','/_blob/ef9d90b994ac3afc1ef63dccb1a4140a','/_blob/2e35ceffb68cadee7259f2960429165a','/_blob/9c8c4c6e5b2fd4d714eb18640fe0bcbf','/_blob/3190f67e81c46bb33baed1e2856ec3ba','/_blob/54d0f0290c332737caec926156c416ac'];
+function hx(h){h=String(h||'#000000').replace('#','');if(h.length===3)h=h.split('').map(function(x){return x+x;}).join('');var n=parseInt(h,16)||0;return [(n>>16)&255,(n>>8)&255,n&255];}
+function mix(a,b,t){var p=hx(a),q=hx(b);return 'rgb('+p.map(function(v,i){return Math.round(v+(q[i]-v)*t);}).join(',')+')';}
+class Component extends DCLogic {
+  renderVals() {
+    var p = this.props;
+    var size = Number(p.size) || 200;
+    var skin = p.skin || '#8D5524', hair = p.hair || '#1C1714', bg = p.bg || '#C9B8FF', shirt = p.shirt || '#C93E1C';
+    var st = p.hairStyle || 'afro';
+    var sl = mix(skin,'#ffffff',0.3), sd = mix(skin,'#000000',0.22);
+    return {
+      px: size + 'px', em: (size / 10) + 'px',
+      bgGrad: 'radial-gradient(circle at 30% 22%, ' + mix(bg,'#ffffff',0.4) + ' 0%, ' + bg + ' 65%, ' + mix(bg,'#000000',0.08) + ' 100%)',
+      skinGrad: 'radial-gradient(circle at 38% 30%, ' + sl + ' 0%, ' + skin + ' 48%, ' + sd + ' 100%)',
+      skinDark: sd,
+      noseGrad: 'radial-gradient(circle at 40% 35%, ' + sl + ', ' + sd + ')',
+      hairGrad: 'radial-gradient(circle at 35% 25%, ' + mix(hair,'#ffffff',0.22) + ' 0%, ' + hair + ' 55%, ' + mix(hair,'#000000',0.3) + ' 100%)',
+      wavesGrad: 'repeating-linear-gradient(170deg, ' + hair + ' 0 0.22em, ' + mix(hair,'#ffffff',0.18) + ' 0.22em 0.4em)',
+      shirtGrad: 'radial-gradient(circle at 40% 20%, ' + mix(shirt,'#ffffff',0.28) + ', ' + shirt + ' 60%, ' + mix(shirt,'#000000',0.2) + ')',
+      browColor: mix(hair,'#000000',0.2),
+      isAfro: st === 'afro', isShort: st === 'short', isWaves: st === 'waves', isBun: st === 'bun', isLong: st === 'long',
+      glasses: p.glasses === true || p.glasses === 'true',
+      img: (function(){ const k = String(skin).toUpperCase().replace('#','#') + '|' + st + '|' + String(hair).toUpperCase(); const hit = IMG[k]; if (hit) return hit; let h = 0; k.split('').forEach(function(ch){ h = (h * 31 + ch.charCodeAt(0)) >>> 0; }); return POOL[h % POOL.length]; })(),
+      useImg: p.mode !== 'css', useCss: p.mode === 'css'
+    };
+  }
+}
+</script>
+</body>
+</html>

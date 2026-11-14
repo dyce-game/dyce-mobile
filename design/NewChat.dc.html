@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Dyce — New chat or group</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&amp;family=Bricolage+Grotesque:wght@600;700;800&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; padding-top: 54px; display: flex; flex-direction: column; font-family: Figtree, -apple-system, system-ui, sans-serif; background: {{c.bg}}; color: {{c.text}}; overflow: hidden">
+  <div style="display: flex; align-items: center; justify-content: space-between; height: 44px; padding: 0 16px">
+    <a href="Chats.dc.html" style="height: 44px; display: flex; align-items: center; color: {{c.brandText}}; font-size: 17px; text-decoration: none">Cancel</a>
+    <span style="font-size: 17px; font-weight: 600">{{title}}</span>
+    <a href="{{doneHref}}" style="height: 44px; display: flex; align-items: center; color: {{doneColor}}; font-size: 17px; font-weight: 700; text-decoration: none">{{doneLabel}}</a>
+  </div>
+
+  <sc-if value="{{isGroup}}" hint-placeholder-val="{{false}}">
+    <div style="display: flex; align-items: center; gap: 12px; padding: 10px 16px 4px">
+      <button aria-label="Group photo" style="width: 56px; height: 56px; border-radius: 50%; border: none; background: {{c.brandSoft}}; color: {{c.brandText}}; display: flex; align-items: center; justify-content: center; padding: 0; flex-shrink: 0">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>
+      </button>
+      <label for="gname" style="position: absolute; left: -9999px">Group name</label>
+      <input id="gname" value="Sunday Game Night" style="flex: 1; height: 48px; border: none; border-bottom: 2px solid #C93E1C; background: none; font: 600 18px Figtree, sans-serif; color: {{c.text}}; outline: none">
+    </div>
+    <div style="display: flex; gap: 10px; padding: 12px 16px 6px; overflow: hidden; min-height: 76px">
+      <sc-for list="{{picked}}" as="p" hint-placeholder-count="3">
+        <button onClick="{{p.toggle}}" aria-label="Remove {{p.name}}" style="display: flex; flex-direction: column; align-items: center; gap: 4px; width: 56px; border: none; background: none; padding: 0; position: relative; color: {{c.text}}; font-family: Figtree, sans-serif; flex-shrink: 0">
+          <dc-import name="Avatar" size="48" skin="{{p.skin}}" hair="{{p.hair}}" hair-style="{{p.hs}}" bg="{{p.bg}}" shirt="{{p.shirt}}" hint-size="48px,48px"></dc-import>
+          <span style="position: absolute; right: 2px; top: -2px; width: 20px; height: 20px; border-radius: 50%; background: {{c.sub}}; color: {{c.bg}}; font-size: 13px; font-weight: 800; display: flex; align-items: center; justify-content: center">×</span>
+          <span style="font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 56px">{{p.first}}</span>
+        </button>
+      </sc-for>
+    </div>
+  </sc-if>
+
+  <div style="margin: 6px 16px 0; height: 40px; border-radius: 12px; background: {{c.field}}; display: flex; align-items: center; gap: 8px; padding: 0 12px; color: {{c.sub}}">
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+    <label for="to" style="position: absolute; left: -9999px">Search contacts</label>
+    <input id="to" placeholder="Name, number or @username" style="flex: 1; border: none; background: none; font: 400 16px Figtree, sans-serif; color: {{c.text}}; outline: none">
+  </div>
+
+  <sc-if value="{{isChat}}" hint-placeholder-val="{{true}}">
+    <a href="NewGroup.dc.html" style="display: flex; align-items: center; gap: 12px; margin: 10px 16px 0; height: 54px; color: {{c.text}}; text-decoration: none; border-bottom: 1px solid {{c.line}}">
+      <span style="width: 40px; height: 40px; border-radius: 50%; background: {{c.brandSoft}}; color: {{c.brandText}}; display: flex; align-items: center; justify-content: center">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="9" cy="9" r="3"/><circle cx="17" cy="10" r="2.4"/><path d="M3 19c.6-2.8 2.9-4.5 6-4.5s5.4 1.7 6 4.5M15.5 14.6c2.4.2 4.2 1.7 4.7 4.4"/></svg>
+      </span>
+      <span style="font-size: 16px; font-weight: 600">New group</span>
+    </a>
+  </sc-if>
+
+  <div style="font-size: 13px; font-weight: 700; color: {{c.sub}}; padding: 14px 16px 4px">On Dyce</div>
+  <div style="padding: 0 16px">
+    <sc-for list="{{onDyce}}" as="p" hint-placeholder-count="4">
+      <button onClick="{{p.toggle}}" style="width: 100%; display: flex; align-items: center; gap: 12px; height: 58px; border: none; border-bottom: 1px solid {{c.line}}; background: none; padding: 0; color: {{c.text}}; font-family: Figtree, sans-serif; text-align: left">
+        <dc-import name="Avatar" size="40" skin="{{p.skin}}" hair="{{p.hair}}" hair-style="{{p.hs}}" bg="{{p.bg}}" shirt="{{p.shirt}}" hint-size="40px,40px"></dc-import>
+        <div style="flex: 1"><div style="font-size: 15px; font-weight: 600">{{p.name}}</div><div style="font-size: 12px; color: {{c.sub}}">{{p.handle}}</div></div>
+        <sc-if value="{{isGroup}}" hint-placeholder-val="{{false}}">
+          <span style="width: 24px; height: 24px; border-radius: 50%; border: 2px solid {{p.ring}}; background: {{p.fill}}; box-sizing: border-box; display: flex; align-items: center; justify-content: center">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
+          </span>
+        </sc-if>
+      </button>
+    </sc-for>
+  </div>
+  <div style="font-size: 13px; font-weight: 700; color: {{c.sub}}; padding: 14px 16px 4px">Invite by text</div>
+  <div style="padding: 0 16px; flex: 1; overflow: hidden">
+    <sc-for list="{{offDyce}}" as="p" hint-placeholder-count="2">
+      <div style="display: flex; align-items: center; gap: 12px; height: 58px; border-bottom: 1px solid {{c.line}}">
+        <div style="width: 40px; height: 40px; border-radius: 50%; background: {{c.line}}; color: {{c.sub}}; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px">{{p.ini}}</div>
+        <div style="flex: 1"><div style="font-size: 15px; font-weight: 600">{{p.name}}</div><div style="font-size: 12px; color: {{c.sub}}">Not on Dyce</div></div>
+        <a href="Invite.dc.html" style="height: 32px; padding: 0 12px; border-radius: 999px; background: #0067D6; color: #fff; font-size: 13px; font-weight: 700; display: flex; align-items: center; text-decoration: none">Invite</a>
+      </div>
+    </sc-for>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"variant":{"editor":"enum","options":["chat","group"],"default":"chat"},"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"$preview":{"width":390,"height":844}}'>
+const T={light:{bg:'#FBF8F3',text:'#1B140F',sub:'#6F655B',line:'#E6DDD0',field:'#EEE7DC',brandText:'#B33416',brandSoft:'#FBE7DF'},
+dark:{bg:'#0F0D0B',text:'#F7F1E8',sub:'#ABA196',line:'#2E2823',field:'#1D1916',brandText:'#FF8F6B',brandSoft:'#3A170C'}};
+const PPL=[
+ {id:'amaka',name:'Amaka Obi',first:'Amaka',handle:'@amaka.o',skin:'#8D5524',hair:'#1C1714',hs:'bun',bg:'#FFC857',shirt:'#E0453A'},
+ {id:'tunde',name:'Tunde Bakare',first:'Tunde',handle:'@tundeb',skin:'#5C3A21',hair:'#111111',hs:'waves',bg:'#8FD3FF',shirt:'#1F2937'},
+ {id:'ife',name:'Ifeoma N.',first:'Ifeoma',handle:'@ife.n',skin:'#A0662F',hair:'#3B2219',hs:'afro',bg:'#FFB4C6',shirt:'#0E9F6E'},
+ {id:'zee',name:'Zainab M.',first:'Zainab',handle:'@zee',skin:'#C68642',hair:'#2A1A12',hs:'long',bg:'#B8F2C8',shirt:'#C93E1C'}
+];
+class Component extends DCLogic {
+  constructor(p){ super(p); this.state = { sel: ['amaka','tunde','ife'] }; }
+  renderVals() {
+    const c = T[this.props.theme === 'dark' ? 'dark' : 'light'];
+    const group = this.props.variant === 'group';
+    const sel = this.state.sel;
+    const tog = (id) => () => this.setState({ sel: sel.indexOf(id) >= 0 ? sel.filter((x) => x !== id) : sel.concat(id) });
+    return {
+      c, isGroup: group, isChat: !group,
+      title: group ? 'New group' : 'New chat',
+      doneLabel: group ? 'Create' : '', doneHref: group ? 'GroupChat.dc.html' : '#', doneColor: sel.length >= 2 ? c.brandText : c.sub,
+      picked: PPL.filter((p) => sel.indexOf(p.id) >= 0).map((p) => Object.assign({}, p, { toggle: tog(p.id) })),
+      onDyce: PPL.map((p) => { const on = sel.indexOf(p.id) >= 0; return Object.assign({}, p, { ring: on ? '#C93E1C' : c.line, fill: on ? '#C93E1C' : 'transparent', toggle: group ? tog(p.id) : () => {} }); }),
+      offDyce: [{ name: 'Tolu Ade', ini: 'TA' }, { name: 'Femi (Work)', ini: 'FW' }]
+    };
+  }
+}
+</script>
+</body>
+</html>

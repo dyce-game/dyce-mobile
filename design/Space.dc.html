@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Dyce — Spaces</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800;900&amp;family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; padding-top: 54px; position: relative; overflow: hidden; display: flex; flex-direction: column; font-family: Figtree, -apple-system, system-ui, sans-serif; background: {{c.bg}}; color: {{c.text}}">
+  <div style="position: absolute; left: -100px; top: -140px; width: 360px; height: 360px; border-radius: 50%; background: radial-gradient(circle, {{c.glowB}}, transparent 70%)" aria-hidden="true"></div>
+  <div style="position: absolute; right: -140px; top: 60px; width: 320px; height: 320px; border-radius: 50%; background: radial-gradient(circle, {{c.glowA}}, transparent 70%)" aria-hidden="true"></div>
+
+  <div style="position: relative; display: flex; align-items: center; justify-content: space-between; padding: 0 16px; height: 48px">
+    <a href="Profile.dc.html" aria-label="My profile and notifications" style="position: relative; display: flex; border-radius: 50%; box-shadow: 0 0 0 2px {{c.bg}}, 0 0 0 4px #C93E1C">
+      <dc-import name="Avatar" size="38" skin="#8D5524" hair="#1C1714" hair-style="afro" bg="#C9B8FF" shirt="#6E4BFF" hint-size="38px,38px"></dc-import>
+      <span style="position: absolute; right: -4px; top: -4px; min-width: 16px; height: 16px; padding: 0 4px; box-sizing: border-box; border-radius: 8px; background: #C93E1C; border: 2px solid {{c.bg}}; color: #fff; font-size: 9px; font-weight: 900; display: flex; align-items: center; justify-content: center">2</span>
+    </a>
+    <a href="{{plus.href}}" aria-label="{{plus.label}}" style="width: 42px; height: 42px; border-radius: 50%; background: #C93E1C; box-shadow: 0 3px 0 #8A2410, 0 8px 18px rgba(201,62,28,.32), inset 0 2px 0 rgba(255,255,255,.25); display: flex; align-items: center; justify-content: center; color: #fff">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+    </a>
+  </div>
+
+  <div style="position: relative; display: flex; align-items: flex-end; justify-content: space-between; padding: 12px 18px 0">
+    <h1 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-size: 38px; font-weight: 800; letter-spacing: -1px; line-height: 1">{{title}}</h1>
+    <span style="margin-bottom: 6px; display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 700; color: {{c.sub}}"><span style="width: 8px; height: 8px; border-radius: 50%; background: #2BB673"></span>1,284 playing</span>
+  </div>
+
+  <div role="tablist" aria-label="Spaces or people" style="position: relative; margin: 14px 16px 0; padding: 4px; border-radius: 22px; background: {{c.chip}}; display: grid; grid-template-columns: 1fr 1fr; gap: 4px; flex-shrink: 0">
+    <sc-for list="{{tabs}}" as="t" hint-placeholder-count="2">
+      <button role="tab" aria-selected="{{t.sel}}" onClick="{{t.pick}}" style="height: 38px; border: none; border-radius: 18px; background: {{t.bg}}; box-shadow: {{t.shadow}}; color: {{t.fg}}; font: {{t.weight}} 15px Figtree, sans-serif">{{t.label}}</button>
+    </sc-for>
+  </div>
+
+  <div style="position: relative; flex: 1; overflow: hidden; padding: 4px 0 120px">
+    <sc-if value="{{show.spaces}}" hint-placeholder-val="{{false}}">
+      <a href="JoinRoom.dc.html" style="margin: 12px 16px 0; height: 50px; border-radius: 16px; border: 2px dashed {{c.line}}; display: flex; align-items: center; gap: 10px; padding: 0 14px; color: {{c.text}}; text-decoration: none">
+        <span style="font-size: 15px; font-weight: 700; flex: 1">Join a space with a code</span><span style="font-size: 13px; color: {{c.sub}}; letter-spacing: 1px; font-weight: 700">DY-····</span>
+      </a>
+      <div style="padding: 16px 18px 8px; font-family: 'Bricolage Grotesque', sans-serif; font-size: 20px; font-weight: 800">Your spaces</div>
+      <div style="display: flex; gap: 12px; padding: 0 18px; overflow: hidden">
+        <sc-for list="{{mySpaces}}" as="r" hint-placeholder-count="2">
+          <a href="{{r.href}}" style="width: 220px; flex-shrink: 0; height: 150px; border-radius: 24px; padding: 14px; box-sizing: border-box; background: {{r.bg}}; box-shadow: inset 0 -5px 0 rgba(0,0,0,.18), inset 0 2px 0 rgba(255,255,255,.22), 0 10px 24px {{c.glassShadow}}; color: #fff; text-decoration: none; display: flex; flex-direction: column; gap: 6px; position: relative; overflow: hidden">
+            <span style="position: absolute; right: -24px; top: -24px; width: 110px; height: 110px; border-radius: 30px; transform: rotate(18deg); background: rgba(255,255,255,.10)"></span>
+            <div style="display: flex; justify-content: space-between; position: relative"><span style="height: 22px; padding: 0 9px; border-radius: 11px; background: {{r.modeBg}}; color: {{r.modeFg}}; font-size: 11px; font-weight: 800; display: flex; align-items: center">{{r.mode}}</span><span style="font-size: 12px; font-weight: 800">{{r.status}}</span></div>
+            <span style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 21px; font-weight: 800; letter-spacing: -0.4px; position: relative">{{r.name}}</span>
+            <span style="font-size: 12px; opacity: .9; position: relative">{{r.meta}}</span>
+            <div style="display: flex; margin-top: auto; position: relative">
+              <sc-for list="{{r.people}}" as="p" hint-placeholder-count="3"><div style="margin-right: -10px; border-radius: 50%; border: 2px solid rgba(255,255,255,.9)"><dc-import name="Avatar" size="30" skin="{{p.skin}}" hair="{{p.hair}}" hair-style="{{p.hs}}" bg="{{p.bg}}" shirt="{{p.shirt}}" hint-size="30px,30px"></dc-import></div></sc-for>
+            </div>
+          </a>
+        </sc-for>
+      </div>
+      <div style="display: flex; justify-content: space-between; align-items: baseline; padding: 18px 18px 4px"><span style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 20px; font-weight: 800">Open now</span><span style="font-size: 13px; color: {{c.sub}}; font-weight: 700">Free · Pool</span></div>
+      <sc-for list="{{openSpaces}}" as="r" hint-placeholder-count="4">
+        <div style="display: flex; align-items: center; gap: 12px; padding: 0 18px; height: 66px">
+          <span style="width: 44px; height: 44px; border-radius: 13px; background: {{r.bg}}; box-shadow: inset 0 -4px 0 rgba(0,0,0,.2); color: #fff; font-size: 14px; font-weight: 900; display: flex; align-items: center; justify-content: center; flex-shrink: 0">{{r.mark}}</span>
+          <div style="flex: 1; min-width: 0; border-bottom: 1px solid {{c.line}}; height: 66px; display: flex; align-items: center; gap: 10px">
+            <div style="flex: 1; min-width: 0"><div style="font-size: 15px; font-weight: 700">{{r.name}} <span style="color: {{c.sub}}; font-weight: 500">· {{r.host}}</span></div><div style="font-size: 12px; font-weight: 700; color: {{r.modeColor}}">{{r.meta}}</div></div>
+            <span style="font-size: 13px; color: {{c.sub}}; font-weight: 700">{{r.seats}}</span>
+            <a href="Lobby.dc.html" style="height: 32px; padding: 0 14px; border-radius: 16px; background: {{c.chip}}; box-shadow: 0 2px 0 {{c.chipEdge}}; color: {{c.text}}; font-size: 13px; font-weight: 800; display: flex; align-items: center; text-decoration: none">Join</a>
+          </div>
+        </div>
+      </sc-for>
+    </sc-if>
+
+    <sc-if value="{{show.people}}" hint-placeholder-val="{{false}}">
+      <div style="display: flex; gap: 8px; padding: 12px 18px 4px">
+        <span style="height: 32px; padding: 0 12px; border-radius: 16px; background: {{c.ink}}; color: {{c.inkText}}; font-size: 13px; font-weight: 800; display: flex; align-items: center">Playing now</span>
+        <span style="height: 32px; padding: 0 12px; border-radius: 16px; background: {{c.chip}}; font-size: 13px; font-weight: 700; display: flex; align-items: center">Near you</span>
+        <a href="Leaderboard.dc.html" style="height: 32px; padding: 0 12px; border-radius: 16px; background: {{c.chip}}; color: {{c.text}}; font-size: 13px; font-weight: 700; display: flex; align-items: center; text-decoration: none">Top this week</a>
+      </div>
+      <sc-for list="{{people}}" as="p" hint-placeholder-count="5">
+        <a href="UserProfile.dc.html" style="display: flex; align-items: center; gap: 12px; padding: 0 18px; height: 72px; color: {{c.text}}; text-decoration: none">
+          <div style="position: relative"><dc-import name="Avatar" size="52" skin="{{p.skin}}" hair="{{p.hair}}" hair-style="{{p.hs}}" bg="{{p.bg}}" shirt="{{p.shirt}}" hint-size="52px,52px"></dc-import><span style="position: absolute; right: 0; bottom: 0; width: 13px; height: 13px; border-radius: 50%; background: #2BB673; border: 3px solid {{c.bg}}"></span></div>
+          <div style="flex: 1; min-width: 0"><div style="display: flex; align-items: center; gap: 6px"><span style="font-size: 16px; font-weight: 700">{{p.handle}}</span><sc-if value="{{p.friend}}" hint-placeholder-val="{{false}}"><span style="font-size: 10px; font-weight: 800; padding: 2px 7px; border-radius: 999px; background: {{c.moneySoft}}; color: {{c.money}}">FRIEND</span></sc-if></div><div style="font-size: 13px; color: {{c.sub}}">{{p.meta}}</div></div>
+          <span style="height: 34px; padding: 0 14px; border-radius: 17px; background: {{c.chip}}; box-shadow: 0 2px 0 {{c.chipEdge}}; font-size: 13px; font-weight: 800; display: flex; align-items: center">Challenge</span>
+        </a>
+      </sc-for>
+    </sc-if>
+  </div>
+
+  <div style="position: absolute; left: 0; right: 0; bottom: 0; height: 150px; background: linear-gradient(transparent, {{c.bg}} 70%); pointer-events: none" aria-hidden="true"></div>
+  <div style="position: absolute; left: 14px; right: 14px; bottom: 26px">
+    <dc-import name="TabBar" active="spaces" search="{{searchHref}}" theme="{{c.name}}" hint-size="362px,68px"></dc-import>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"tab":{"editor":"enum","options":["spaces","people"],"default":"spaces"},"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"$preview":{"width":390,"height":844}}'>
+const T={light:{name:'light',bg:'#FBF8F3',card:'#FFFFFF',text:'#1B140F',sub:'#6F655B',faint:'#C9BEB1',line:'#E6DDD0',chip:'#EEE7DC',chipEdge:'#D8CEC1',ink:'#1B140F',inkText:'#FFFFFF',accent:'#B33416',brandSoft:'#FBE7DF',glass:'rgba(255,255,255,.62)',glassEdge:'rgba(255,255,255,.9)',glassShadow:'rgba(90,40,10,.12)',glowA:'rgba(227,169,59,.22)',glowB:'rgba(201,62,28,.14)',money:'#17834F',moneySoft:'#DDF1E5'},
+dark:{name:'dark',bg:'#0F0D0B',card:'#1D1916',text:'#F7F1E8',sub:'#ABA196',faint:'#4A423A',line:'#2E2823',chip:'#2A2420',chipEdge:'#15120F',ink:'#F7F1E8',inkText:'#1B140F',accent:'#FF8F6B',brandSoft:'#3A170C',glass:'rgba(42,36,32,.6)',glassEdge:'rgba(255,255,255,.10)',glassShadow:'rgba(0,0,0,.45)',glowA:'rgba(227,169,59,.12)',glowB:'rgba(201,62,28,.16)',money:'#3DDC84',moneySoft:'#11301F'}};
+const P={
+ amaka:{name:'Amaka',skin:'#8D5524',hair:'#1C1714',hs:'bun',bg:'#FFC857',shirt:'#E0453A'},
+ tunde:{name:'Tunde',skin:'#5C3A21',hair:'#111111',hs:'waves',bg:'#8FD3FF',shirt:'#1F2937'},
+ zee:{name:'Zainab',skin:'#C68642',hair:'#2A1A12',hs:'long',bg:'#B8F2C8',shirt:'#6E4BFF'},
+ ife:{name:'Ifeoma',skin:'#A0662F',hair:'#3B2219',hs:'afro',bg:'#FFB4C6',shirt:'#0E9F6E'},
+ dayo:{name:'Dayo',skin:'#F1C27D',hair:'#7A4A2A',hs:'short',bg:'#C9B8FF',shirt:'#FFB020'},
+ shark:{skin:'#5C3A21',hair:'#111111',hs:'short',bg:'#8FD3FF',shirt:'#0E9F6E'},
+ ngozi:{skin:'#A0662F',hair:'#3B2219',hs:'long',bg:'#FFB4C6',shirt:'#FFB020'},
+ bayo:{skin:'#F1C27D',hair:'#1C1714',hs:'waves',bg:'#FFC857',shirt:'#1F2937'}
+};
+const POOLM = ['POOL','#3A2400','#E3A93B'], FREEM = ['FREE','#FFFFFF','#17834F'];
+class Component extends DCLogic {
+  constructor(p){ super(p); this.state = { t: p.tab === 'people' ? 'people' : 'spaces' }; }
+  renderVals() {
+    const c = T[this.props.theme === 'dark' ? 'dark' : 'light'];
+    const t = this.state.t;
+    const SP = (name, meta, bg, m, status, people, href) => ({ name, meta, bg, mode: m[0], modeFg: m[1], modeBg: m[2], status, people, href });
+    return {
+      c, title: t === 'people' ? 'People' : 'Spaces',
+      show: { spaces: t === 'spaces', people: t === 'people' },
+      mySpaces: [
+        SP('Sunday Game Night', 'Crazy Cards · 3 of 4 seated', 'linear-gradient(145deg, #2E2823, #0F0D0B)', POOLM, 'WAITING', [P.ife, P.amaka, P.tunde], 'Lobby.dc.html'),
+        SP('Office Doodles', 'Doodle Guess · round 2 of 3', 'linear-gradient(145deg, #F07A4A, #C93E1C)', FREEM, 'LIVE', [P.zee, P.dayo, P.tunde], 'DoodleRoom.dc.html')
+      ],
+      openSpaces: [
+        { name: 'Doodle Guess', host: '@ngozi.k', mark: 'Aa', bg: '#C93E1C', seats: '5/8', meta: 'Pool · ₦300 a seat · 50/30/20', modeColor: c.accent },
+        { name: 'Whot!', host: '@bayo_spins', mark: 'W', bg: '#8C2A43', seats: '2/4', meta: 'Free · XP for top 3', modeColor: c.money },
+        { name: 'Ludo', host: '@zee', mark: 'L', bg: '#2457D6', seats: '3/4', meta: 'Pool · ₦1,000 a seat · winner all', modeColor: c.accent },
+        { name: 'Werewolf', host: '@femi.o', mark: 'WW', bg: '#10183A', seats: '7/12', meta: 'Free · night 1 starts when full', modeColor: c.money }
+      ],
+      people: [
+        Object.assign({ handle: '@lagos_shark', meta: 'Sea Battle · 214 wins', friend: false }, P.shark),
+        Object.assign({ handle: '@ngozi.k', meta: 'In a Doodle Guess space', friend: false }, P.ngozi),
+        Object.assign({ handle: '@tundeb', meta: 'Idle · 132 wins', friend: true }, P.tunde),
+        Object.assign({ handle: '@bayo_spins', meta: 'Word Hunt · 31 wins', friend: false }, P.bayo),
+        Object.assign({ handle: '@redhead.ade', meta: '8 Ball · 77 wins', friend: false }, { skin: '#8D5524', hair: '#B7412E', hs: 'afro', bg: '#B8F2C8', shirt: '#E0453A' }),
+        Object.assign({ handle: '@femi.o', meta: 'Hosting Werewolf · 58 wins', friend: false }, P.dayo)
+      ],
+      searchHref: t === 'people' ? 'SpaceSearch.dc.html' : 'JoinRoom.dc.html',
+      plus: t === 'people' ? { href: 'QuickMatch.dc.html', label: 'Quick match' } : { href: 'CreateRoom.dc.html', label: 'Create a space' },
+      tabs: [['spaces','Spaces'],['people','People']].map(([id, label]) => ({ label, sel: t === id ? 'true' : 'false', weight: t === id ? '800' : '600', fg: t === id ? c.text : c.sub, bg: t === id ? c.card : 'transparent', shadow: t === id ? '0 2px 8px ' + c.glassShadow : 'none', pick: () => this.setState({ t: id }) }))
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Dyce — Daily top-up</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&amp;family=Bricolage+Grotesque:wght@600;700;800&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; padding: 54px 20px 34px; display: flex; flex-direction: column; font-family: Figtree, -apple-system, system-ui, sans-serif; background: {{c.bg}}; color: {{c.text}}; overflow: hidden">
+  <div style="display: flex; align-items: center; height: 44px">
+    <a href="Wallet.dc.html" style="height: 44px; display: flex; align-items: center; gap: 2px; color: {{c.brandText}}; font-size: 17px; text-decoration: none">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>Wallet</a>
+  </div>
+
+  <div style="margin-top: 12px; height: 240px; border-radius: 30px; background: {{heroBg}}; position: relative; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #fff">
+    <span style="position: absolute; left: -30px; top: -30px; width: 140px; height: 140px; border-radius: 50%; background: rgba(255,255,255,.10)" aria-hidden="true"></span>
+    <span style="position: absolute; right: -40px; bottom: -50px; width: 180px; height: 180px; border-radius: 50%; background: rgba(255,255,255,.08)" aria-hidden="true"></span>
+    <div style="font-size: 13px; font-weight: 800; letter-spacing: 0.5px; opacity: .9">{{kicker}}</div>
+    <div style="font-family: 'Bricolage Grotesque', Figtree, sans-serif; font-size: 64px; font-weight: 800; letter-spacing: -2px">+₦1,000</div>
+    <div style="font-size: 15px; opacity: .92">{{line}}</div>
+  </div>
+
+  <div style="display: flex; justify-content: space-between; margin-top: 18px; padding: 14px; border-radius: 18px; background: {{c.bg2}}">
+    <div><div style="font-size: 12px; color: {{c.sub}}; font-weight: 600">Balance now</div><div style="font-size: 20px; font-weight: 800">{{bal}}</div></div>
+    <div style="text-align: right"><div style="font-size: 12px; color: {{c.sub}}; font-weight: 600">Next top-up</div><div style="font-size: 20px; font-weight: 800">{{next}}</div></div>
+  </div>
+
+  <div style="font-size: 13px; font-weight: 700; color: {{c.sub}}; margin: 18px 0 8px">This week</div>
+  <div style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px">
+    <sc-for list="{{days}}" as="d" hint-placeholder-count="7">
+      <div style="height: 64px; border-radius: 14px; background: {{d.bg}}; color: {{d.fg}}; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px">
+        <span style="font-size: 11px; font-weight: 700">{{d.d}}</span><span style="font-size: 13px; font-weight: 800">{{d.v}}</span>
+      </div>
+    </sc-for>
+  </div>
+
+  <div style="margin-top: 16px; font-size: 13px; line-height: 1.5; color: {{c.sub}}">The top-up is for when you're running low: it's there any day your balance is under ₦5,000. Free games stay open whatever your balance.</div>
+
+  <button onClick="{{claim}}" style="margin-top: auto; height: 56px; border-radius: 16px; border: none; background: {{ctaBg}}; color: #fff; font: 800 17px Figtree, sans-serif">{{cta}}</button>
+  <a href="Games.dc.html" style="height: 46px; display: flex; align-items: center; justify-content: center; color: {{c.brandText}}; font-size: 15px; font-weight: 600; text-decoration: none">Play a free game instead</a>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"$preview":{"width":390,"height":844}}'>
+const T={light:{bg:'#FBF8F3',bg2:'#F2ECE3',text:'#1B140F',sub:'#6F655B',brandText:'#B33416',field:'#EEE7DC',money:'#0E7C47',moneySoft:'#E3F6EA'},dark:{bg:'#0F0D0B',bg2:'#1D1916',text:'#F7F1E8',sub:'#ABA196',brandText:'#FF8F6B',field:'#1D1916',money:'#3DDC84',moneySoft:'#11301F'}};
+class Component extends DCLogic {
+  constructor(p){ super(p); this.state = { claimed: false }; }
+  renderVals() {
+    const c = T[this.props.theme === 'dark' ? 'dark' : 'light'];
+    const done = this.state.claimed;
+    const D = [['M','—'],['T','+1k'],['W','—'],['T','+1k'],['F','—'],['S', done ? '+1k' : 'Today'],['S','']];
+    return {
+      c,
+      heroBg: done ? 'radial-gradient(circle at 30% 20%, #3DDC84, #13985A 55%, #06502E)' : 'radial-gradient(circle at 30% 20%, #F07A4A, #A8321A 55%, #4A150A)',
+      kicker: done ? 'ADDED TO YOUR WALLET' : 'YOUR DAILY TOP-UP IS READY',
+      line: done ? 'Go win it back up' : 'You’re under ₦5,000, so it’s on us',
+      bal: done ? '₦4,200' : '₦3,200', next: done ? 'Tomorrow' : 'Ready now',
+      days: D.map(([d, v], i) => ({ d, v, bg: v.indexOf('+') === 0 ? c.moneySoft : (v === 'Today' ? '#C93E1C' : c.field), fg: v.indexOf('+') === 0 ? c.money : (v === 'Today' ? '#FFFFFF' : c.sub) })),
+      cta: done ? 'Claimed' : 'Claim ₦1,000', ctaBg: done ? '#0E7C47' : '#C93E1C',
+      claim: () => this.setState({ claimed: true })
+    };
+  }
+}
+</script>
+</body>
+</html>

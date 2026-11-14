@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Dyce — Chess</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800;900&amp;family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; font-family: Figtree, -apple-system, system-ui, sans-serif; color: #FFFFFF; background: radial-gradient(ellipse at 50% 30%, #2E2016, #0E0905 75%)">
+  <span style="position: absolute; inset: 0; background: radial-gradient(ellipse 80% 45% at 50% 45%, rgba(255,214,150,.22), transparent 70%)" aria-hidden="true"></span>
+  <div style="position: absolute; left: 25px; top: 200px; width: 340px; height: 340px" role="img" aria-label="Chess board, Italian opening. Your bishop is selected with three legal moves.">
+    <div style="position: absolute; inset: 0; transform: rotateX(0deg); transform-style: preserve-3d">
+      <span style="position: absolute; inset: -18px; border-radius: 14px; background: linear-gradient(135deg, #4A2812, #8A5A30 50%, #4A2812); box-shadow: 0 34px 44px rgba(0,0,0,.65), inset 0 0 0 2px rgba(255,220,170,.25)"></span>
+      <div style="position: absolute; inset: 0; display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); transform-style: preserve-3d">
+        <sc-for list="{{cells}}" as="c" hint-placeholder-count="64">
+          <div style="position: relative; aspect-ratio: 1; background: {{c.bg}}; transform-style: preserve-3d">
+            <span style="position: absolute; left: 50%; top: 50%; width: {{c.dot}}; height: {{c.dot}}; transform: translate(-50%, -50%); border-radius: 50%; background: rgba(201,62,28,.75)"></span>
+            
+            <span style="position: absolute; left: 0; right: 0; top: 50%; transform: translateY(-50%); text-align: center; font-family: 'DejaVu Serif', 'Noto Serif', Georgia, serif; font-size: 32px; line-height: 1; color: {{c.fg}}; text-shadow: {{c.ts}}">{{c.p}}</span>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+  <div style="position: absolute; left: 20px; right: 20px; top: 168px; display: flex; justify-content: space-between; font-size: 12px; font-weight: 800; opacity: .85"><span>Captured: ♟︎ ♟︎</span><span>Black · 9:41</span></div>
+  <div style="position: absolute; left: 12px; right: 12px; top: 54px; display: flex; align-items: center; justify-content: space-between">
+    <a href="Thread.dc.html" aria-label="Back to chat" style="height: 40px; padding: 0 14px; border-radius: 20px; background: rgba(255,255,255,.12); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,.16); color: #fff; font-size: 14px; font-weight: 700; display: flex; align-items: center; gap: 4px; text-decoration: none">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>Chat</a>
+    <span style="height: 30px; padding: 0 12px; border-radius: 15px; background: {{modeBg}}; box-shadow: 0 2px 0 rgba(0,0,0,.35); font-size: 12px; font-weight: 800; letter-spacing: 0.4px; display: flex; align-items: center">{{modeLabel}}</span>
+    <a href="GameMenu.dc.html" aria-label="Game menu" style="width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,.12); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,.16); display: flex; align-items: center; justify-content: center">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
+    </a>
+  </div>
+  <div style="position: absolute; left: 50%; top: 106px; transform: translateX(-50%); height: 46px; padding: 0 16px 0 12px; border-radius: 23px; background: rgba(0,0,0,.38); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,.14); display: flex; align-items: center; gap: 8px; white-space: nowrap"><div style="display: flex"><div style="margin-left: -8px; border-radius: 50%; box-shadow: 0 0 0 2px rgba(0,0,0,.4)"><dc-import name="Avatar" size="34" skin="#5C3A21" hair="#111111" hair-style="waves" bg="#8FD3FF" shirt="#1F2937" hint-size="34px,34px"></dc-import></div></div><span style="font-size: 13px; font-weight: 800">Tunde · black · thinking…</span></div>
+  <div style="position: absolute; left: 14px; right: 14px; bottom: 30px; display: flex; align-items: center; gap: 12px; padding: 10px 10px 10px 12px; border-radius: 30px; background: rgba(0,0,0,.38); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,.14)">
+    <div style="position: relative; flex-shrink: 0"><dc-import name="Avatar" size="42" skin="#8D5524" hair="#1C1714" hair-style="afro" bg="#C9B8FF" shirt="#6E4BFF" hint-size="42px,42px"></dc-import><span style="position: absolute; inset: -4px; border-radius: 50%; border: 3px solid #E3A93B; border-right-color: transparent"></span></div>
+    <div style="flex: 1; min-width: 0"><div style="font-size: 14px; font-weight: 800">Your move · white · 9:58</div><div style="font-size: 12px; opacity: .82">Bishop c4 selected · 3 moves</div></div>
+    <button style="height: 50px; padding: 0 18px; border-radius: 25px; border: none; background: #C93E1C; box-shadow: 0 4px 0 #8A2410, inset 0 2px 0 rgba(255,255,255,.25); color: #FFFFFF; font: 900 15px Figtree, sans-serif; flex-shrink: 0">Move</button>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"mode":{"editor":"enum","options":["pool","free"],"default":"pool"},"$preview":{"width":390,"height":844}}'>
+const POT='₦2,000', MULTI=false;
+function poly(pts){ return 'polygon(' + pts.map(function(p){ return p[0].toFixed(1) + 'px ' + p[1].toFixed(1) + 'px'; }).join(', ') + ')'; }
+function rnd(seed){ var x = Math.sin(seed * 9301 + 49297) * 233280; return x - Math.floor(x); }
+
+const W='#F6EBD6', B='#2A211B';
+const TSW='0 1px 0 #8C774F, 0 2px 3px rgba(0,0,0,.45)';
+const TSB='0 1px 0 #000, 0 2px 3px rgba(0,0,0,.5)';
+const G={k:'\u265A',q:'\u265B',r:'\u265C',b:'\u265D',n:'\u265E',p:'\u265F'};
+const ROWS=['r.bqk.nr','pppp.ppp','..n.....','..b.p...','..B.P...','.....N..','PPPP.PPP','RNBQK..R'];
+function scene(){
+  const dots={'1,5':1,'2,4':1,'1,1':1};
+  const cells=[];
+  ROWS.forEach(function(row,y){ row.split('').forEach(function(ch,x){
+    const light=(x+y)%2===0, sel=(y===4&&x===2), last=(y===4&&x===4)||(y===6&&x===4);
+    const p=ch==='.'?'':G[ch.toLowerCase()]+'\uFE0E', white=ch!=='.'&&ch===ch.toUpperCase();
+    cells.push({bg: sel?'#E3A93B':(last?(light?'#E9D27A':'#C2A24A'):(light?'#E8D3AE':'#9A6B42')), p:p, fg: white?W:B, ts: white?TSW:TSB, so: p?'.35':'0', dot: dots[y+','+x]?'26%':'0'});
+  }); });
+  return {cells:cells};
+}
+class Component extends DCLogic {
+  renderVals() {
+    const pool = this.props.mode !== 'free';
+    return Object.assign({ modeLabel: pool ? (MULTI ? 'SPACE POOL · ' : 'POOL · ') + POT + ' POT' : (MULTI ? 'FREE SPACE · XP' : 'FREE · +25 XP'), modeBg: pool ? '#C93E1C' : '#17834F' }, scene(this.props, this));
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Dyce — Receipt</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&amp;family=Bricolage+Grotesque:wght@600;700;800&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; padding: 54px 16px 34px; display: flex; flex-direction: column; font-family: Figtree, -apple-system, system-ui, sans-serif; background: {{c.bg2}}; color: {{c.text}}; overflow: hidden">
+  <div style="display: flex; align-items: center; height: 44px">
+    <a href="WalletHistory.dc.html" style="height: 44px; display: flex; align-items: center; gap: 2px; color: {{c.brandText}}; font-size: 17px; text-decoration: none">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>History</a>
+  </div>
+
+  <div style="margin-top: 10px; border-radius: 26px; background: {{c.card}}; padding: 24px 18px 6px; display: flex; flex-direction: column; align-items: center; text-align: center">
+    <span style="width: 64px; height: 64px; border-radius: 18px; background: #C98500; color: #fff; font-size: 20px; font-weight: 800; display: flex; align-items: center; justify-content: center">WH</span>
+    <div style="font-size: 15px; font-weight: 600; color: {{c.sub}}; margin-top: 12px">Won Word Hunt pool</div>
+    <div style="font-family: 'Bricolage Grotesque', Figtree, sans-serif; font-size: 48px; font-weight: 800; letter-spacing: -1.4px; color: {{c.money}}">+₦1,500</div>
+    <div style="display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 999px; background: {{c.moneySoft}}; color: {{c.money}}; font-size: 13px; font-weight: 700">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Paid out</div>
+
+    <div style="width: 100%; margin-top: 20px; border-top: 2px dashed {{c.line}}; text-align: left">
+      <sc-for list="{{rows}}" as="r" hint-placeholder-count="7">
+        <div style="display: flex; justify-content: space-between; gap: 12px; padding: 12px 0; border-bottom: 1px solid {{c.line}}; font-size: 14px">
+          <span style="color: {{c.sub}}">{{r.k}}</span><span style="font-weight: 600; text-align: right">{{r.v}}</span>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 14px">
+    <a href="Thread.dc.html" style="height: 50px; border-radius: 14px; background: {{c.card}}; color: {{c.text}}; font-size: 15px; font-weight: 700; display: flex; align-items: center; justify-content: center; text-decoration: none">Open the game</a>
+    <button style="height: 50px; border-radius: 14px; border: none; background: {{c.card}}; color: {{c.text}}; font: 700 15px Figtree, sans-serif">Share result</button>
+  </div>
+  <a href="Dispute.dc.html" style="margin-top: auto; text-align: center; padding: 12px; font-size: 14px; font-weight: 600; color: {{c.brandText}}; text-decoration: none">Something wrong with this game?</a>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"$preview":{"width":390,"height":844}}'>
+const T={light:{bg2:'#F2ECE3',card:'#FFFFFF',text:'#1B140F',sub:'#6F655B',line:'#E6DDD0',brandText:'#B33416',money:'#0E7C47',moneySoft:'#E3F6EA'},dark:{bg2:'#0F0D0B',card:'#1D1916',text:'#F7F1E8',sub:'#ABA196',line:'#2E2823',brandText:'#FF8F6B',money:'#3DDC84',moneySoft:'#11301F'}};
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      c: T[this.props.theme === 'dark' ? 'dark' : 'light'],
+      rows: [
+        { k: 'Opponent', v: 'Tunde Bakare · @tundeb' },
+        { k: 'Result', v: 'You 46 · Tunde 39' },
+        { k: 'Your stake', v: '₦1,500 (returned)' },
+        { k: 'Tunde’s stake', v: '₦1,500' },
+        { k: 'Pot', v: '₦3,000 · Dyce fee ₦0' },
+        { k: 'Date', v: 'Sat 14 Nov 2026, 4:05 PM' },
+        { k: 'Reference', v: 'DY-TX-8F2K-91QA' }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

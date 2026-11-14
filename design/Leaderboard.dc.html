@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Dyce — Leaderboard</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&amp;family=Bricolage+Grotesque:wght@600;700;800&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; padding-top: 54px; display: flex; flex-direction: column; font-family: Figtree, -apple-system, system-ui, sans-serif; background: {{c.bg}}; color: {{c.text}}; overflow: hidden">
+  <div style="display: flex; align-items: center; justify-content: space-between; height: 44px; padding: 0 12px">
+    <a href="Space.dc.html" style="height: 44px; display: flex; align-items: center; gap: 2px; color: {{c.brandText}}; font-size: 17px; text-decoration: none">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>Space</a>
+    <span style="font-size: 13px; color: {{c.sub}}; font-weight: 600">Resets Monday · 2d 14h</span>
+  </div>
+  <h1 style="margin: 2px 16px 10px; font-family: 'Bricolage Grotesque', Figtree, sans-serif; font-size: 32px; font-weight: 700; letter-spacing: -0.6px">This week</h1>
+
+  <div style="margin: 0 16px; padding: 3px; border-radius: 12px; background: {{c.field}}; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 3px">
+    <sc-for list="{{scopes}}" as="s" hint-placeholder-count="3">
+      <button onClick="{{s.pick}}" style="height: 34px; border-radius: 9px; border: none; font: 600 14px Figtree, sans-serif; background: {{s.bgc}}; color: {{c.text}}">{{s.label}}</button>
+    </sc-for>
+  </div>
+  <div style="display: flex; gap: 8px; padding: 10px 16px 0">
+    <button onClick="{{toFree}}" style="height: 32px; padding: 0 12px; border-radius: 16px; border: none; font: 700 13px Figtree, sans-serif; background: {{m.freeBg}}; color: {{m.freeFg}}">Free · XP</button>
+    <button onClick="{{toPool}}" style="height: 32px; padding: 0 12px; border-radius: 16px; border: none; font: 700 13px Figtree, sans-serif; background: {{m.poolBg}}; color: {{m.poolFg}}">Pool · net winnings</button>
+  </div>
+
+  <div style="display: flex; align-items: flex-end; justify-content: center; gap: 10px; padding: 18px 16px 0">
+    <sc-for list="{{podium}}" as="p" hint-placeholder-count="3">
+      <div style="width: 108px; display: flex; flex-direction: column; align-items: center; gap: 6px">
+        <dc-import name="Avatar" size="{{p.size}}" skin="{{p.skin}}" hair="{{p.hair}}" hair-style="{{p.hs}}" bg="{{p.bg}}" shirt="{{p.shirt}}" hint-size="64px,64px"></dc-import>
+        <span style="font-size: 14px; font-weight: 700">{{p.name}}</span>
+        <span style="font-size: 13px; font-weight: 800; color: {{p.valColor}}">{{p.val}}</span>
+        <div style="width: 100%; height: {{p.h}}; border-radius: 14px 14px 0 0; background: {{p.block}}; color: #fff; font-family: 'Bricolage Grotesque', Figtree, sans-serif; font-size: 28px; font-weight: 800; display: flex; align-items: flex-start; justify-content: center; padding-top: 8px; box-sizing: border-box">{{p.rank}}</div>
+      </div>
+    </sc-for>
+  </div>
+
+  <div style="flex: 1; overflow: hidden; padding: 0 16px; border-top: 1px solid {{c.line}}">
+    <sc-for list="{{rest}}" as="r" hint-placeholder-count="4">
+      <div style="display: flex; align-items: center; gap: 12px; height: 58px; border-bottom: 1px solid {{c.line}}">
+        <span style="width: 22px; font-size: 15px; font-weight: 800; color: {{c.sub}}">{{r.rank}}</span>
+        <dc-import name="Avatar" size="38" skin="{{r.skin}}" hair="{{r.hair}}" hair-style="{{r.hs}}" bg="{{r.bg}}" shirt="{{r.shirt}}" hint-size="38px,38px"></dc-import>
+        <span style="flex: 1; font-size: 15px; font-weight: 600">{{r.name}}</span>
+        <span style="font-size: 14px; font-weight: 700; color: {{r.valColor}}">{{r.val}}</span>
+      </div>
+    </sc-for>
+  </div>
+
+  <div style="margin: 0 12px 34px; display: flex; align-items: center; gap: 12px; height: 62px; padding: 0 14px; border-radius: 18px; background: #C93E1C; color: #fff">
+    <span style="font-size: 15px; font-weight: 800; width: 26px">{{me.rank}}</span>
+    <dc-import name="Avatar" size="38" skin="#8D5524" hair="#1C1714" hair-style="afro" bg="#C9B8FF" shirt="#8A2410" hint-size="38px,38px"></dc-import>
+    <div style="flex: 1"><div style="font-size: 15px; font-weight: 700">You</div><div style="font-size: 12px; opacity: .9">{{me.note}}</div></div>
+    <span style="font-size: 15px; font-weight: 800">{{me.val}}</span>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"$preview":{"width":390,"height":844}}'>
+const T={light:{bg:'#FBF8F3',text:'#1B140F',sub:'#6F655B',line:'#E6DDD0',field:'#EEE7DC',card:'#FFFFFF',brandText:'#B33416',brandSoft:'#FBE7DF',money:'#0E7C47',freeSoft:'#E3F6EA'},
+dark:{bg:'#0F0D0B',text:'#F7F1E8',sub:'#ABA196',line:'#2E2823',field:'#1D1916',card:'#2E2823',brandText:'#FF8F6B',brandSoft:'#3A170C',money:'#3DDC84',freeSoft:'#11301F'}};
+const PPL=[
+ ['Zainab',{skin:'#C68642',hair:'#2A1A12',hs:'long',bg:'#B8F2C8',shirt:'#C93E1C'},640,12500],
+ ['Tunde',{skin:'#5C3A21',hair:'#111111',hs:'waves',bg:'#8FD3FF',shirt:'#1F2937'},380,18000],
+ ['You',{skin:'#8D5524',hair:'#1C1714',hs:'afro',bg:'#C9B8FF',shirt:'#C93E1C'},430,9000],
+ ['Amaka',{skin:'#8D5524',hair:'#1C1714',hs:'bun',bg:'#FFC857',shirt:'#E0453A'},415,9500],
+ ['Ifeoma',{skin:'#A0662F',hair:'#3B2219',hs:'afro',bg:'#FFB4C6',shirt:'#0E9F6E'},300,4500],
+ ['Dayo',{skin:'#F1C27D',hair:'#7A4A2A',hs:'short',bg:'#C9B8FF',shirt:'#FFB020'},210,-2000],
+ ['Femi',{skin:'#8D5524',hair:'#B7412E',hs:'short',bg:'#ECE4D8',shirt:'#0E9F6E'},150,-3500]
+];
+class Component extends DCLogic {
+  constructor(p){ super(p); this.state = { scope: 'friends', metric: 'free' }; }
+  renderVals() {
+    const c = T[this.props.theme === 'dark' ? 'dark' : 'light'];
+    const pool = this.state.metric === 'pool';
+    const fmt = (n) => (n < 0 ? '−₦' : '+₦') + Math.abs(n).toLocaleString('en-NG');
+    const list = PPL.slice().sort((a, b) => pool ? b[3] - a[3] : b[2] - a[2]).map(([name, a, xp, cash], i) => Object.assign({ name, rank: String(i + 1), val: pool ? fmt(cash) : xp + ' XP', valColor: pool ? (cash < 0 ? c.sub : c.money) : c.text }, a));
+    const order = [1, 0, 2], H = ['92px', '64px', '48px'], S = ['72', '60', '56'], BL = ['#B37A00', '#7C8597', '#A0582E'];
+    return {
+      c,
+      scopes: [['friends','Friends'],['lagos','Lagos'],['ng','Nigeria']].map(([id, label]) => ({ label, bgc: this.state.scope === id ? c.card : 'transparent', pick: () => this.setState({ scope: id }) })),
+      m: { freeBg: pool ? c.field : c.freeSoft, freeFg: pool ? c.text : c.money, poolBg: pool ? c.brandSoft : c.field, poolFg: pool ? c.brandText : c.text },
+      toFree: () => this.setState({ metric: 'free' }), toPool: () => this.setState({ metric: 'pool' }),
+      podium: order.map((i) => Object.assign({}, list[i], { h: H[i], size: S[i], block: BL[i] })),
+      rest: list.slice(3),
+      me: (function(){ const i = list.findIndex((x) => x.name === 'You'); const above = list[i - 1]; return { rank: String(i + 1), val: list[i].val, note: above ? (pool ? '₦' + (PPL.find((x)=>x[0]===above.name)[3] - 9000).toLocaleString('en-NG') + ' behind ' + above.name : (PPL.find((x)=>x[0]===above.name)[2] - 430) + ' XP behind ' + above.name) : 'Top of the board' }; })()
+    };
+  }
+}
+</script>
+</body>
+</html>

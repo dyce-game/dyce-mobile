@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Dyce — Can't join this pool</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&amp;family=Bricolage+Grotesque:wght@600;700;800&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; font-family: Figtree, -apple-system, system-ui, sans-serif; color: {{k.text}}; background: {{k.card}}">
+  <div style="position: absolute; inset: 0" aria-hidden="true">
+    <dc-import name="PoolInvite" theme="{{k.name}}" hint-size="390px,844px"></dc-import>
+  </div>
+  <div style="position: absolute; inset: 0; background: rgba(0,0,0,.4)"></div>
+
+  <section aria-label="{{v.title}}" style="position: absolute; left: 0; right: 0; bottom: 0; border-radius: 26px 26px 0 0; background: {{k.card}}; padding: 8px 18px 34px">
+    <div style="width: 40px; height: 5px; border-radius: 3px; background: {{k.line}}; margin: 0 auto"></div>
+    <div style="display: flex; align-items: center; gap: 12px; margin-top: 16px">
+      <span style="width: 48px; height: 48px; border-radius: 14px; background: {{v.iconBg}}; color: #fff; font-size: 20px; font-weight: 800; display: flex; align-items: center; justify-content: center">{{v.icon}}</span>
+      <div style="flex: 1">
+        <div style="font-family: 'Bricolage Grotesque', Figtree, sans-serif; font-size: 22px; font-weight: 800; letter-spacing: -0.3px">{{v.title}}</div>
+        <div style="font-size: 14px; color: {{k.sub}}">{{v.sub}}</div>
+      </div>
+    </div>
+
+    <div style="margin-top: 16px; border-radius: 18px; background: {{k.bg2}}; padding: 14px">
+      <div style="display: flex; justify-content: space-between; font-size: 14px"><span style="color: {{k.sub}}">{{v.k1}}</span><b>{{v.v1}}</b></div>
+      <div style="height: 10px; border-radius: 5px; background: {{k.line}}; margin: 10px 0; overflow: hidden"><div style="width: {{v.bar}}; height: 100%; border-radius: 5px; background: {{v.barColor}}"></div></div>
+      <div style="display: flex; justify-content: space-between; font-size: 14px"><span style="color: {{k.sub}}">{{v.k2}}</span><b>{{v.v2}}</b></div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 14px">
+      <sc-for list="{{v.options}}" as="o" hint-placeholder-count="3">
+        <button style="height: 58px; border-radius: 16px; border: {{o.border}}; background: {{o.bg}}; color: {{o.fg}}; padding: 0 16px; display: flex; align-items: center; justify-content: space-between; font-family: Figtree, sans-serif; text-align: left">
+          <span><span style="display: block; font-size: 15px; font-weight: 700">{{o.t}}</span><span style="display: block; font-size: 12px; opacity: .8">{{o.d}}</span></span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
+        </button>
+      </sc-for>
+    </div>
+    <div style="font-size: 12px; color: {{k.sub}}; text-align: center; margin-top: 12px">{{v.foot}}</div>
+  </section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"variant":{"editor":"enum","options":["lowBalance","limit"],"default":"lowBalance"},"$preview":{"width":390,"height":844}}'>
+const P={bg:'#C93E1C',fg:'#FFFFFF',border:'none'}, S={bg:'#FBF8F3',fg:'#1B140F',border:'1px solid #E6DDD0'}, F={bg:'#E3F6EA',fg:'#08402A',border:'none'};
+const O=(t,d,s)=>Object.assign({t,d},s);
+const V={
+  lowBalance:{icon:'₦',iconBg:'#C2410C',title:'Not enough Dyce Cash',sub:'Tunde’s pool needs ₦1,000 from you',k1:'Your balance',v1:'₦650',bar:'65%',barColor:'#FF7A1A',k2:'Needed',v2:'₦1,000',
+    options:[O('Claim daily top-up','+₦1,000 now · you’re under ₦5,000',P),O('Counter at ₦500','Tunde gets your offer as a message',S),O('Play this one free','No cash moves, still earns XP',F)],
+    foot:'Dyce Cash can’t be bought. It only comes from wins, friends and the daily top-up.'},
+  limit:{icon:'!',iconBg:'#B33416',title:'Daily pool limit reached',sub:'You set ₦20,000 a day. Resets at midnight.',k1:'Staked today',v1:'₦20,000',bar:'100%',barColor:'#C93E1C',k2:'Resets in',v2:'4h 19m',
+    options:[O('Play this one free','No cash moves, still earns XP',F),O('Save it for tomorrow','Tunde gets a note, the invite stays 24h',S),O('Change my limit','Increases take effect after 24 hours',S)],
+    foot:'Lowering the limit is instant. Raising it waits a day on purpose.'}
+};
+const KT={light:{name:'light',card:'#FFFFFF',text:'#1B140F',sub:'#62584E',bg2:'#F2ECE3',field:'#EEE7DC',line:'#E6DDD0'},dark:{name:'dark',card:'#1D1916',text:'#F7F1E8',sub:'#ABA196',bg2:'#2A2420',field:'#2A2420',line:'#2E2823'}};
+class Component extends DCLogic {
+  renderVals() { return Object.assign({ k: KT[this.props.theme === 'dark' ? 'dark' : 'light'] }, this.rv()); }
+  rv() { return { v: V[this.props.variant] || V.lowBalance }; }
+}
+</script>
+</body>
+</html>

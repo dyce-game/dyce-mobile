@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Dyce — In-game problems</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&amp;family=Bricolage+Grotesque:wght@600;700;800&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; font-family: Figtree, -apple-system, system-ui, sans-serif; color: {{k.text}}; background: #0E1512">
+  <div style="position: absolute; inset: 0" aria-hidden="true">
+    <dc-import name="Play8Ball" mode="pool" hint-size="390px,844px"></dc-import>
+  </div>
+  <div style="position: absolute; inset: 0; background: rgba(5,8,7,.62)"></div>
+
+  <sc-if value="{{isCard}}" hint-placeholder-val="{{true}}">
+    <div style="position: absolute; left: 24px; right: 24px; top: 230px; border-radius: 28px; background: {{k.card}}; padding: 24px 20px 20px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px">
+      <div style="position: relative; width: 96px; height: 96px; display: flex; align-items: center; justify-content: center">
+        <span style="position: absolute; inset: 0; border-radius: 50%; background: conic-gradient({{v.ring}} 0 {{v.pct}}, #E9E9EE {{v.pct}})"></span>
+        <span style="position: absolute; inset: 6px; border-radius: 50%; background: #fff"></span>
+        <sc-if value="{{v.avatar}}" hint-placeholder-val="{{true}}">
+          <div style="position: relative; opacity: .6">
+            <dc-import name="Avatar" size="76" skin="#8D5524" hair="#1C1714" hair-style="bun" bg="#FFC857" shirt="#E0453A" hint-size="76px,76px"></dc-import>
+          </div>
+        </sc-if>
+        <sc-if value="{{v.count}}" hint-placeholder-val="{{false}}">
+          <span style="position: relative; font-family: 'Bricolage Grotesque', Figtree, sans-serif; font-size: 40px; font-weight: 800; color: {{v.ring}}">{{v.num}}</span>
+        </sc-if>
+      </div>
+      <div style="font-family: 'Bricolage Grotesque', Figtree, sans-serif; font-size: 24px; font-weight: 800; letter-spacing: -0.3px; margin-top: 6px">{{v.title}}</div>
+      <div style="font-size: 15px; line-height: 1.45; color: {{k.sub}}">{{v.body}}</div>
+      <div style="display: inline-flex; align-items: center; gap: 6px; margin-top: 4px; padding: 6px 12px; border-radius: 999px; background: #FBE7DF; color: #B33416; font-size: 13px; font-weight: 700">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>{{v.pot}}</div>
+      <div style="width: 100%; display: flex; flex-direction: column; gap: 8px; margin-top: 12px">
+        <button style="height: 50px; border-radius: 14px; border: none; background: {{v.primaryBg}}; color: #fff; font: 700 16px Figtree, sans-serif">{{v.primary}}</button>
+        <sc-if value="{{v.secondary}}" hint-placeholder-val="{{true}}">
+          <button style="height: 46px; border-radius: 14px; border: none; background: {{k.field}}; color: {{k.text}}; font: 600 15px Figtree, sans-serif">{{v.secondary}}</button>
+        </sc-if>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{isMenu}}" hint-placeholder-val="{{false}}">
+    <section aria-label="Game menu" style="position: absolute; left: 0; right: 0; bottom: 0; border-radius: 26px 26px 0 0; background: {{k.card}}; padding: 8px 16px 34px">
+      <div style="width: 40px; height: 5px; border-radius: 3px; background: {{k.line}}; margin: 0 auto"></div>
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 14px">
+        <div><div style="font-size: 18px; font-weight: 800">Game paused for you</div><div style="font-size: 13px; color: {{k.sub}}">Your timer keeps running · 0:24 left</div></div>
+        <span style="padding: 4px 10px; border-radius: 999px; background: #C93E1C; color: #fff; font-size: 12px; font-weight: 800">POOL ₦2,000</span>
+      </div>
+      <div style="margin-top: 14px; border-radius: 18px; background: {{k.bg2}}; overflow: hidden">
+        <sc-for list="{{menu}}" as="m" hint-placeholder-count="5">
+          <button style="width: 100%; height: 54px; border: none; border-bottom: 1px solid {{k.line}}; background: none; padding: 0 14px; display: flex; align-items: center; gap: 12px; font: 600 15px Figtree, sans-serif; color: {{m.fg}}; text-align: left">
+            <span style="width: 30px; height: 30px; border-radius: 9px; background: {{m.bg}}; color: #fff; font-size: 12px; font-weight: 800; display: flex; align-items: center; justify-content: center">{{m.i}}</span>
+            <span style="flex: 1">{{m.t}}</span>
+            <span style="font-size: 13px; font-weight: 500; color: {{k.sub}}">{{m.v}}</span>
+          </button>
+        </sc-for>
+      </div>
+      <button style="width: 100%; margin-top: 12px; height: 52px; border-radius: 16px; border: none; background: #C93E1C; color: #fff; font: 700 16px Figtree, sans-serif">Back to the table</button>
+    </section>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"variant":{"editor":"enum","options":["reconnecting","offline","forfeit","menu"],"default":"reconnecting"},"$preview":{"width":390,"height":844}}'>
+const V={
+  reconnecting:{avatar:true,count:false,ring:'#FF7A1A',pct:'62%',num:'',title:'Amaka lost connection',body:'Waiting up to 60 seconds for her to come back. If she doesn’t, you win the pot.',pot:'₦2,000 pot is safe',primary:'Wait · 0:37',primaryBg:'#C93E1C',secondary:'Message Amaka'},
+  offline:{avatar:false,count:true,ring:'#0067D6',pct:'40%',num:'2',title:'You’re offline',body:'Reconnecting… your move is saved. You get one grace period per game, so this one won’t count against you.',pot:'Grace period: 0:48 left',primary:'Retry now',primaryBg:'#0067D6',secondary:false},
+  forfeit:{avatar:false,count:true,ring:'#E0453A',pct:'80%',num:'8',title:'Come back or forfeit',body:'You left the game. In 8 seconds Amaka wins the pot and the game ends.',pot:'₦2,000 at stake',primary:'I’m back',primaryBg:'#E0453A',secondary:'Forfeit now'}
+};
+const KT={light:{name:'light',card:'#FFFFFF',text:'#1B140F',sub:'#62584E',bg2:'#F2ECE3',field:'#EEE7DC',line:'#E6DDD0'},dark:{name:'dark',card:'#1D1916',text:'#F7F1E8',sub:'#ABA196',bg2:'#2A2420',field:'#2A2420',line:'#2E2823'}};
+class Component extends DCLogic {
+  renderVals() { return Object.assign({ k: KT[this.props.theme === 'dark' ? 'dark' : 'light'] }, this.rv()); }
+  rv() {
+    const k = this.props.variant || 'reconnecting';
+    const menu = k === 'menu';
+    return {
+      isCard: !menu, isMenu: menu,
+      v: V[k] || V.reconnecting,
+      menu: [
+        { i: 'Aa', t: 'Mute chat reactions', v: 'Off', bg: '#B33416', fg: '#1B140F' },
+        { i: '♪', t: 'Sound and haptics', v: 'On', bg: '#0E7C47', fg: '#1B140F' },
+        { i: '?', t: 'How to play 8 Ball', v: '', bg: '#2457D6', fg: '#1B140F' },
+        { i: '!', t: 'Report Amaka', v: '', bg: '#C2410C', fg: '#1B140F' },
+        { i: '×', t: 'Resign and lose ₦1,000', v: '', bg: '#C4314B', fg: '#C4314B' }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Dyce — How pools work</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&amp;family=Bricolage+Grotesque:wght@600;700;800&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; padding-top: 54px; display: flex; flex-direction: column; font-family: Figtree, -apple-system, system-ui, sans-serif; background: {{c.bg}}; color: {{c.text}}; overflow: hidden">
+  <div style="display: flex; align-items: center; height: 44px; padding: 0 12px">
+    <a href="ModeSheet.dc.html" style="height: 44px; display: flex; align-items: center; gap: 2px; color: {{c.brandText}}; font-size: 17px; text-decoration: none">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>Back</a>
+  </div>
+  <h1 style="margin: 4px 16px 4px; font-family: 'Bricolage Grotesque', Figtree, sans-serif; font-size: 30px; font-weight: 700; letter-spacing: -0.5px">Free vs Pool</h1>
+  <p style="margin: 0 16px 12px; font-size: 14px; line-height: 1.45; color: {{c.sub}}">Every game has both modes. You pick when you send it.</p>
+
+  <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin: 0 16px">
+    <div style="border-radius: 18px; padding: 12px; background: {{c.freeSoft}}">
+      <div style="font-size: 15px; font-weight: 800; color: {{c.free}}">Free</div>
+      <div style="font-size: 12px; line-height: 1.5; margin-top: 4px">XP, streaks, badges, friends leaderboard. Unlimited. Works at ₦0.</div>
+    </div>
+    <div style="border-radius: 18px; padding: 12px; background: {{c.brandSoft}}">
+      <div style="font-size: 15px; font-weight: 800; color: {{c.brandText}}">Pool</div>
+      <div style="font-size: 12px; line-height: 1.5; margin-top: 4px">Equal stakes in, winner takes the pot. Also earns XP.</div>
+    </div>
+  </div>
+
+  <div style="flex: 1; overflow: hidden; margin: 12px 16px 0; border-radius: 20px; background: {{c.bg2}}; padding: 2px 14px">
+    <sc-for list="{{rules}}" as="r" hint-placeholder-count="6">
+      <div style="display: flex; gap: 12px; padding: 10px 0; border-bottom: 1px solid {{c.line}}">
+        <span style="width: 30px; height: 30px; border-radius: 9px; background: {{r.bg}}; color: #fff; font-size: 13px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0">{{r.n}}</span>
+        <div>
+          <div style="font-size: 14px; font-weight: 700">{{r.t}}</div>
+          <div style="font-size: 12px; line-height: 1.45; color: {{c.sub}}">{{r.d}}</div>
+        </div>
+      </div>
+    </sc-for>
+  </div>
+
+  <div style="margin: 12px 16px 34px; border-radius: 20px; background: {{c.bg2}}; overflow: hidden">
+    <div style="display: flex; align-items: center; justify-content: space-between; padding: 0 14px; height: 52px; border-bottom: 1px solid {{c.line}}">
+      <span style="font-size: 15px; font-weight: 600">Daily pool limit</span>
+      <span style="font-size: 15px; font-weight: 700; color: {{c.brandText}}">₦20,000 ›</span>
+    </div>
+    <div style="display: flex; align-items: center; justify-content: space-between; padding: 0 14px; height: 52px">
+      <div>
+        <div style="font-size: 15px; font-weight: 600">Free-only mode</div>
+        <div style="font-size: 12px; color: {{c.sub}}">Hide pools everywhere, decline pool invites</div>
+      </div>
+      <button onClick="{{toggle}}" role="switch" aria-checked="{{onStr}}" aria-label="Free-only mode" style="width: 52px; height: 32px; border-radius: 16px; border: none; padding: 3px; background: {{track}}; display: flex; justify-content: {{justify}}; flex-shrink: 0">
+        <span style="width: 26px; height: 26px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.25)"></span>
+      </button>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"$preview":{"width":390,"height":844}}'>
+const T={light:{bg:'#FBF8F3',bg2:'#F2ECE3',text:'#1B140F',sub:'#6F655B',line:'#E6DDD0',brandText:'#B33416',brandSoft:'#FBE7DF',free:'#0E7C47',freeSoft:'#E3F6EA',off:'#D8CEC1'},
+dark:{bg:'#0F0D0B',bg2:'#1D1916',text:'#F7F1E8',sub:'#ABA196',line:'#2E2823',brandText:'#FF8F6B',brandSoft:'#3A170C',free:'#3DDC84',freeSoft:'#11301F',off:'#4A423A'}};
+class Component extends DCLogic {
+  constructor(p){ super(p); this.state = { freeOnly: false }; }
+  renderVals() {
+    const c = T[this.props.theme === 'dark' ? 'dark' : 'light'];
+    const on = this.state.freeOnly;
+    const V = '#C93E1C';
+    return {
+      c, onStr: on ? 'true' : 'false', track: on ? '#2BB673' : c.off, justify: on ? 'flex-end' : 'flex-start',
+      toggle: () => this.setState({ freeOnly: !on }),
+      rules: [
+        { n: '1', bg: V, t: 'Your stake locks when you send', d: 'It sits in the pot, not with the other player. Stakes run from ₦100 to ₦50,000.' },
+        { n: '2', bg: V, t: 'They match, counter, or go free', d: 'Nothing leaves their wallet until they match. Not answered in 24h? You get yours back.' },
+        { n: '3', bg: V, t: 'Winner takes the pot', d: 'Draws split it evenly. Dyce takes no cut.' },
+        { n: '4', bg: V, t: 'Spaces can split the pot', d: 'Winner takes all, 70 / 30, or 50 / 30 / 20 for the top three. Host picks before anyone pays in.' },
+        { n: '5', bg: '#C2410C', t: 'Leaving counts as a forfeit', d: 'Gone for 60 seconds mid-game and the pot goes to your opponent. A bad network gets one reconnect grace.' },
+        { n: '6', bg: '#0E7C47', t: 'Running low?', d: 'Under ₦5,000 you get a free daily top-up of ₦1,000, and free games are always open.' }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

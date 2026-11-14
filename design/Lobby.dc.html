@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Dyce — Space lobby</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&amp;family=Bricolage+Grotesque:wght@600;700;800&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; padding: 54px 0 34px; display: flex; flex-direction: column; font-family: Figtree, -apple-system, system-ui, sans-serif; background: {{c.bg}}; color: {{c.text}}">
+  <div style="display: flex; align-items: center; justify-content: space-between; height: 44px; padding: 0 12px">
+    <a href="Chats.dc.html" aria-label="Leave lobby" style="width: 44px; height: 44px; display: flex; align-items: center; color: {{c.text}}">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
+    </a>
+    <div style="text-align: center">
+      <div style="font-size: 17px; font-weight: 600">Sunday Game Night</div>
+      <div style="font-size: 12px; color: {{c.sub}}">Friends only · you're the host</div>
+    </div>
+    <button aria-label="Space settings" style="width: 44px; height: 44px; border: none; background: none; color: {{c.text}}; padding: 0; display: flex; align-items: center; justify-content: flex-end">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
+    </button>
+  </div>
+
+  <div style="margin: 10px 16px 0; border-radius: 24px; padding: 18px; background: radial-gradient(circle at 80% 20%, #F06A3A, #B23A12); color: #fff; display: flex; align-items: center; gap: 14px">
+    <div style="position: relative; width: 74px; height: 70px; flex-shrink: 0" aria-hidden="true">
+      <span style="position: absolute; left: 4px; top: 6px; width: 38px; height: 56px; border-radius: 8px; background: #FFC857; transform: rotate(-14deg); box-shadow: 0 2px 6px rgba(0,0,0,.25)"></span>
+      <span style="position: absolute; left: 22px; top: 2px; width: 38px; height: 56px; border-radius: 8px; background: #2BB673; transform: rotate(0deg); box-shadow: 0 2px 6px rgba(0,0,0,.25)"></span>
+      <span style="position: absolute; left: 38px; top: 6px; width: 38px; height: 56px; border-radius: 8px; background: #fff; color: #B23A12; transform: rotate(14deg); box-shadow: 0 2px 6px rgba(0,0,0,.25); display: flex; align-items: center; justify-content: center; font-weight: 800">+4</span>
+    </div>
+    <div style="flex: 1">
+      <div style="font-size: 20px; font-weight: 800; font-family: 'Bricolage Grotesque', Figtree, sans-serif">Crazy Cards</div>
+      <div style="font-size: 13px; opacity: .95">4 seats · ₦500 entry</div>
+      <div style="margin-top: 6px; display: inline-flex; padding: 4px 10px; border-radius: 999px; background: rgba(0,0,0,.28); font-size: 13px; font-weight: 700">Pool ₦2,000</div>
+    </div>
+  </div>
+
+  <div style="margin: 14px 16px 0; display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 14px; background: {{c.bg2}}">
+    <div style="flex: 1">
+      <div style="font-size: 12px; color: {{c.sub}}; font-weight: 600">Space code</div>
+      <div style="font-size: 18px; font-weight: 800; letter-spacing: 2px">DY-4K9P</div>
+    </div>
+    <button style="height: 40px; padding: 0 14px; border-radius: 12px; border: none; background: {{c.brandSoft}}; color: {{c.brandText}}; font: 700 14px Figtree, sans-serif">Share link</button>
+  </div>
+
+  <div style="margin: 16px 16px 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
+    <sc-for list="{{seats}}" as="s" hint-placeholder-count="4">
+      <div style="border-radius: 20px; padding: 14px 10px; background: {{c.bg2}}; display: flex; flex-direction: column; align-items: center; gap: 6px; border: 2px solid {{s.ring}}">
+        <sc-if value="{{s.filled}}" hint-placeholder-val="{{true}}">
+          <dc-import name="Avatar" size="64" skin="{{s.skin}}" hair="{{s.hair}}" hair-style="{{s.hs}}" bg="{{s.bg}}" shirt="{{s.shirt}}" glasses="{{s.glasses}}" hint-size="64px,64px"></dc-import>
+          <div style="font-size: 15px; font-weight: 600">{{s.name}}</div>
+          <div style="font-size: 12px; font-weight: 700; color: {{s.stColor}}">{{s.status}}</div>
+        </sc-if>
+        <sc-if value="{{s.empty}}" hint-placeholder-val="{{false}}">
+          <div style="width: 64px; height: 64px; border-radius: 50%; border: 2px dashed {{c.line}}; display: flex; align-items: center; justify-content: center; color: {{c.sub}}">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+          </div>
+          <div style="font-size: 15px; font-weight: 600; color: {{c.sub}}">Open seat</div>
+          <button style="height: 30px; padding: 0 12px; border-radius: 999px; border: none; background: #C93E1C; color: #fff; font: 700 12px Figtree, sans-serif">Invite</button>
+        </sc-if>
+      </div>
+    </sc-for>
+  </div>
+
+  <div style="margin: 14px 16px 0; flex: 1; display: flex; flex-direction: column; justify-content: flex-end; gap: 6px; overflow: hidden">
+    <div style="align-self: flex-start; padding: 8px 12px; border-radius: 18px; border-bottom-left-radius: 6px; background: {{c.recv}}; font-size: 15px"><b style="font-size: 12px; display: block; color: {{c.sub}}">Amaka</b>no +4 stacking tonight abeg</div>
+    <div style="align-self: flex-end; padding: 8px 12px; border-radius: 18px; border-bottom-right-radius: 6px; background: #C93E1C; color: #fff; font-size: 15px">stacking is the whole game</div>
+  </div>
+
+  <div style="padding: 12px 16px 0; display: flex; flex-direction: column; gap: 6px">
+    <button style="height: 54px; border-radius: 16px; border: none; background: #C93E1C; color: #fff; font: 700 17px Figtree, sans-serif">Start with 3 players</button>
+    <div style="font-size: 12px; color: {{c.sub}}; text-align: center">Unfilled seats are refunded to the pool</div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"$preview":{"width":390,"height":844}}'>
+const T={light:{bg:'#FBF8F3',bg2:'#F2ECE3',card:'#FFFFFF',text:'#1B140F',sub:'#6F655B',line:'#CFCFD6',recv:'#ECE4D8',field:'#EEE7DC',brand:'#C93E1C',brandText:'#B33416',brandSoft:'#FBE7DF',money:'#0E7C47',moneySoft:'#E3F6EA',ink:'#1B140F',inkText:'#FFFFFF',wait:'#9A5B00'},
+dark:{bg:'#0F0D0B',bg2:'#1D1916',card:'#1D1916',text:'#F7F1E8',sub:'#ABA196',line:'#4A423A',recv:'#2A2420',field:'#1D1916',brand:'#C93E1C',brandText:'#FF8F6B',brandSoft:'#3A170C',money:'#3DDC84',moneySoft:'#11301F',ink:'#F7F1E8',inkText:'#1B140F',wait:'#FFC857'}};
+class Component extends DCLogic {
+  renderVals() {
+    const c = T[this.props.theme === 'dark' ? 'dark' : 'light'];
+    const f = (o) => Object.assign({ filled: true, empty: false, ring: 'transparent', glasses: 'false' }, o);
+    return {
+      c,
+      seats: [
+        f({ name: 'You', status: 'Host · Ready', stColor: c.money, skin: '#8D5524', hair: '#1C1714', hs: 'afro', bg: '#FFC857', shirt: '#C93E1C', ring: '#C93E1C' }),
+        f({ name: 'Amaka', status: 'Ready', stColor: c.money, skin: '#8D5524', hair: '#1C1714', hs: 'bun', bg: '#FFC857', shirt: '#E0453A' }),
+        f({ name: 'Ifeoma', status: 'Paying entry…', stColor: c.wait, skin: '#A0662F', hair: '#3B2219', hs: 'afro', bg: '#FFB4C6', shirt: '#0E9F6E' }),
+        { filled: false, empty: true, ring: 'transparent' }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

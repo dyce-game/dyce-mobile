@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Dyce — Wallet</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&amp;family=Bricolage+Grotesque:wght@600;700;800&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; padding-top: 54px; display: flex; flex-direction: column; font-family: Figtree, -apple-system, system-ui, sans-serif; background: {{c.bg}}; color: {{c.text}}; position: relative; overflow: hidden">
+  <div style="display: flex; align-items: center; justify-content: space-between; padding: 0 16px; height: 48px; flex-shrink: 0">
+    <a href="Profile.dc.html" aria-label="My profile and notifications" style="position: relative; display: flex; border-radius: 50%; box-shadow: 0 0 0 2px {{c.bg}}, 0 0 0 4px #C93E1C">
+      <dc-import name="Avatar" size="38" skin="#8D5524" hair="#1C1714" hair-style="afro" bg="#C9B8FF" shirt="#6E4BFF" hint-size="38px,38px"></dc-import>
+      <span style="position: absolute; right: -4px; top: -4px; min-width: 16px; height: 16px; padding: 0 4px; box-sizing: border-box; border-radius: 8px; background: #C93E1C; border: 2px solid {{c.bg}}; color: #fff; font-size: 9px; font-weight: 900; display: flex; align-items: center; justify-content: center">2</span>
+    </a>
+    <a href="TopUp.dc.html" style="height: 36px; padding: 0 14px; border-radius: 18px; background: {{c.field}}; color: {{c.text}}; font-size: 14px; font-weight: 800; display: flex; align-items: center; text-decoration: none">Daily top-up</a>
+  </div>
+  <h1 style="margin: 6px 16px 12px; font-family: 'Bricolage Grotesque', Figtree, sans-serif; font-size: 34px; font-weight: 700; letter-spacing: -0.6px">Wallet</h1>
+
+  <div style="margin: 0 16px; border-radius: 26px; padding: 20px; background: radial-gradient(circle at 85% 10%, #F07A4A 0%, #C93E1C 40%, #8A2410 100%); color: #FFFFFF; position: relative; overflow: hidden">
+    <div style="position: absolute; right: -18px; top: -18px; width: 110px; height: 110px; border-radius: 28px; background: rgba(255,255,255,.12); transform: rotate(18deg)" aria-hidden="true"></div>
+    <div style="font-size: 14px; font-weight: 600; opacity: .9">Dyce Cash</div>
+    <div style="font-family: 'Bricolage Grotesque', Figtree, sans-serif; font-size: 44px; font-weight: 800; letter-spacing: -1px; margin-top: 2px">₦200k</div>
+    <div style="font-size: 13px; opacity: .9; margin-top: 2px">Virtual cash for play · not withdrawable</div>
+    <div style="display: inline-flex; align-items: center; gap: 6px; margin-top: 10px; padding: 5px 10px; border-radius: 999px; background: rgba(0,0,0,.22); font-size: 12px; font-weight: 700"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.8" stroke-linecap="round" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>₦1,500 locked in 2 open pools</div>
+    <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-top: 18px">
+      <a href="SendMoney.dc.html" style="height: 46px; border-radius: 14px; background: #FFFFFF; color: #8A2410; font-size: 15px; font-weight: 700; display: flex; align-items: center; justify-content: center; text-decoration: none">Send</a>
+      <a href="RequestMoney.dc.html" style="height: 46px; border-radius: 14px; background: rgba(255,255,255,.18); color: #fff; font-size: 15px; font-weight: 700; display: flex; align-items: center; justify-content: center; text-decoration: none">Request</a>
+      <a href="WalletHistory.dc.html" style="height: 46px; border-radius: 14px; background: rgba(255,255,255,.18); color: #fff; font-size: 15px; font-weight: 700; display: flex; align-items: center; justify-content: center; text-decoration: none">History</a>
+    </div>
+  </div>
+
+  <div style="margin: 14px 16px 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px">
+    <div style="border-radius: 16px; padding: 12px; background: {{c.bg2}}">
+      <div style="font-size: 12px; color: {{c.sub}}; font-weight: 600">Won this week</div>
+      <div style="font-size: 18px; font-weight: 800; color: {{c.money}}; margin-top: 4px">₦6,500</div>
+    </div>
+    <div style="border-radius: 16px; padding: 12px; background: {{c.bg2}}">
+      <div style="font-size: 12px; color: {{c.sub}}; font-weight: 600">Win rate</div>
+      <div style="font-size: 18px; font-weight: 800; margin-top: 4px">62%</div>
+    </div>
+    <div style="border-radius: 16px; padding: 12px; background: {{c.bg2}}">
+      <div style="font-size: 12px; color: {{c.sub}}; font-weight: 600">Streak</div>
+      <div style="font-size: 18px; font-weight: 800; margin-top: 4px">3 wins</div>
+    </div>
+  </div>
+
+  <div style="margin: 12px 16px 0; display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 16px; background: {{c.moneySoft}}">
+    <div style="flex: 1">
+      <div style="font-size: 15px; font-weight: 700">Daily bonus is ready</div>
+      <div style="font-size: 13px; color: {{c.sub}}">Play one game today to unlock</div>
+    </div>
+    <span style="font-size: 16px; font-weight: 800; color: {{c.money}}">+₦1,000</span>
+  </div>
+
+  <h2 style="margin: 18px 16px 4px; font-size: 17px; font-weight: 700">Activity</h2>
+  <div style="flex: 1; overflow: hidden; padding: 0 16px">
+    <sc-for list="{{tx}}" as="t" hint-placeholder-count="5">
+      <div style="display: flex; align-items: center; gap: 12px; height: 60px; border-bottom: 1px solid {{c.line}}">
+        <span style="width: 40px; height: 40px; border-radius: 12px; background: {{t.bg}}; color: #fff; font-size: 13px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0">{{t.mark}}</span>
+        <div style="flex: 1; min-width: 0">
+          <div style="font-size: 15px; font-weight: 600">{{t.title}}</div>
+          <div style="font-size: 12px; color: {{c.sub}}">{{t.meta}}</div>
+        </div>
+        <span style="font-size: 15px; font-weight: 700; color: {{t.color}}">{{t.amt}}</span>
+      </div>
+    </sc-for>
+  </div>
+  <div style="position: absolute; left: 0; right: 0; bottom: 0; height: 150px; background: linear-gradient(transparent, {{c.bg}} 70%); pointer-events: none" aria-hidden="true"></div>
+  <div style="position: absolute; left: 14px; right: 14px; bottom: 26px">
+    <dc-import name="TabBar" active="wallet" search="WalletHistory.dc.html" theme="{{tname}}" hint-size="362px,68px"></dc-import>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"$preview":{"width":390,"height":844}}'>
+const T={light:{bg:'#FBF8F3',bg2:'#F2ECE3',card:'#FFFFFF',text:'#1B140F',sub:'#6F655B',line:'#E6DDD0',recv:'#ECE4D8',field:'#EEE7DC',brand:'#C93E1C',brandText:'#B33416',brandSoft:'#FBE7DF',sms:'#0067D6',money:'#0E7C47',moneySoft:'#E3F6EA',danger:'#C4314B',ink:'#1B140F',inkText:'#FFFFFF'},
+dark:{bg:'#0F0D0B',bg2:'#1D1916',card:'#1D1916',text:'#F7F1E8',sub:'#ABA196',line:'#2E2823',recv:'#2A2420',field:'#1D1916',brand:'#C93E1C',brandText:'#FF8F6B',brandSoft:'#3A170C',sms:'#0067D6',money:'#3DDC84',moneySoft:'#11301F',danger:'#FF6B81',ink:'#F7F1E8',inkText:'#1B140F'}};
+class Component extends DCLogic {
+  renderVals() {
+    const c = T[this.props.theme === 'dark' ? 'dark' : 'light'];
+    const plus = c.money, minus = c.text;
+    return {
+      tname: this.props.theme === 'dark' ? 'dark' : 'light',
+      c,
+      tx: [
+        { mark: 'WH', bg: '#C98500', title: 'Won Word Hunt pool', meta: 'vs Tunde · today', amt: '+₦1,500', color: plus },
+        { mark: '+4', bg: '#C2410C', title: 'Space entry · Crazy Cards', meta: 'Sunday Game Night · today', amt: '−₦500', color: minus },
+        { mark: 'SB', bg: '#0B2A55', title: 'Lost Sea Battle pool', meta: 'vs @lagos_shark · yesterday', amt: '−₦1,000', color: minus },
+        { mark: '₦', bg: '#C93E1C', title: 'Welcome to Dyce', meta: 'Starter cash · Nov 13', amt: '+₦200k', color: plus }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

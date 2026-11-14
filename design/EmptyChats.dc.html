@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Dyce — Empty states</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&amp;family=Bricolage+Grotesque:wght@600;700;800&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; padding-top: 54px; display: flex; flex-direction: column; font-family: Figtree, -apple-system, system-ui, sans-serif; background: {{c.bg}}; color: {{c.text}}; overflow: hidden">
+  <div style="display: flex; align-items: center; justify-content: space-between; padding: 0 16px; height: 44px">
+    <dc-import name="Avatar" size="34" skin="#8D5524" hair="#1C1714" hair-style="afro" bg="#C9B8FF" shirt="#C93E1C" hint-size="34px,34px"></dc-import>
+    <span style="height: 34px; padding: 0 12px; border-radius: 999px; background: {{c.moneySoft}}; color: {{c.money}}; font-size: 14px; font-weight: 700; display: flex; align-items: center">₦200k</span>
+  </div>
+  <h1 style="margin: 2px 16px 10px; font-family: 'Bricolage Grotesque', Figtree, sans-serif; font-size: 34px; font-weight: 700; letter-spacing: -0.6px">Chats</h1>
+  <div style="margin: 0 16px; padding: 3px; border-radius: 12px; background: {{c.field}}; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 3px">
+    <span style="height: 34px; border-radius: 9px; background: {{friendsBg}}; font-size: 14px; font-weight: 600; display: flex; align-items: center; justify-content: center">Friends</span>
+    <span style="height: 34px; border-radius: 9px; background: {{reqBg}}; font-size: 14px; font-weight: 600; display: flex; align-items: center; justify-content: center">Requests</span>
+  </div>
+
+  <div style="flex: 1; display: flex; flex-direction: column; align-items: center; padding: 30px 24px 0; text-align: center">
+    <div style="position: relative; width: 200px; height: 150px" aria-hidden="true">
+      <div style="position: absolute; left: 10px; top: 30px; width: 110px; height: 44px; border-radius: 22px; border-bottom-left-radius: 8px; background: {{c.recv}}"></div>
+      <div style="position: absolute; left: 80px; top: 86px; width: 110px; height: 44px; border-radius: 22px; border-bottom-right-radius: 8px; background: {{bubble}}"></div>
+      <div style="position: absolute; left: 70px; top: 10px; transform: rotate(-8deg)">
+        <dc-import name="Avatar" size="{{artSize}}" skin="#8D5524" hair="#1C1714" hair-style="afro" bg="#FFC857" shirt="#C93E1C" hint-size="64px,64px"></dc-import>
+      </div>
+    </div>
+    <h2 style="margin: 16px 0 6px; font-family: 'Bricolage Grotesque', Figtree, sans-serif; font-size: 24px; font-weight: 700; letter-spacing: -0.3px">{{v.title}}</h2>
+    <p style="margin: 0; font-size: 15px; line-height: 1.45; color: {{c.sub}}; max-width: 300px">{{v.body}}</p>
+
+    <div style="width: 100%; display: flex; flex-direction: column; gap: 10px; margin-top: 22px">
+      <sc-for list="{{v.actions}}" as="a" hint-placeholder-count="3">
+        <a href="{{a.href}}" style="display: flex; align-items: center; gap: 12px; padding: 0 14px; height: 60px; border-radius: 16px; background: {{a.bg}}; color: {{a.fg}}; text-decoration: none; text-align: left">
+          <span style="width: 34px; height: 34px; border-radius: 10px; background: {{a.iconBg}}; color: #fff; font-size: 13px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0">{{a.m}}</span>
+          <span style="flex: 1"><span style="display: block; font-size: 15px; font-weight: 700">{{a.t}}</span><span style="display: block; font-size: 12px; opacity: .8">{{a.d}}</span></span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
+        </a>
+      </sc-for>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"variant":{"editor":"enum","options":["new","denied","requests"],"default":"new"},"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"$preview":{"width":390,"height":844}}'>
+const T={light:{bg:'#FBF8F3',bg2:'#F2ECE3',card:'#FFFFFF',text:'#1B140F',sub:'#6F655B',field:'#EEE7DC',recv:'#ECE4D8',money:'#0E7C47',moneySoft:'#E3F6EA'},
+dark:{bg:'#0F0D0B',bg2:'#1D1916',card:'#2E2823',text:'#F7F1E8',sub:'#ABA196',field:'#1D1916',recv:'#2A2420',money:'#3DDC84',moneySoft:'#11301F'}};
+class Component extends DCLogic {
+  renderVals() {
+    const c = T[this.props.theme === 'dark' ? 'dark' : 'light'];
+    const v = ['new','denied','requests'].indexOf(this.props.variant) >= 0 ? this.props.variant : 'new';
+    const A = (m, iconBg, t, d, href, primary) => ({ m, iconBg, t, d, href, bg: primary ? '#C93E1C' : c.bg2, fg: primary ? '#FFFFFF' : c.text });
+    const V = {
+      new: { title: 'Your friends aren’t here yet', body: 'None of your contacts are on Dyce. Send one a game by text, they can play in the browser.',
+        actions: [A('SMS', '#0067D6', 'Challenge a contact', 'Tolu, Femi and 41 more', 'Invite.dc.html', true), A('VS', '#C2410C', 'Quick match', 'Play a stranger at your level', 'QuickMatch.dc.html'), A('@', '#B33416', 'Find by @username', 'Search everyone in Space', 'Space.dc.html')] },
+      denied: { title: 'Contacts are off', body: 'Dyce can’t see who you know, so friends won’t show up here. You can still play anyone by @username.',
+        actions: [A('ON', '#C93E1C', 'Allow in Settings', 'Takes 10 seconds, numbers stay hashed', '#', true), A('@', '#B33416', 'Find by @username', 'Search everyone in Space', 'Space.dc.html'), A('VS', '#C2410C', 'Quick match', 'Play a stranger at your level', 'QuickMatch.dc.html')] },
+      requests: { title: 'No requests', body: 'Game invites from people outside your contacts land here, so they never crowd your chats.',
+        actions: [A('OK', '#0E7C47', 'Who can challenge me', 'Everyone · change in Settings', 'Settings.dc.html'), A('♛', '#B37A00', 'Take on a hill', 'Beat a holder in Space', 'Bounties.dc.html')] }
+    }[v];
+    return {
+      c, v,
+      friendsBg: v === 'requests' ? 'transparent' : c.card, reqBg: v === 'requests' ? c.card : 'transparent',
+      bubble: v === 'denied' ? c.recv : '#C93E1C',
+      artSize: '64'
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Dyce — Search Space</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&amp;family=Bricolage+Grotesque:wght@600;700;800&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; padding-top: 54px; display: flex; flex-direction: column; font-family: Figtree, -apple-system, system-ui, sans-serif; background: {{c.bg}}; color: {{c.text}}; overflow: hidden">
+  <div style="display: flex; align-items: center; gap: 10px; padding: 4px 16px 10px">
+    <div style="flex: 1; height: 42px; border-radius: 12px; background: {{c.field}}; display: flex; align-items: center; gap: 8px; padding: 0 12px; color: {{c.sub}}">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+      <label for="ss" style="position: absolute; left: -9999px">Search Space</label>
+      <input id="ss" value="{{q}}" placeholder="Search @usernames, spaces, games" style="flex: 1; min-width: 0; border: none; background: none; font: 500 16px Figtree, sans-serif; color: {{c.text}}; outline: none">
+    </div>
+    <a href="Space.dc.html" style="color: {{c.brandText}}; font-size: 16px; text-decoration: none">Cancel</a>
+  </div>
+
+  <sc-if value="{{isRecent}}" hint-placeholder-val="{{true}}">
+    <div style="display: flex; justify-content: space-between; padding: 6px 16px"><b style="font-size: 15px">Recent</b><span style="font-size: 14px; color: {{c.brandText}}; font-weight: 600">Clear</span></div>
+    <div style="padding: 0 16px">
+      <sc-for list="{{recent}}" as="r" hint-placeholder-count="3">
+        <div style="display: flex; align-items: center; gap: 12px; height: 56px; border-bottom: 1px solid {{c.line}}">
+          <dc-import name="Avatar" size="38" skin="{{r.skin}}" hair="{{r.hair}}" hair-style="{{r.hs}}" bg="{{r.bg}}" shirt="{{r.shirt}}" hint-size="38px,38px"></dc-import>
+          <span style="flex: 1; font-size: 15px; font-weight: 600">{{r.h}}</span>
+          <span style="font-size: 18px; color: {{c.sub}}">×</span>
+        </div>
+      </sc-for>
+    </div>
+    <div style="padding: 18px 16px 8px"><b style="font-size: 15px">Try searching</b></div>
+    <div style="display: flex; flex-wrap: wrap; gap: 8px; padding: 0 16px">
+      <sc-for list="{{tries}}" as="t" hint-placeholder-count="5">
+        <span style="height: 36px; padding: 0 14px; border-radius: 18px; background: {{c.field}}; font-size: 14px; font-weight: 600; display: flex; align-items: center">{{t}}</span>
+      </sc-for>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{isResults}}" hint-placeholder-val="{{false}}">
+    <div style="display: flex; gap: 6px; padding: 0 16px 8px">
+      <span style="height: 32px; padding: 0 12px; border-radius: 16px; background: {{c.ink}}; color: {{c.inkText}}; font-size: 13px; font-weight: 700; display: flex; align-items: center">All</span>
+      <span style="height: 32px; padding: 0 12px; border-radius: 16px; background: {{c.field}}; font-size: 13px; font-weight: 600; display: flex; align-items: center">People 12</span>
+      <span style="height: 32px; padding: 0 12px; border-radius: 16px; background: {{c.field}}; font-size: 13px; font-weight: 600; display: flex; align-items: center">Spaces 2</span>
+    </div>
+    <div style="padding: 6px 16px 2px; font-size: 13px; font-weight: 700; color: {{c.sub}}">People</div>
+    <div style="padding: 0 16px">
+      <sc-for list="{{people}}" as="p" hint-placeholder-count="4">
+        <a href="UserProfile.dc.html" style="display: flex; align-items: center; gap: 12px; height: 62px; border-bottom: 1px solid {{c.line}}; color: {{c.text}}; text-decoration: none">
+          <dc-import name="Avatar" size="42" skin="{{p.skin}}" hair="{{p.hair}}" hair-style="{{p.hs}}" bg="{{p.bg}}" shirt="{{p.shirt}}" hint-size="42px,42px"></dc-import>
+          <div style="flex: 1; min-width: 0">
+            <div style="font-size: 15px; font-weight: 600"><b style="color: {{c.brandText}}">{{p.match}}</b>{{p.rest}}</div>
+            <div style="font-size: 12px; color: {{c.sub}}">{{p.meta}}</div>
+          </div>
+          <span style="padding: 3px 8px; border-radius: 999px; font-size: 11px; font-weight: 700; background: {{p.tagBg}}; color: {{p.tagFg}}">{{p.tag}}</span>
+        </a>
+      </sc-for>
+    </div>
+    <div style="padding: 14px 16px 2px; font-size: 13px; font-weight: 700; color: {{c.sub}}">Spaces</div>
+    <div style="padding: 0 16px">
+      <div style="display: flex; align-items: center; gap: 12px; height: 60px; border-bottom: 1px solid {{c.line}}">
+        <span style="width: 40px; height: 40px; border-radius: 12px; background: #2457D6"></span>
+        <div style="flex: 1"><div style="font-size: 15px; font-weight: 600"><b style="color: {{c.brandText}}">Lag</b>os Ludo Kings</div><div style="font-size: 12px; color: {{c.sub}}">Pool · ₦1,000 a seat · 3/4</div></div>
+        <a href="Lobby.dc.html" style="height: 32px; padding: 0 12px; border-radius: 16px; background: {{c.brandSoft}}; color: {{c.brandText}}; font-size: 13px; font-weight: 800; display: flex; align-items: center; text-decoration: none">Join</a>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{isEmpty}}" hint-placeholder-val="{{false}}">
+    <div style="display: flex; flex-direction: column; align-items: center; text-align: center; padding: 50px 28px 0">
+      <span style="width: 80px; height: 80px; border-radius: 24px; background: {{c.field}}; color: {{c.sub}}; font-family: 'Bricolage Grotesque', Figtree, sans-serif; font-size: 34px; font-weight: 800; display: flex; align-items: center; justify-content: center">@</span>
+      <h2 style="margin: 16px 0 6px; font-family: 'Bricolage Grotesque', Figtree, sans-serif; font-size: 22px; font-weight: 700">No one called @{{q2}}</h2>
+      <p style="margin: 0; font-size: 15px; line-height: 1.45; color: {{c.sub}}">Usernames are exact. Check the spelling, or invite them with their number.</p>
+    </div>
+    <div style="padding: 22px 16px 6px; font-size: 13px; font-weight: 700; color: {{c.sub}}">Close matches</div>
+    <div style="padding: 0 16px">
+      <sc-for list="{{close}}" as="p" hint-placeholder-count="2">
+        <a href="UserProfile.dc.html" style="display: flex; align-items: center; gap: 12px; height: 58px; border-bottom: 1px solid {{c.line}}; color: {{c.text}}; text-decoration: none">
+          <dc-import name="Avatar" size="40" skin="{{p.skin}}" hair="{{p.hair}}" hair-style="{{p.hs}}" bg="{{p.bg}}" shirt="{{p.shirt}}" hint-size="40px,40px"></dc-import>
+          <span style="flex: 1; font-size: 15px; font-weight: 600">{{p.h}}</span>
+        </a>
+      </sc-for>
+    </div>
+    <a href="Invite.dc.html" style="margin: 18px 16px 0; height: 52px; border-radius: 16px; background: #0067D6; color: #fff; font-size: 16px; font-weight: 700; display: flex; align-items: center; justify-content: center; text-decoration: none">Invite by phone number</a>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"variant":{"editor":"enum","options":["recent","results","empty"],"default":"results"},"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"$preview":{"width":390,"height":844}}'>
+const T={light:{bg:'#FBF8F3',text:'#1B140F',sub:'#6F655B',line:'#E6DDD0',field:'#EEE7DC',brandText:'#B33416',brandSoft:'#FBE7DF',ink:'#1B140F',inkText:'#FFFFFF',money:'#0E7C47',moneySoft:'#E3F6EA'},
+dark:{bg:'#0F0D0B',text:'#F7F1E8',sub:'#ABA196',line:'#2E2823',field:'#1D1916',brandText:'#FF8F6B',brandSoft:'#3A170C',ink:'#F7F1E8',inkText:'#1B140F',money:'#3DDC84',moneySoft:'#11301F'}};
+const A=[{skin:'#5C3A21',hair:'#111111',hs:'short',bg:'#8FD3FF',shirt:'#0E9F6E'},{skin:'#A0662F',hair:'#3B2219',hs:'long',bg:'#FFB4C6',shirt:'#FFB020'},{skin:'#F1C27D',hair:'#1C1714',hs:'waves',bg:'#FFC857',shirt:'#1F2937'},{skin:'#8D5524',hair:'#B7412E',hs:'afro',bg:'#B8F2C8',shirt:'#E0453A'}];
+class Component extends DCLogic {
+  renderVals() {
+    const c = T[this.props.theme === 'dark' ? 'dark' : 'light'];
+    const v = ['recent','results','empty'].indexOf(this.props.variant) >= 0 ? this.props.variant : 'results';
+    const tag = (t, kind) => kind === 'friend' ? { tag: t, tagBg: c.moneySoft, tagFg: c.money } : (kind === 'live' ? { tag: t, tagBg: c.brandSoft, tagFg: c.brandText } : { tag: t, tagBg: c.field, tagFg: c.sub });
+    return {
+      c, isRecent: v === 'recent', isResults: v === 'results', isEmpty: v === 'empty',
+      q: v === 'results' ? 'lag' : (v === 'empty' ? 'kemdiii' : ''), q2: 'kemdiii',
+      recent: [Object.assign({ h: '@lagos_shark' }, A[0]), Object.assign({ h: '@ngozi.k' }, A[1]), Object.assign({ h: '@bayo_spins' }, A[2])],
+      tries: ['Sea Battle hills', 'Free spaces', 'Lagos', 'Top winners', '@tundeb'],
+      people: [
+        Object.assign({ match: '@lag', rest: 'os_shark', meta: 'Level 14 · playing Sea Battle' }, A[0], tag('Playing', 'live')),
+        Object.assign({ match: '@lag', rest: 'osqueen', meta: 'Level 6 · Whot! fan' }, A[1], tag('Stranger')),
+        Object.assign({ match: '@lag', rest: 'bawse', meta: 'Level 9 · 2 mutual friends' }, A[2], tag('2 mutual')),
+        Object.assign({ match: '@lag', rest: 'gy.ade', meta: 'Level 3' }, A[3], tag('Stranger'))
+      ],
+      close: [Object.assign({ h: '@kemdi' }, A[2]), Object.assign({ h: '@kemdii_' }, A[3])]
+    };
+  }
+}
+</script>
+</body>
+</html>

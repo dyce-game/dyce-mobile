@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Dyce — Choose Free or Pool</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&amp;family=Bricolage+Grotesque:wght@600;700;800&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; position: relative; overflow: hidden; font-family: Figtree, -apple-system, system-ui, sans-serif; background: {{c.bg}}; color: {{c.text}}">
+  <div style="position: absolute; left: 0; right: 0; top: 0; padding-top: 54px" aria-hidden="true">
+    <div style="display: flex; flex-direction: column; align-items: center; gap: 4px; padding-bottom: 10px; border-bottom: 1px solid {{c.line}}; background: {{c.bg2}}">
+      <dc-import name="Avatar" size="40" skin="#8D5524" hair="#1C1714" hair-style="bun" bg="#FFC857" shirt="#E0453A" hint-size="40px,40px"></dc-import>
+      <div style="font-size: 12px; font-weight: 600">Amaka</div>
+    </div>
+  </div>
+  <a href="Games.dc.html" aria-label="Back to games" style="position: absolute; inset: 0; background: rgba(0,0,0,.32)"></a>
+
+  <section aria-label="Game mode" style="position: absolute; left: 0; right: 0; bottom: 0; height: 724px; border-radius: 26px 26px 0 0; background: {{c.bg}}; display: flex; flex-direction: column; padding: 8px 16px 34px; box-sizing: border-box">
+    <div style="width: 40px; height: 5px; border-radius: 3px; background: {{c.line}}; align-self: center"></div>
+
+    <div style="display: flex; align-items: center; gap: 12px; margin-top: 12px">
+      <div style="width: 52px; height: 52px; border-radius: 14px; position: relative; overflow: hidden; background: radial-gradient(circle at 50% 45%, #22A066, #0D5235); flex-shrink: 0" aria-hidden="true">
+        <span style="position: absolute; left: 10px; top: 16px; width: 14px; height: 14px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #fff, #F5C518 45%, #B38A00)"></span>
+        <span style="position: absolute; left: 26px; top: 24px; width: 14px; height: 14px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #888, #111 55%)"></span>
+      </div>
+      <div style="flex: 1">
+        <div style="font-size: 19px; font-weight: 800; font-family: 'Bricolage Grotesque', Figtree, sans-serif">8 Ball vs Amaka</div>
+        <div style="font-size: 13px; color: {{c.sub}}">Amaka's record vs you: 4 W · 6 L</div>
+      </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 16px">
+      <button onClick="{{pickFree}}" style="border-radius: 20px; border: 3px solid {{freeRing}}; padding: 14px 12px; background: {{c.bg2}}; text-align: left; color: {{c.text}}; font-family: Figtree, sans-serif; display: flex; flex-direction: column; gap: 6px; box-sizing: border-box">
+        <span style="width: 38px; height: 38px; border-radius: 12px; background: #2BB673; display: flex; align-items: center; justify-content: center">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>
+        </span>
+        <span style="font-size: 17px; font-weight: 800">Free</span>
+        <span style="font-size: 12px; line-height: 1.4; color: {{c.sub}}">Bragging rights, XP and streaks. Your cash never moves.</span>
+      </button>
+      <button onClick="{{pickPool}}" style="border-radius: 20px; border: 3px solid {{poolRing}}; padding: 14px 12px; background: {{c.bg2}}; text-align: left; color: {{c.text}}; font-family: Figtree, sans-serif; display: flex; flex-direction: column; gap: 6px; box-sizing: border-box">
+        <span style="width: 38px; height: 38px; border-radius: 12px; background: #C93E1C; display: flex; align-items: center; justify-content: center">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><ellipse cx="12" cy="6" rx="7" ry="2.6"/><path d="M5 6v4c0 1.4 3.1 2.6 7 2.6s7-1.2 7-2.6V6M5 10v4c0 1.4 3.1 2.6 7 2.6s7-1.2 7-2.6v-4M5 14v4c0 1.4 3.1 2.6 7 2.6s7-1.2 7-2.6v-4"/></svg>
+        </span>
+        <span style="font-size: 17px; font-weight: 800">Pool</span>
+        <span style="font-size: 12px; line-height: 1.4; color: {{c.sub}}">You both put in the same stake. Winner takes the pot.</span>
+      </button>
+    </div>
+
+    <sc-if value="{{isPool}}" hint-placeholder-val="{{true}}">
+      <div style="font-size: 13px; font-weight: 600; color: {{c.sub}}; margin-top: 18px">Your stake</div>
+      <div style="display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; margin-top: 8px">
+        <sc-for list="{{stakes}}" as="s" hint-placeholder-count="5">
+          <button onClick="{{s.pick}}" style="height: 42px; border-radius: 12px; border: 2px solid {{s.ring}}; background: {{s.bgc}}; color: {{c.text}}; font: 700 13px Figtree, sans-serif; padding: 0">{{s.label}}</button>
+        </sc-for>
+      </div>
+
+      <div style="margin-top: 14px; border-radius: 20px; padding: 14px; background: #1B140F; color: #fff; display: flex; align-items: center; gap: 10px">
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 4px; width: 62px">
+          <dc-import name="Avatar" size="40" skin="#8D5524" hair="#1C1714" hair-style="afro" bg="#C9B8FF" shirt="#C93E1C" hint-size="40px,40px"></dc-import>
+          <span style="font-size: 12px; font-weight: 700">{{stakeLabel}}</span>
+        </div>
+        <div style="flex: 1; text-align: center">
+          <div style="font-size: 12px; color: #C9C9D1; font-weight: 600">Pot</div>
+          <div style="font-family: 'Bricolage Grotesque', Figtree, sans-serif; font-size: 34px; font-weight: 800; letter-spacing: -0.6px; color: #9DF2BE">{{pot}}</div>
+          <div style="font-size: 11px; color: #C9C9D1">locked until the game ends</div>
+        </div>
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 4px; width: 62px">
+          <dc-import name="Avatar" size="40" skin="#8D5524" hair="#1C1714" hair-style="bun" bg="#FFC857" shirt="#E0453A" hint-size="40px,40px"></dc-import>
+          <span style="font-size: 12px; font-weight: 700">{{stakeLabel}}</span>
+        </div>
+      </div>
+
+      <div style="margin-top: 12px; border-radius: 18px; background: {{c.bg2}}; overflow: hidden">
+        <sc-for list="{{opts}}" as="o" hint-placeholder-count="2">
+          <div style="display: flex; align-items: center; gap: 12px; padding: 0 14px; min-height: 58px; border-bottom: 1px solid {{c.line}}">
+            <div style="flex: 1; padding: 8px 0">
+              <div style="font-size: 15px; font-weight: 600">{{o.title}}</div>
+              <div style="font-size: 12px; color: {{c.sub}}; line-height: 1.35">{{o.sub}}</div>
+            </div>
+            <button onClick="{{o.toggle}}" role="switch" aria-checked="{{o.on}}" aria-label="{{o.title}}" style="width: 52px; height: 32px; border-radius: 16px; border: none; padding: 3px; background: {{o.track}}; display: flex; justify-content: {{o.justify}}; flex-shrink: 0">
+              <span style="width: 26px; height: 26px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.25)"></span>
+            </button>
+          </div>
+        </sc-for>
+      </div>
+      <div style="margin-top: 10px; font-size: 12px; color: {{c.sub}}; line-height: 1.45">Not accepted in 24h? Your stake comes back. Draws split the pot. <a href="PoolRules.dc.html" style="color: {{c.brandText}}; font-weight: 600; text-decoration: none">How pools work</a></div>
+    </sc-if>
+
+    <sc-if value="{{isFree}}" hint-placeholder-val="{{false}}">
+      <div style="margin-top: 18px; border-radius: 20px; padding: 16px; background: {{c.moneySoft}}; display: flex; flex-direction: column; gap: 12px">
+        <div style="font-size: 13px; font-weight: 700; color: {{c.money}}">What you play for</div>
+        <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px">
+          <div style="border-radius: 14px; background: {{c.bg}}; padding: 10px; text-align: center"><div style="font-size: 20px; font-weight: 800">+25</div><div style="font-size: 11px; color: {{c.sub}}">XP for a win</div></div>
+          <div style="border-radius: 14px; background: {{c.bg}}; padding: 10px; text-align: center"><div style="font-size: 20px; font-weight: 800">3</div><div style="font-size: 11px; color: {{c.sub}}">win streak</div></div>
+          <div style="border-radius: 14px; background: {{c.bg}}; padding: 10px; text-align: center"><div style="font-size: 20px; font-weight: 800">#2</div><div style="font-size: 11px; color: {{c.sub}}">among friends</div></div>
+        </div>
+        <div style="font-size: 13px; line-height: 1.45">Free wins count toward badges and the weekly friends leaderboard.</div>
+      </div>
+      <div style="margin-top: 12px; border-radius: 18px; padding: 14px; border: 1px dashed {{c.line}}; font-size: 13px; line-height: 1.45; color: {{c.sub}}">Unlimited free games. No stake, no wallet prompts, works for players with ₦0 balance too.</div>
+    </sc-if>
+
+    <a href="{{ctaHref}}" style="margin-top: auto; height: 54px; border-radius: 16px; background: {{ctaBg}}; color: #fff; font-size: 17px; font-weight: 700; display: flex; align-items: center; justify-content: center; text-decoration: none">{{cta}}</a>
+  </section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"$preview":{"width":390,"height":844}}'>
+const T={light:{bg:'#FBF8F3',bg2:'#F2ECE3',card:'#FFFFFF',text:'#1B140F',sub:'#6F655B',line:'#E6DDD0',field:'#EEE7DC',brandText:'#B33416',brandSoft:'#FBE7DF',money:'#0E7C47',moneySoft:'#E3F6EA',off:'#D8CEC1'},
+dark:{bg:'#0F0D0B',bg2:'#1D1916',card:'#1D1916',text:'#F7F1E8',sub:'#ABA196',line:'#2E2823',field:'#2E2823',brandText:'#FF8F6B',brandSoft:'#3A170C',money:'#3DDC84',moneySoft:'#11301F',off:'#4A423A'}};
+const STAKES=[200,500,1000,2000,5000];
+const fmt=(n)=>'₦'+n.toLocaleString('en-NG');
+class Component extends DCLogic {
+  constructor(p){ super(p); this.state = { mode: 'pool', stake: 1000, counter: true, runback: true }; }
+  renderVals() {
+    const c = T[this.props.theme === 'dark' ? 'dark' : 'light'];
+    const s = this.state, pool = s.mode === 'pool';
+    const sw = (key, title, sub) => ({ title, sub, on: s[key] ? 'true' : 'false', track: s[key] ? '#2BB673' : c.off, justify: s[key] ? 'flex-end' : 'flex-start', toggle: () => this.setState({ [key]: !s[key] }) });
+    return {
+      c, isPool: pool, isFree: !pool,
+      freeRing: pool ? 'transparent' : '#2BB673', poolRing: pool ? '#C93E1C' : 'transparent',
+      pickFree: () => this.setState({ mode: 'free' }), pickPool: () => this.setState({ mode: 'pool' }),
+      stakes: STAKES.map((v) => ({ label: v >= 1000 ? '₦' + (v / 1000) + 'k' : fmt(v), ring: v === s.stake ? '#C93E1C' : 'transparent', bgc: v === s.stake ? c.brandSoft : c.field, pick: () => this.setState({ stake: v }) })),
+      stakeLabel: fmt(s.stake), pot: fmt(s.stake * 2),
+      opts: [
+        sw('counter', 'Allow counter-offers', 'Amaka can suggest a lower stake or play free'),
+        sw('runback', 'Run-it-back', 'Loser can ask for a double-or-nothing rematch')
+      ],
+      cta: pool ? 'Lock ' + fmt(s.stake) + ' & send' : 'Send free game',
+      ctaBg: pool ? '#C93E1C' : '#0E7C47',
+      ctaHref: pool ? 'AgeGate.dc.html' : 'Thread.dc.html'
+    };
+  }
+}
+</script>
+</body>
+</html>

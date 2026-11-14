@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Dyce — Waiting for their turn</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&amp;family=Bricolage+Grotesque:wght@600;700;800&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; padding-top: 54px; display: flex; flex-direction: column; font-family: Figtree, -apple-system, system-ui, sans-serif; background: {{c.bg}}; color: {{c.text}}; overflow: hidden">
+  <header style="display: flex; align-items: flex-start; justify-content: space-between; padding: 0 8px 8px; border-bottom: 1px solid {{c.line}}; background: {{c.bg2}}">
+    <a href="Chats.dc.html" aria-label="Back to chats" style="height: 44px; width: 64px; display: flex; align-items: center; color: {{c.brandText}}">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
+    </a>
+    <div style="display: flex; flex-direction: column; align-items: center; gap: 3px">
+      <dc-import name="Avatar" size="46" skin="#C68642" hair="#2A1A12" hair-style="long" bg="#B8F2C8" shirt="#C93E1C" hint-size="46px,46px"></dc-import>
+      <div style="font-size: 12px; font-weight: 600">Zainab</div>
+      <div style="font-size: 11px; color: {{c.sub}}">Last active 3h ago</div>
+    </div>
+    <span style="width: 64px"></span>
+  </header>
+
+  <div style="flex: 1; display: flex; flex-direction: column; justify-content: flex-end; gap: 6px; padding: 12px 14px 10px; overflow: hidden">
+    <div style="align-self: flex-end; max-width: 260px; padding: 9px 14px; border-radius: 20px; border-bottom-right-radius: 6px; background: #C93E1C; color: #fff; font-size: 16px">beat 38 if you can</div>
+
+    <div style="align-self: flex-end; width: 270px; border-radius: 22px; overflow: hidden; background: {{c.card}}; border: 1px solid {{c.line}}; margin-top: 2px">
+      <div style="height: 110px; position: relative; background: #FFB020">
+        <sc-for list="{{tiles}}" as="t" hint-placeholder-count="8">
+          <span style="position: absolute; left: {{t.x}}; top: {{t.y}}; width: 30px; height: 30px; border-radius: 8px; background: #fff; color: #7A4A00; font-size: 14px; font-weight: 800; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 0 #C98500">{{t.l}}</span>
+        </sc-for>
+        <span style="position: absolute; left: 10px; top: 10px; height: 22px; padding: 0 9px; border-radius: 11px; background: #C93E1C; color: #fff; font-size: 11px; font-weight: 800; display: flex; align-items: center">POOL ₦1,000</span>
+      </div>
+      <div style="padding: 12px 14px 14px; display: flex; flex-direction: column; gap: 10px">
+        <div style="display: flex; justify-content: space-between; align-items: baseline">
+          <div><div style="font-size: 16px; font-weight: 800">Word Hunt</div><div style="font-size: 13px; color: {{c.sub}}">You played: 38 points</div></div>
+          <span style="font-size: 12px; font-weight: 700; color: {{c.brandText}}">₦500 locked</span>
+        </div>
+        <div>
+          <div style="display: flex; justify-content: space-between; font-size: 12px; font-weight: 700"><span>Waiting for Zainab</span><span style="color: {{c.sub}}">23h 12m left</span></div>
+          <div style="height: 6px; border-radius: 3px; background: {{c.field}}; margin-top: 6px; overflow: hidden"><div style="width: 4%; height: 100%; background: #C93E1C"></div></div>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px">
+          <button onClick="{{nudge}}" style="height: 40px; border-radius: 12px; border: none; background: {{nudgeBg}}; color: {{nudgeFg}}; font: 700 14px Figtree, sans-serif">{{nudgeLabel}}</button>
+          <button style="height: 40px; border-radius: 12px; border: none; background: {{c.field}}; color: {{c.text}}; font: 600 14px Figtree, sans-serif">Cancel · refund</button>
+        </div>
+      </div>
+    </div>
+    <div style="align-self: flex-end; font-size: 11px; color: {{c.sub}}; font-weight: 600; padding-right: 4px">Delivered · not opened yet</div>
+  </div>
+
+  <a href="Activity.dc.html" style="margin: 0 12px 8px; display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 14px; background: {{c.brandSoft}}; color: {{c.text}}; text-decoration: none">
+    <span style="width: 26px; height: 26px; border-radius: 50%; background: #C93E1C; color: #fff; font-size: 13px; font-weight: 800; display: flex; align-items: center; justify-content: center">2</span>
+    <span style="flex: 1; font-size: 14px; font-weight: 600">While you wait: it's your turn in 2 games</span>
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
+  </a>
+
+  <div style="display: flex; align-items: center; gap: 8px; padding: 0 10px 34px">
+    <span style="width: 36px; height: 36px; border-radius: 11px; background: #C93E1C; flex-shrink: 0" aria-hidden="true"></span>
+    <div style="flex: 1; height: 38px; border-radius: 19px; border: 1px solid {{c.line}}; display: flex; align-items: center; padding: 0 14px">
+      <label for="wm" style="position: absolute; left: -9999px">Message</label>
+      <input id="wm" placeholder="Dyce message" style="flex: 1; min-width: 0; border: none; background: none; font: 400 16px Figtree, sans-serif; color: {{c.text}}; outline: none">
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"$preview":{"width":390,"height":844}}'>
+const T={light:{bg:'#FBF8F3',bg2:'#F6F1EA',card:'#FFFFFF',text:'#1B140F',sub:'#6F655B',line:'#E6DDD0',field:'#EEE7DC',brandText:'#B33416',brandSoft:'#FBE7DF',money:'#0E7C47',moneySoft:'#E3F6EA'},
+dark:{bg:'#0F0D0B',bg2:'#15120F',card:'#1D1916',text:'#F7F1E8',sub:'#ABA196',line:'#2E2823',field:'#2E2823',brandText:'#FF8F6B',brandSoft:'#3A170C',money:'#3DDC84',moneySoft:'#11301F'}};
+class Component extends DCLogic {
+  constructor(p){ super(p); this.state = { nudged: false }; }
+  renderVals() {
+    const c = T[this.props.theme === 'dark' ? 'dark' : 'light'];
+    const n = this.state.nudged;
+    return {
+      c,
+      tiles: ['W','O','R','D','H','U','N','T'].map((l, i) => ({ l, x: (60 + (i % 4) * 38) + 'px', y: (24 + Math.floor(i / 4) * 40) + 'px' })),
+      nudgeLabel: n ? 'Nudged · again in 6h' : 'Nudge Zainab',
+      nudgeBg: n ? c.moneySoft : '#C93E1C', nudgeFg: n ? c.money : '#FFFFFF',
+      nudge: () => this.setState({ nudged: true })
+    };
+  }
+}
+</script>
+</body>
+</html>

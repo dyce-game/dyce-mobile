@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Dyce — Counter-offer received</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&amp;family=Bricolage+Grotesque:wght@600;700;800&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; padding-top: 54px; display: flex; flex-direction: column; font-family: Figtree, -apple-system, system-ui, sans-serif; background: {{c.bg}}; color: {{c.text}}; overflow: hidden">
+  <header style="display: flex; align-items: flex-start; justify-content: space-between; padding: 0 8px 8px; border-bottom: 1px solid {{c.line}}; background: {{c.bg2}}">
+    <a href="Chats.dc.html" aria-label="Back to chats" style="height: 44px; width: 64px; display: flex; align-items: center; color: {{c.brandText}}">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
+    </a>
+    <div style="display: flex; flex-direction: column; align-items: center; gap: 3px">
+      <dc-import name="Avatar" size="46" skin="#5C3A21" hair="#111111" hair-style="short" bg="#8FD3FF" shirt="#0E9F6E" hint-size="46px,46px"></dc-import>
+      <div style="font-size: 12px; font-weight: 600">@lagos_shark</div>
+      <div style="font-size: 11px; color: {{c.warn}}; font-weight: 600">Not in your contacts</div>
+    </div>
+    <a href="UserProfile.dc.html" aria-label="Profile" style="width: 64px; height: 44px"></a>
+  </header>
+
+  <div style="flex: 1; display: flex; flex-direction: column; justify-content: flex-end; gap: 6px; padding: 12px 14px 10px; overflow: hidden">
+    <div style="align-self: center; width: 280px; border-radius: 16px; padding: 10px 12px; background: {{c.bg2}}; display: flex; align-items: center; gap: 10px; opacity: .85">
+      <span style="width: 34px; height: 34px; border-radius: 10px; background: #13774A; flex-shrink: 0"></span>
+      <div style="flex: 1; min-width: 0">
+        <div style="font-size: 14px; font-weight: 700; text-decoration: line-through">8 Ball · Pool ₦1,000 each</div>
+        <div style="font-size: 12px; color: {{c.sub}}">Expired Tuesday · ₦1,000 refunded to you</div>
+      </div>
+      <span style="font-size: 11px; font-weight: 800; color: {{c.money}}">REFUNDED</span>
+    </div>
+
+    <div style="align-self: flex-end; width: 250px; border-radius: 20px; padding: 12px 14px; background: {{c.card}}; border: 1px solid {{c.line}}; margin-top: 10px">
+      <div style="display: flex; justify-content: space-between; align-items: center"><b style="font-size: 15px">Sea Battle</b><span style="padding: 2px 8px; border-radius: 6px; background: #C93E1C; color: #fff; font-size: 10px; font-weight: 800">POOL</span></div>
+      <div style="font-size: 13px; color: {{c.sub}}; margin-top: 2px; text-decoration: line-through">You offered ₦1,000 each · pot ₦2,000</div>
+    </div>
+
+    <div style="align-self: flex-start; width: 286px; border-radius: 22px; overflow: hidden; background: {{c.recv}}; margin-top: 4px">
+      <div style="padding: 14px 14px 0; display: flex; align-items: center; gap: 8px">
+        <span style="padding: 3px 9px; border-radius: 999px; background: #FF7A1A; color: #fff; font-size: 11px; font-weight: 800; letter-spacing: 0.3px">COUNTER-OFFER</span>
+        <span style="font-size: 12px; color: {{c.sub}}">12m ago</span>
+      </div>
+      <div style="padding: 10px 14px 14px; display: flex; flex-direction: column; gap: 10px">
+        <div style="display: flex; align-items: baseline; gap: 10px">
+          <span style="font-family: 'Bricolage Grotesque', Figtree, sans-serif; font-size: 30px; font-weight: 800; letter-spacing: -0.5px">₦500</span>
+          <span style="font-size: 14px; color: {{c.sub}}">each · pot ₦1,000</span>
+        </div>
+        <div style="font-size: 14px; line-height: 1.4">"I'm low this week. Half stakes, same smoke."</div>
+        <sc-if value="{{open}}" hint-placeholder-val="{{true}}">
+          <button onClick="{{accept}}" style="height: 46px; border-radius: 14px; border: none; background: #C93E1C; color: #fff; font: 700 15px Figtree, sans-serif">Accept ₦500</button>
+          <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px">
+            <button style="height: 40px; border-radius: 12px; border: none; background: {{c.bg}}; color: {{c.text}}; font: 600 14px Figtree, sans-serif">Counter back</button>
+            <button onClick="{{decline}}" style="height: 40px; border-radius: 12px; border: none; background: {{c.bg}}; color: {{c.text}}; font: 600 14px Figtree, sans-serif">Decline</button>
+          </div>
+          <div style="font-size: 12px; color: {{c.sub}}">Your ₦1,000 is still locked. Accepting returns ₦500 to you right away.</div>
+        </sc-if>
+        <sc-if value="{{accepted}}" hint-placeholder-val="{{false}}">
+          <a href="PoolResult.dc.html" style="height: 46px; border-radius: 14px; background: #C93E1C; color: #fff; font-size: 15px; font-weight: 700; display: flex; align-items: center; justify-content: center; text-decoration: none">Deal · play now</a>
+          <div style="font-size: 12px; color: {{c.money}}; font-weight: 600">₦500 back in your wallet · ₦500 each locked</div>
+        </sc-if>
+        <sc-if value="{{declined}}" hint-placeholder-val="{{false}}">
+          <div style="height: 42px; border-radius: 12px; background: {{c.bg}}; color: {{c.sub}}; font-size: 14px; font-weight: 600; display: flex; align-items: center; justify-content: center">Declined · ₦1,000 refunded</div>
+        </sc-if>
+      </div>
+    </div>
+  </div>
+  <div style="height: 34px"></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"$preview":{"width":390,"height":844}}'>
+const T={light:{bg:'#FBF8F3',bg2:'#F6F1EA',card:'#FFFFFF',text:'#1B140F',sub:'#6F655B',line:'#E6DDD0',recv:'#ECE4D8',brandText:'#B33416',money:'#0E7C47',warn:'#C4314B'},
+dark:{bg:'#0F0D0B',bg2:'#15120F',card:'#1D1916',text:'#F7F1E8',sub:'#ABA196',line:'#2E2823',recv:'#2A2420',brandText:'#FF8F6B',money:'#3DDC84',warn:'#FF6B81'}};
+class Component extends DCLogic {
+  constructor(p){ super(p); this.state = { s: 'open' }; }
+  renderVals() {
+    const s = this.state.s;
+    return {
+      c: T[this.props.theme === 'dark' ? 'dark' : 'light'],
+      open: s === 'open', accepted: s === 'accepted', declined: s === 'declined',
+      accept: () => this.setState({ s: 'accepted' }), decline: () => this.setState({ s: 'declined' })
+    };
+  }
+}
+</script>
+</body>
+</html>

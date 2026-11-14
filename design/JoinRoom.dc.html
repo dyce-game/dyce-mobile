@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Dyce — Join a space</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&amp;family=Bricolage+Grotesque:wght@600;700;800&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; padding: 54px 20px 34px; display: flex; flex-direction: column; font-family: Figtree, -apple-system, system-ui, sans-serif; background: {{c.bg}}; color: {{c.text}}; overflow: hidden">
+  <div style="display: flex; align-items: center; justify-content: space-between; height: 44px">
+    <a href="Space.dc.html" style="height: 44px; display: flex; align-items: center; color: {{c.brandText}}; font-size: 17px; text-decoration: none">Cancel</a>
+    <span style="font-size: 17px; font-weight: 600">{{v.header}}</span>
+    <span style="width: 54px"></span>
+  </div>
+
+  <sc-if value="{{isEnter}}" hint-placeholder-val="{{true}}">
+    <h1 style="margin: 20px 0 6px; font-family: 'Bricolage Grotesque', Figtree, sans-serif; font-size: 28px; font-weight: 700; letter-spacing: -0.4px">Enter the space code</h1>
+    <p style="margin: 0 0 20px; font-size: 15px; color: {{c.sub}}">The host can find it in the space. It looks like DY-4K9P.</p>
+    <div style="display: flex; align-items: center; gap: 8px">
+      <span style="font-size: 26px; font-weight: 800; color: {{c.sub}}; margin-right: 4px">DY-</span>
+      <sc-for list="{{chars}}" as="k" hint-placeholder-count="4">
+        <span style="flex: 1; height: 64px; border-radius: 16px; border: 2px solid {{k.ring}}; background: {{c.field}}; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: 800">{{k.ch}}</span>
+      </sc-for>
+    </div>
+    <button style="margin-top: 12px; align-self: flex-start; height: 40px; padding: 0 14px; border-radius: 999px; border: none; background: {{c.field}}; color: {{c.text}}; font: 600 14px Figtree, sans-serif">Paste from clipboard</button>
+
+    <div style="margin-top: 22px; border-radius: 22px; padding: 16px; background: radial-gradient(circle at 80% 20%, #F06A3A, #B23A12); color: #fff">
+      <div style="font-size: 12px; font-weight: 800; letter-spacing: 0.4px; opacity: .9">SPACE FOUND</div>
+      <div style="font-family: 'Bricolage Grotesque', Figtree, sans-serif; font-size: 22px; font-weight: 800; margin-top: 2px">Sunday Game Night</div>
+      <div style="font-size: 14px; opacity: .95">Crazy Cards · host Ifeoma · 3 of 4 seated</div>
+      <div style="display: flex; margin-top: 12px">
+        <sc-for list="{{seated}}" as="p" hint-placeholder-count="3">
+          <div style="margin-right: -10px; border-radius: 50%; border: 2px solid rgba(255,255,255,.9)">
+            <dc-import name="Avatar" size="38" skin="{{p.skin}}" hair="{{p.hair}}" hair-style="{{p.hs}}" bg="{{p.bg}}" shirt="{{p.shirt}}" hint-size="38px,38px"></dc-import>
+          </div>
+        </sc-for>
+        <span style="width: 38px; height: 38px; border-radius: 50%; border: 2px dashed rgba(255,255,255,.8); margin-left: 14px; box-sizing: border-box"></span>
+      </div>
+      <div style="margin-top: 12px; padding: 8px 12px; border-radius: 12px; background: rgba(0,0,0,.24); font-size: 13px; font-weight: 700">Pool · ₦500 a seat · winner takes ₦2,000</div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{isProblem}}" hint-placeholder-val="{{false}}">
+    <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 10px; padding: 0 8px">
+      <span style="width: 88px; height: 88px; border-radius: 28px; background: {{v.iconBg}}; color: #fff; font-family: 'Bricolage Grotesque', Figtree, sans-serif; font-size: 36px; font-weight: 800; display: flex; align-items: center; justify-content: center">{{v.icon}}</span>
+      <h1 style="margin: 10px 0 0; font-family: 'Bricolage Grotesque', Figtree, sans-serif; font-size: 26px; font-weight: 700; letter-spacing: -0.4px">{{v.title}}</h1>
+      <p style="margin: 0; font-size: 15px; line-height: 1.45; color: {{c.sub}}">{{v.body}}</p>
+      <div style="margin-top: 6px; padding: 8px 14px; border-radius: 999px; background: {{c.moneySoft}}; color: {{c.money}}; font-size: 13px; font-weight: 700">{{v.money}}</div>
+    </div>
+  </sc-if>
+
+  <div style="margin-top: auto; display: flex; flex-direction: column; gap: 8px">
+    <a href="{{v.href}}" style="height: 54px; border-radius: 16px; background: #C93E1C; color: #fff; font-size: 17px; font-weight: 700; display: flex; align-items: center; justify-content: center; text-decoration: none">{{v.cta}}</a>
+    <sc-if value="{{v.alt}}" hint-placeholder-val="{{false}}">
+      <a href="Space.dc.html" style="height: 48px; display: flex; align-items: center; justify-content: center; color: {{c.brandText}}; font-size: 16px; font-weight: 600; text-decoration: none">{{v.alt}}</a>
+    </sc-if>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"variant":{"editor":"enum","options":["enter","full","hostLeft","removed"],"default":"enter"},"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"$preview":{"width":390,"height":844}}'>
+const T={light:{bg:'#FBF8F3',text:'#1B140F',sub:'#6F655B',field:'#EEE7DC',brandText:'#B33416',money:'#0E7C47',moneySoft:'#E3F6EA'},dark:{bg:'#0F0D0B',text:'#F7F1E8',sub:'#ABA196',field:'#1D1916',brandText:'#FF8F6B',money:'#3DDC84',moneySoft:'#11301F'}};
+const V={
+  enter:{header:'Join a space',cta:'Take the seat · pay ₦500',href:'Lobby.dc.html',alt:false},
+  full:{header:'Sunday Game Night',icon:'4/4',iconBg:'#C2410C',title:'Space’s full',body:'Someone grabbed the last seat a few seconds ago. We’ll ping you if a seat opens before it starts.',money:'Nothing was charged',cta:'Find another Crazy Cards space',href:'RoomsHome.dc.html',alt:'Notify me if a seat opens'},
+  hostLeft:{header:'Sunday Game Night',icon:'↩',iconBg:'#B33416',title:'The host closed the space',body:'Ifeoma ended the space before the game started. Every entry goes straight back.',money:'₦500 refunded to your wallet',cta:'Start your own space',href:'CreateRoom.dc.html',alt:'Back to spaces'},
+  removed:{header:'Office Doodles',icon:'×',iconBg:'#6F655B',title:'You were removed',body:'The host removed you from this space. You can’t rejoin it, but you can play anyone else.',money:'Your ₦300 entry was refunded',cta:'Browse open spaces',href:'RoomsHome.dc.html',alt:false}
+};
+class Component extends DCLogic {
+  renderVals() {
+    const k = V[this.props.variant] ? this.props.variant : 'enter';
+    return {
+      c: T[this.props.theme === 'dark' ? 'dark' : 'light'],
+      v: V[k], isEnter: k === 'enter', isProblem: k !== 'enter',
+      chars: ['4','K','9','P'].map((ch) => ({ ch, ring: '#C93E1C' })),
+      seated: [
+        { skin: '#A0662F', hair: '#3B2219', hs: 'afro', bg: '#FFB4C6', shirt: '#0E9F6E' },
+        { skin: '#8D5524', hair: '#1C1714', hs: 'bun', bg: '#FFC857', shirt: '#E0453A' },
+        { skin: '#5C3A21', hair: '#111111', hs: 'waves', bg: '#8FD3FF', shirt: '#1F2937' }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

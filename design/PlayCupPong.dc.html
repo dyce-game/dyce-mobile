@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Dyce — Cup Pong in 3D</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&amp;family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; font-family: Figtree, -apple-system, system-ui, sans-serif; color: #FFFFFF; background: linear-gradient(#170C1C 0%, #2A1220 30%, #3A1A14 48%, #1A0D0A 49%)">
+  <sc-for list="{{bokeh}}" as="b" hint-placeholder-count="10">
+    <span style="position: absolute; left: {{b.x}}; top: {{b.y}}; width: {{b.s}}; height: {{b.s}}; border-radius: 50%; background: radial-gradient(circle, {{b.c}}, transparent 70%); opacity: {{b.o}}" aria-hidden="true"></span>
+  </sc-for>
+  <span style="position: absolute; left: 0; right: 0; top: 330px; height: 90px; background: linear-gradient(transparent, rgba(0,0,0,.45))" aria-hidden="true"></span>
+
+  <div role="img" aria-label="Cup pong table seen from your end. Six cups left at the far end." style="position: absolute; inset: 0">
+    <span style="position: absolute; inset: 0; clip-path: {{table.lip}}; background: #0D2A6B"></span>
+    <span style="position: absolute; inset: 0; clip-path: {{table.top}}; background: linear-gradient(#1B4BB0 0%, #2F6BEA 45%, #3B78F2 100%)"></span>
+    <span style="position: absolute; inset: 0; clip-path: {{table.top}}; background: radial-gradient(ellipse 60% 22% at 50% 66%, rgba(255,255,255,.28), transparent 70%)"></span>
+    <span style="position: absolute; inset: 0; clip-path: {{table.top}}; background: repeating-linear-gradient(90deg, rgba(255,255,255,.025) 0 2px, transparent 2px 6px)"></span>
+    <sc-for list="{{lines}}" as="l" hint-placeholder-count="3">
+      <span style="position: absolute; inset: 0; clip-path: {{l}}; background: rgba(255,255,255,.88)"></span>
+    </sc-for>
+    <sc-for list="{{cups}}" as="k" hint-placeholder-count="6">
+      <span style="position: absolute; left: {{k.sx}}; top: {{k.sy}}; width: {{k.sw}}; height: {{k.sh}}; border-radius: 50%; background: rgba(0,0,0,.35); filter: blur(2px)"></span>
+      <span style="position: absolute; left: {{k.bx}}; top: {{k.by}}; width: {{k.bw}}; height: {{k.bh}}; clip-path: polygon(0 0, 100% 0, 86% 100%, 14% 100%); background: linear-gradient(90deg, #7A0E12 0%, #D8262C 22%, #FF6B5E 42%, #E0303A 58%, #8E1218 100%)"></span>
+      <span style="position: absolute; left: {{k.bx}}; top: {{k.ry}}; width: {{k.bw}}; height: {{k.bandH}}; background: linear-gradient(90deg, rgba(0,0,0,.25), rgba(255,255,255,.18) 45%, rgba(0,0,0,.25)); clip-path: polygon(0 0, 100% 0, 99% 100%, 1% 100%)"></span>
+      <span style="position: absolute; left: {{k.rx}}; top: {{k.rTop}}; width: {{k.rw}}; height: {{k.rh}}; border-radius: 50%; background: #F4F1EC; box-shadow: inset 0 -1px 0 rgba(0,0,0,.2)"></span>
+      <span style="position: absolute; left: {{k.ix}}; top: {{k.iy}}; width: {{k.iw}}; height: {{k.ih}}; border-radius: 50%; background: radial-gradient(ellipse at 50% 70%, #E0303A, #5A0A0E 70%)"></span>
+    </sc-for>
+
+    <sc-for list="{{arc}}" as="a" hint-placeholder-count="12">
+      <span style="position: absolute; left: {{a.x}}; top: {{a.y}}; width: {{a.s}}; height: {{a.s}}; border-radius: 50%; background: rgba(255,255,255,{{a.o}})"></span>
+    </sc-for>
+    <span style="position: absolute; left: 160px; top: 778px; width: 84px; height: 18px; border-radius: 50%; background: rgba(0,0,20,.4); filter: blur(4px)"></span>
+    <span style="position: absolute; left: 176px; top: 702px; width: 52px; height: 52px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #FFFFFF 0%, #F2F0EA 40%, #C9C4BA 80%, #9C968C 100%); box-shadow: 0 0 0 1px rgba(0,0,0,.05)"></span>
+  </div>
+
+  <sc-if value="{{inApp}}" hint-placeholder-val="{{true}}">
+  <div style="position: absolute; left: 12px; right: 12px; top: 54px; display: flex; align-items: center; justify-content: space-between">
+    <a href="Thread.dc.html" aria-label="Back to chat" style="height: 40px; padding: 0 14px; border-radius: 20px; background: rgba(255,255,255,.14); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,.18); color: #fff; font-size: 14px; font-weight: 700; display: flex; align-items: center; gap: 4px; text-decoration: none">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>Chat</a>
+    <span style="height: 30px; padding: 0 12px; border-radius: 15px; background: {{modeBg}}; box-shadow: 0 2px 0 rgba(0,0,0,.35); font-size: 12px; font-weight: 800; letter-spacing: 0.4px; display: flex; align-items: center">{{modeLabel}}</span>
+    <a href="GameMenu.dc.html" aria-label="Game menu" style="width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,.14); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,.18); display: flex; align-items: center; justify-content: center">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
+    </a>
+  </div>
+
+  </sc-if>
+  <sc-if value="{{guest}}" hint-placeholder-val="{{false}}">
+    <div style="position: absolute; left: 12px; right: 12px; top: 54px; display: flex; align-items: center; justify-content: space-between">
+      <div style="height: 40px; padding: 0 14px 0 6px; border-radius: 20px; background: rgba(255,255,255,.14); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,.18); display: flex; align-items: center; gap: 8px">
+        <span style="width: 28px; height: 28px; border-radius: 9px; background: #C93E1C; box-shadow: inset 0 -3px 0 #8A2410; display: flex; align-items: center; justify-content: center; gap: 3px"><span style="width: 5px; height: 5px; border-radius: 50%; background: #fff"></span><span style="width: 5px; height: 5px; border-radius: 50%; background: #fff"></span></span>
+        <span style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 17px; font-weight: 800">dyce</span><span style="font-size: 12px; opacity: .75">guest · Tolu</span>
+      </div>
+      <a href="DeepLinkOnboard.dc.html" style="height: 36px; padding: 0 14px; border-radius: 18px; background: #E3A93B; box-shadow: 0 3px 0 #A86F12; color: #3A2400; font-size: 13px; font-weight: 800; display: flex; align-items: center; text-decoration: none">Get the app</a>
+    </div>
+  </sc-if>
+  <div style="position: absolute; left: 50%; top: 112px; transform: translateX(-50%); height: 52px; padding: 0 16px 0 6px; border-radius: 26px; background: rgba(0,0,0,.35); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,.14); display: flex; align-items: center; gap: 10px; white-space: nowrap">
+    <dc-import name="Avatar" size="40" skin="#C68642" hair="#2A1A12" hair-style="short" bg="#E9E9EB" shirt="#0E9F6E" hint-size="40px,40px"></dc-import>
+    <div><div style="font-size: 14px; font-weight: 800">{{oppName}}</div><div style="font-size: 12px; opacity: .8">{{oppMeta}}</div></div>
+  </div>
+
+  <div style="position: absolute; left: 14px; right: 14px; bottom: 30px; display: flex; align-items: flex-end; justify-content: space-between">
+    <div style="padding: 10px 14px; border-radius: 18px; background: rgba(0,0,0,.38); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,.14)">
+      <div style="font-size: 11px; font-weight: 800; letter-spacing: 0.5px; opacity: .8">YOUR CUPS</div>
+      <div style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 26px; font-weight: 800">4 / 10</div>
+    </div>
+    <div style="text-align: center; padding-bottom: 6px">
+      <div style="font-size: 14px; font-weight: 800">Flick up to throw</div>
+      <div style="display: flex; gap: 6px; justify-content: center; margin-top: 6px"><span style="width: 12px; height: 12px; border-radius: 50%; background: #fff"></span><span style="width: 12px; height: 12px; border-radius: 50%; background: rgba(255,255,255,.3)"></span></div>
+    </div>
+    <button style="height: 46px; padding: 0 16px; border-radius: 23px; border: none; background: #E3A93B; box-shadow: 0 3px 0 #A86F12; color: #3A2400; font: 800 14px Figtree, sans-serif">Re-rack</button>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"guest":{"editor":"boolean","default":false},"mode":{"editor":"enum","options":["free","pool"],"default":"free"},"$preview":{"width":390,"height":844}}'>
+const CX = 195;
+function S(d){ return 1 / (3 - 2 * d); }
+function Y(d){ return 200 + 640 * S(d); }
+function W(d){ return 600 * S(d); }
+function X(d, u){ return CX + u * W(d); }
+function poly(pts){ return 'polygon(' + pts.map((p) => p[0].toFixed(1) + 'px ' + p[1].toFixed(1) + 'px').join(', ') + ')'; }
+function strip(u0, u1, d0, d1){ return poly([[X(d0,u0),Y(d0)],[X(d0,u1),Y(d0)],[X(d1,u1),Y(d1)],[X(d1,u0),Y(d1)]]); }
+class Component extends DCLogic {
+  renderVals() {
+    const pool = this.props.mode === 'pool';
+    const rows = [[0, 4], [0.08, 3], [0.16, 2], [0.24, 1]];
+    const sunk = { '0,0': 1, '1,2': 1, '0,3': 1, '2,1': 1 };
+    const cups = [];
+    rows.forEach(([d, k], ri) => {
+      for (let i = 0; i < k; i++) {
+        if (sunk[ri + ',' + i]) continue;
+        const u = (i - (k - 1) / 2) * 0.16;
+        const w = 0.15 * W(d), h = w * 1.18, cx = X(d, u), base = Y(d);
+        const top = base - h, rh = w * 0.3;
+        cups.push({
+          sx: (cx - w * 0.55) + 'px', sy: (base - w * 0.08) + 'px', sw: (w * 1.1) + 'px', sh: (w * 0.28) + 'px',
+          bx: (cx - w / 2) + 'px', by: (top + rh / 2) + 'px', bw: w + 'px', bh: (h - rh / 2) + 'px',
+          ry: (top + rh / 2 + h * 0.18) + 'px', bandH: (h * 0.1) + 'px',
+          rx: (cx - w / 2) + 'px', rTop: top + 'px', rw: w + 'px', rh: rh + 'px',
+          ix: (cx - w * 0.42) + 'px', iy: (top + rh * 0.14) + 'px', iw: (w * 0.84) + 'px', ih: (rh * 0.72) + 'px'
+        });
+      }
+    });
+    const arc = [];
+    const p0 = [202, 700], p1 = [196, 120], p2 = [CX, Y(0.24) - 0.15 * W(0.24) * 1.18];
+    for (let i = 1; i <= 12; i++) { const t = i / 13, x = (1-t)*(1-t)*p0[0] + 2*(1-t)*t*p1[0] + t*t*p2[0], y = (1-t)*(1-t)*p0[1] + 2*(1-t)*t*p1[1] + t*t*p2[1], s = 9 - t * 6; arc.push({ x: (x - s/2) + 'px', y: (y - s/2) + 'px', s: s + 'px', o: (0.85 - t * 0.5).toFixed(2) }); }
+    const BK = [[20,150,70,'#FFB347',.45],[90,90,40,'#FF6B9D',.35],[150,180,56,'#FFD27A',.4],[250,120,80,'#FF8F6B',.35],[320,200,50,'#FFB347',.45],[40,270,46,'#9DD6FF',.3],[200,250,36,'#FFD27A',.5],[300,300,60,'#FF6B9D',.3],[120,320,30,'#FFB347',.5],[350,60,44,'#FFD27A',.35]];
+    const guest = !!this.props.guest;
+    return {
+      guest, inApp: !guest, oppName: guest ? 'Kemdi' : 'Tolu', oppMeta: guest ? '6 cups left · sent you this' : '6 cups left · watching',
+      modeLabel: pool ? 'POOL · ₦1,000 POT' : 'FREE · +25 XP', modeBg: pool ? '#C93E1C' : '#17834F',
+      table: { top: strip(-0.5, 0.5, 0, 1), lip: poly([[X(0,-0.5),Y(0)],[X(0,0.5),Y(0)],[X(0,0.5),Y(0)+7],[X(0,-0.5),Y(0)+7]]) },
+      lines: [strip(-0.49, -0.475, 0, 1), strip(0.475, 0.49, 0, 1), strip(-0.004, 0.004, 0.3, 1)],
+      cups, arc,
+      bokeh: BK.map(([x,y,s,c,o]) => ({ x: x + 'px', y: y + 'px', s: s + 'px', c, o: String(o) }))
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Dyce — Ludo · In game</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&amp;family=Bricolage+Grotesque:wght@600;700;800&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; padding: 54px 0 30px; display: flex; flex-direction: column; font-family: Figtree, -apple-system, system-ui, sans-serif; background: {{g.bg}}; color: #FFFFFF; overflow: hidden">
+  <div style="display: flex; align-items: center; justify-content: space-between; height: 44px; padding: 0 12px; flex-shrink: 0">
+    <a href="Thread.dc.html" aria-label="Back to chat" style="height: 40px; padding: 0 12px; border-radius: 12px; background: rgba(255,255,255,.12); color: #fff; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 4px; text-decoration: none">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>Chat</a>
+    <span style="height: 28px; padding: 0 12px; border-radius: 14px; background: {{modeBg}}; font-size: 12px; font-weight: 800; letter-spacing: 0.4px; display: flex; align-items: center">{{modeLabel}}</span>
+    <a href="GameMenu.dc.html" aria-label="Game menu" style="width: 40px; height: 40px; border-radius: 12px; background: rgba(255,255,255,.12); display: flex; align-items: center; justify-content: center">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
+    </a>
+  </div>
+
+  <div style="display: flex; align-items: center; gap: 10px; padding: 8px 16px; flex-shrink: 0">
+    <sc-for list="{{opps}}" as="o" hint-placeholder-count="1">
+      <div style="display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; opacity: {{o.op}}">
+        <dc-import name="Avatar" size="{{o.size}}" skin="{{o.skin}}" hair="{{o.hair}}" hair-style="{{o.hs}}" bg="{{o.bg}}" shirt="{{o.shirt}}" hint-size="40px,40px"></dc-import>
+        <div style="min-width: 0"><div style="font-size: 13px; font-weight: 700; white-space: nowrap">{{o.name}}</div><div style="font-size: 11px; opacity: .75; white-space: nowrap">{{o.meta}}</div></div>
+      </div>
+    </sc-for>
+  </div>
+
+  <div style="flex: 1; margin: 0 16px; border-radius: 26px; background: {{g.board}}; position: relative; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center">
+
+    <sc-if value="{{is.ludo}}" hint-placeholder-val="{{false}}">
+      <div style="display: grid; grid-template-columns: repeat(11, minmax(0, 1fr)); gap: 2px; width: 320px; background: #E6E1D8; padding: 4px; border-radius: 14px; box-sizing: border-box; transform: perspective(900px) rotateX(40deg); box-shadow: 0 12px 0 #8A7A62, 0 34px 40px rgba(0,0,0,.55)">
+        <sc-for list="{{ludo}}" as="s" hint-placeholder-count="121">
+          <span style="aspect-ratio: 1; border-radius: 4px; background: {{s.bg}}; display: flex; align-items: center; justify-content: center"><span style="width: {{s.t}}; height: {{s.t}}; border-radius: 50%; background: {{s.tc}}; border: {{s.tb}}; box-sizing: border-box; box-shadow: 0 4px 0 rgba(0,0,0,.45)"></span></span>
+        </sc-for>
+      </div>
+    </sc-if>
+  </div>
+
+  <div style="display: flex; align-items: center; gap: 10px; padding: 12px 16px 0; flex-shrink: 0">
+    <div style="position: relative">
+      <dc-import name="Avatar" size="44" skin="#8D5524" hair="#1C1714" hair-style="afro" bg="#C9B8FF" shirt="#C93E1C" hint-size="44px,44px"></dc-import>
+      <span style="position: absolute; inset: -4px; border-radius: 50%; border: 3px solid #FFC857; border-right-color: transparent"></span>
+    </div>
+    <div style="flex: 1">
+      <div style="font-size: 15px; font-weight: 700">{{g.meTitle}}</div>
+      <div style="font-size: 12px; color: #FFD27A; font-weight: 700">{{g.meSub}}</div>
+    </div>
+    <sc-if value="{{g.action}}" hint-placeholder-val="{{false}}">
+      <button style="height: 46px; padding: 0 18px; border-radius: 14px; border: none; background: {{g.actionBg}}; color: {{g.actionFg}}; font: 800 15px Figtree, sans-serif; display: flex; align-items: center; gap: 8px">
+        <sc-if value="{{is.ludo}}" hint-placeholder-val="{{false}}">
+          <span style="width: 30px; height: 30px; border-radius: 8px; background: #fff; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); padding: 4px; box-sizing: border-box; gap: 1px" aria-hidden="true">
+            <span style="width: 5px; height: 5px; border-radius: 50%; background: #111"></span><span></span><span style="width: 5px; height: 5px; border-radius: 50%; background: #111; justify-self: end"></span>
+            <span></span><span style="width: 5px; height: 5px; border-radius: 50%; background: #111; justify-self: center"></span><span></span>
+            <span style="width: 5px; height: 5px; border-radius: 50%; background: #111"></span><span></span><span style="width: 5px; height: 5px; border-radius: 50%; background: #111; justify-self: end"></span>
+          </span>
+        </sc-if>
+        {{g.action}}</button>
+    </sc-if>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"game":{"editor":"enum","options":["ludo"],"default":"ludo"},"mode":{"editor":"enum","options":["pool","free"],"default":"pool"},"$preview":{"width":390,"height":844}}'>
+const P={
+ amaka:{name:'Amaka',skin:'#8D5524',hair:'#1C1714',hs:'bun',bg:'#FFC857',shirt:'#E0453A'},
+ tunde:{name:'Tunde',skin:'#5C3A21',hair:'#111111',hs:'waves',bg:'#8FD3FF',shirt:'#1F2937'},
+ zee:{name:'Zainab',skin:'#C68642',hair:'#2A1A12',hs:'long',bg:'#B8F2C8',shirt:'#C93E1C'},
+ ife:{name:'Ifeoma',skin:'#A0662F',hair:'#3B2219',hs:'afro',bg:'#FFB4C6',shirt:'#0E9F6E'},
+ tolu:{name:'Tolu',skin:'#C68642',hair:'#2A1A12',hs:'short',bg:'#ECE4D8',shirt:'#0E9F6E'}
+};
+const G={
+ wordhunt:{bg:'#3A2400',board:'#FFC23D',pot:'₦3,000',meTitle:'Your round · 38 pts',meSub:'0:41 left · Zainab played 41',action:'Done',actionBg:'#FFFFFF',actionFg:'#3A2400',opps:[['zee','Played · 41 pts']]},
+ cuppong:{bg:'#0B1A40',board:'linear-gradient(#2F6BEA, #163C9A)',pot:'₦1,000',meTitle:'Your throw · 4 cups left',meSub:'Tolu has 2 cups left',action:false,opps:[['tolu','2 cups left']]},
+ seabattle:{bg:'#06152E',board:'#0B2A55',pot:'₦2,000',meTitle:'Your shot · 3 hits in a row',meSub:'One more hit sinks the cruiser',action:'Fire',actionBg:'#E0453A',actionFg:'#FFFFFF',opps:[['tunde','2 of 4 ships left']]},
+ crazycards:{bg:'#5A0F18',board:'radial-gradient(circle at 50% 40%, #C2222F, #7A1220)',pot:'₦2,000',back:'#111111',drawLabel:'DRAW',rule:'Blue 7 · play blue, a 7 or a wild',meTitle:'Your turn · 7 cards',meSub:'2 cards playable',action:'Last card!',actionBg:'#FFC857',actionFg:'#3A2400',opps:[['amaka','3 cards'],['ife','5 cards'],['tunde','1 card!']]},
+ whot:{bg:'#2E0814',board:'radial-gradient(circle at 50% 40%, #8C2A43, #4E0F22)',pot:'₦2,000',back:'#5A1A2B',drawLabel:'MARKET',rule:'Pick two! Play a 2 or go to market',meTitle:'Your turn · 6 cards',meSub:'Amaka played Pick Two',action:'Go market',actionBg:'#FFFFFF',actionFg:'#4E0F22',opps:[['amaka','4 cards'],['zee','2 cards'],['ife','6 cards']]},
+ ludo:{bg:'#131313',board:'#202020',pot:'₦3,000',meTitle:'You rolled a 5',meSub:'Tap a green token to move',action:'Roll',actionBg:'#2BB673',actionFg:'#FFFFFF',opps:[['amaka','Red · 2 home'],['tunde','Blue · 0 home'],['zee','Yellow · 1 home']]}
+};
+const SHAPES={circle:['22px','22px','50%','none'],square:['20px','20px','3px','none'],triangle:['22px','20px','2px','none'],cross:['20px','6px','2px','rotate(0deg)'],star:['20px','20px','3px','rotate(45deg)']};
+function card(kind,o){
+  if(kind==='whot'){const s=SHAPES[o.s]||SHAPES.circle;return {bg:'#FBF8F3',fg:'#8C2A43',label:o.n,shape:true,sw:s[0],sh:s[1],sr:s[2],st:o.s==='triangle'?'skewX(-18deg)':s[3]};}
+  return {bg:o.c,fg:o.c==='#FFC857'?'#3A2400':'#FFFFFF',label:o.n,shape:false,sw:'0',sh:'0',sr:'0',st:'none'};
+}
+class Component extends DCLogic {
+  renderVals() {
+    const k = G[this.props.game] ? this.props.game : 'ludo';
+    const g = G[k]; const pool = this.props.mode !== 'free';
+    const multi = g.opps.length > 1;
+    const is = { wordhunt: k === 'wordhunt', cuppong: k === 'cuppong', seabattle: k === 'seabattle', cards: k === 'crazycards' || k === 'whot', ludo: k === 'ludo' };
+    const out = {
+      g, is,
+      modeLabel: pool ? (multi ? 'SPACE POOL · ' : 'POOL · ') + g.pot + ' POT' : (multi ? 'FREE SPACE · XP' : 'FREE · +25 XP'),
+      modeBg: pool ? '#C93E1C' : '#0E7C47',
+      opps: g.opps.map(([id, meta], i) => Object.assign({}, P[id], { meta, size: multi ? '34' : '42', op: multi && i === 2 ? '1' : (multi ? '0.85' : '1') })),
+      letters: [], found: [], cups: [], enemy: [], mine: [], hand: [], top: {}, ludo: []
+    };
+    if (is.wordhunt) {
+      const L = 'SUYAJOLFMEDIRTNK'.split(''); const path = [0,1,2,3];
+      out.letters = L.map((ch, i) => { const on = path.indexOf(i) >= 0; return { ch, bg: on ? '#C93E1C' : '#FFFFFF', fg: on ? '#FFFFFF' : '#5A3600', sh: on ? '#8A2410' : '#C98500' }; });
+      out.found = ['JOLLOF','MEAT','FIRE','DIRT','LOAF'];
+    }
+    if (is.cuppong) out.cups = [[110,40],[166,40],[222,40],[138,94],[194,94],[166,148]].map(([x,y], i) => ({ x: x + 'px', y: y + 'px', op: i < 2 ? '0.15' : '1' }));
+    if (is.seabattle) {
+      const hits = [10,11,12,35,43], miss = [3,20,28,50,54,61,6,45];
+      out.enemy = Array.from({ length: 64 }, (_, i) => { const h = hits.indexOf(i) >= 0, m = miss.indexOf(i) >= 0, aim = i === 13; return { bg: aim ? '#FFC857' : 'rgba(255,255,255,.10)', dot: h ? '60%' : (m ? '28%' : '0'), dc: h ? '#E0453A' : '#FFFFFF' }; });
+      const ships = [9,10,11,12,26,34,42,50,45,46,47,60,61], dmg = [10,11,34,42,45,60];
+      out.mine = Array.from({ length: 64 }, (_, i) => ({ bg: dmg.indexOf(i) >= 0 ? '#E0453A' : (ships.indexOf(i) >= 0 ? '#9AA7B8' : 'rgba(255,255,255,.12)') }));
+    }
+    if (is.cards) {
+      const whot = k === 'whot';
+      const handData = whot
+        ? [{s:'circle',n:'2'},{s:'triangle',n:'5'},{s:'cross',n:'7'},{s:'square',n:'2'},{s:'star',n:'8'},{s:'circle',n:'14'}]
+        : [{c:'#2457D6',n:'3'},{c:'#E0453A',n:'7'},{c:'#2BB673',n:'+2'},{c:'#FFC857',n:'9'},{c:'#2457D6',n:'SKIP'},{c:'#111111',n:'W'},{c:'#E0453A',n:'4'}];
+      const playable = whot ? [0,3] : [0,1,4,5];
+      const n = handData.length, span = 270, step = span / (n - 1);
+      out.hand = handData.map((o, i) => Object.assign(card(k, o), { x: (28 + i * step - 33 + 20) + 'px', y: (Math.abs(i - (n - 1) / 2) < 1 ? 26 : 14 - Math.abs(i - (n - 1) / 2) * 4 + 12) + 'px', r: ((i - (n - 1) / 2) * 6) + 'deg', ring: playable.indexOf(i) >= 0 ? '#FFC857' : '#FFFFFF', op: playable.indexOf(i) >= 0 ? '1' : '0.75' }));
+      out.top = whot ? card('whot', { s: 'circle', n: '2' }) : card('cards', { c: '#2457D6', n: '7' });
+    }
+    if (is.ludo) {
+      const C = { r: '#E0453A', g: '#2BB673', y: '#FFB020', b: '#2457D6' };
+      const cell = (x, y) => {
+        const inYard = (x < 4 && y < 4) ? 'r' : (x > 6 && y < 4) ? 'g' : (x < 4 && y > 6) ? 'b' : (x > 6 && y > 6) ? 'y' : null;
+        if (inYard) { const yardInner = (x === 1 || x === 2 || x === 8 || x === 9) && (y === 1 || y === 2 || y === 8 || y === 9); return { bg: yardInner ? '#FFFFFF' : C[inYard], key: inYard, inner: yardInner }; }
+        if (x === 5 && y === 5) return { bg: '#C93E1C' };
+        if (x === 5 && y > 0 && y < 5) return { bg: C.g };
+        if (x === 5 && y > 5 && y < 10) return { bg: C.b };
+        if (y === 5 && x > 0 && x < 5) return { bg: C.r };
+        if (y === 5 && x > 5 && x < 10) return { bg: C.y };
+        return { bg: '#FFFFFF' };
+      };
+      const tokens = { '1,1': 'r', '2,2': 'r', '8,1': 'g', '9,2': 'g', '8,8': 'y', '1,8': 'b', '2,9': 'b', '9,9': 'y', '4,6': 'g', '6,3': 'r', '5,7': 'b', '7,4': 'y', '6,9': 'g' };
+      out.ludo = [];
+      for (let y = 0; y < 11; y++) for (let x = 0; x < 11; x++) {
+        const c = cell(x, y); const t = tokens[x + ',' + y];
+        out.ludo.push({ bg: c.bg, t: t ? '70%' : '0', tc: t ? C[t] : 'transparent', tb: t ? '2px solid #FFFFFF' : 'none' });
+      }
+    }
+    return out;
+  }
+}
+</script>
+</body>
+</html>

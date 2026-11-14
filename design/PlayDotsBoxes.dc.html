@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Dyce — Dots and Boxes</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800;900&amp;family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; font-family: Figtree, -apple-system, system-ui, sans-serif; color: #FFFFFF; background: radial-gradient(ellipse at 50% 30%, #2A2420, #0F0D0B 75%)">
+  <div style="position: absolute; left: 50px; top: 220px; width: 290px; height: 290px; perspective: 900px" role="img" aria-label="Dots and boxes, 4 by 4. You own 4 boxes, Bayo owns 3.">
+    <div style="position: absolute; inset: 0; transform: rotateX(0deg); transform-style: preserve-3d">
+      <span style="position: absolute; inset: -22px; border-radius: 18px; background: linear-gradient(135deg, #F6EEDC, #E8DCC0); box-shadow: 0 12px 0 #B9A57E, 0 36px 44px rgba(0,0,0,.5)"></span>
+      <span style="position: absolute; inset: -22px; border-radius: 18px; background: repeating-linear-gradient(0deg, rgba(36,87,214,.12) 0 1px, transparent 1px 18px)"></span>
+      <sc-for list="{{boxes}}" as="b" hint-placeholder-count="7">
+        <span style="position: absolute; left: {{b.x}}; top: {{b.y}}; width: 62px; height: 62px; border-radius: 6px; background: {{b.bg}}; color: #fff; font-family: 'Bricolage Grotesque', sans-serif; font-size: 22px; font-weight: 800; display: flex; align-items: center; justify-content: center">{{b.t}}</span>
+      </sc-for>
+      <sc-for list="{{lines}}" as="l" hint-placeholder-count="20">
+        <span style="position: absolute; left: {{l.x}}; top: {{l.y}}; width: {{l.w}}; height: {{l.h}}; border-radius: 4px; background: {{l.c}}; box-shadow: {{l.sh}}; border: {{l.b}}; box-sizing: border-box"></span>
+      </sc-for>
+      <sc-for list="{{dots}}" as="d" hint-placeholder-count="25">
+        <span style="position: absolute; left: {{d.x}}; top: {{d.y}}; width: 14px; height: 14px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #6A5E54, #1B140F); box-shadow: 0 4px 0 #000, 0 6px 6px rgba(0,0,0,.35)"></span>
+      </sc-for>
+    </div>
+  </div>
+  <div style="position: absolute; left: 20px; right: 20px; top: 560px; display: flex; justify-content: space-between; font-size: 15px; font-weight: 800"><span style="color: #FF8F6B">You · 4</span><span style="opacity: .8">9 boxes left</span><span style="color: #8FB8FF">Bayo · 3</span></div>
+  <div style="position: absolute; left: 12px; right: 12px; top: 54px; display: flex; align-items: center; justify-content: space-between">
+    <a href="Thread.dc.html" aria-label="Back to chat" style="height: 40px; padding: 0 14px; border-radius: 20px; background: rgba(255,255,255,.12); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,.16); color: #fff; font-size: 14px; font-weight: 700; display: flex; align-items: center; gap: 4px; text-decoration: none">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>Chat</a>
+    <span style="height: 30px; padding: 0 12px; border-radius: 15px; background: {{modeBg}}; box-shadow: 0 2px 0 rgba(0,0,0,.35); font-size: 12px; font-weight: 800; letter-spacing: 0.4px; display: flex; align-items: center">{{modeLabel}}</span>
+    <a href="GameMenu.dc.html" aria-label="Game menu" style="width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,.12); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,.16); display: flex; align-items: center; justify-content: center">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
+    </a>
+  </div>
+  <div style="position: absolute; left: 50%; top: 106px; transform: translateX(-50%); height: 46px; padding: 0 16px 0 12px; border-radius: 23px; background: rgba(0,0,0,.38); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,.14); display: flex; align-items: center; gap: 8px; white-space: nowrap"><div style="display: flex"><div style="margin-left: -8px; border-radius: 50%; box-shadow: 0 0 0 2px rgba(0,0,0,.4)"><dc-import name="Avatar" size="34" skin="#F1C27D" hair="#1C1714" hair-style="waves" bg="#FFC857" shirt="#1F2937" hint-size="34px,34px"></dc-import></div></div><span style="font-size: 13px; font-weight: 800">Bayo · his move next</span></div>
+  <div style="position: absolute; left: 14px; right: 14px; bottom: 30px; display: flex; align-items: center; gap: 12px; padding: 10px 10px 10px 12px; border-radius: 30px; background: rgba(0,0,0,.38); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,.14)">
+    <div style="position: relative; flex-shrink: 0"><dc-import name="Avatar" size="42" skin="#8D5524" hair="#1C1714" hair-style="afro" bg="#C9B8FF" shirt="#6E4BFF" hint-size="42px,42px"></dc-import><span style="position: absolute; inset: -4px; border-radius: 50%; border: 3px solid #E3A93B; border-right-color: transparent"></span></div>
+    <div style="flex: 1; min-width: 0"><div style="font-size: 14px; font-weight: 800">Your line · close a box, go again</div><div style="font-size: 12px; opacity: .82">The dashed line gives Bayo nothing</div></div>
+    <button style="height: 50px; padding: 0 18px; border-radius: 25px; border: none; background: #C93E1C; box-shadow: 0 4px 0 #8A2410, inset 0 2px 0 rgba(255,255,255,.25); color: #FFFFFF; font: 900 15px Figtree, sans-serif; flex-shrink: 0">Draw</button>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"mode":{"editor":"enum","options":["pool","free"],"default":"free"},"$preview":{"width":390,"height":844}}'>
+const POT='₦500', MULTI=false;
+function poly(pts){ return 'polygon(' + pts.map(function(p){ return p[0].toFixed(1) + 'px ' + p[1].toFixed(1) + 'px'; }).join(', ') + ')'; }
+function rnd(seed){ var x = Math.sin(seed * 9301 + 49297) * 233280; return x - Math.floor(x); }
+
+function scene(){
+  const S=72, dots=[], lines=[], boxes=[];
+  for(let r=0;r<5;r++) for(let c=0;c<5;c++) dots.push({x:(c*S-7)+'px',y:(r*S-7)+'px'});
+  const ME='#C93E1C', ME2='#8A2410', TH='#2457D6', TH2='#12307A';
+  function L(r,c,horiz,who){ const col=who==='m'?[ME,ME2]:(who==='t'?[TH,TH2]:['transparent','transparent']); lines.push({x:(c*S+(horiz?6:-4))+'px',y:(r*S+(horiz?-4:6))+'px',w:horiz?(S-12)+'px':'8px',h:horiz?'8px':(S-12)+'px',c:col[0],sh:who==='s'?'none':'0 3px 0 '+col[1],b:who==='s'?'2px dashed #E3A93B':'none'}); }
+  [[0,0,'m'],[0,1,'m'],[0,2,'t'],[0,3,'t'],[1,0,'m'],[1,1,'m'],[2,0,'t'],[2,1,'m'],[1,2,'t'],[1,3,'t'],[2,3,'m'],[3,0,'t'],[4,1,'m'],[3,2,'s']].forEach(function(a){ L(a[0],a[1],true,a[2]); });
+  [[0,0,'m'],[0,1,'m'],[0,2,'t'],[0,3,'t'],[0,4,'t'],[1,0,'m'],[1,1,'m'],[1,2,'m'],[1,3,'t'],[1,4,'m'],[2,0,'t'],[3,1,'m'],[3,4,'t']].forEach(function(a){ L(a[0],a[1],false,a[2]); });
+  [[0,0,'m'],[0,1,'m'],[1,0,'m'],[1,1,'m'],[0,2,'t'],[0,3,'t'],[1,3,'t']].forEach(function(b){ boxes.push({x:(b[1]*S+5)+'px',y:(b[0]*S+5)+'px',bg:b[2]==='m'?'rgba(201,62,28,.85)':'rgba(36,87,214,.85)',t:b[2]==='m'?'K':'B'}); });
+  return {dots:dots,lines:lines,boxes:boxes};
+}
+class Component extends DCLogic {
+  renderVals() {
+    const pool = this.props.mode !== 'free';
+    return Object.assign({ modeLabel: pool ? (MULTI ? 'SPACE POOL · ' : 'POOL · ') + POT + ' POT' : (MULTI ? 'FREE SPACE · XP' : 'FREE · +25 XP'), modeBg: pool ? '#C93E1C' : '#17834F' }, scene(this.props, this));
+  }
+}
+</script>
+</body>
+</html>

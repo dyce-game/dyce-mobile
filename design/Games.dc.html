@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Dyce — Games drawer</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&amp;family=Bricolage+Grotesque:wght@600;700;800&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; position: relative; overflow: hidden; font-family: Figtree, -apple-system, system-ui, sans-serif; background: {{c.bg}}; color: {{c.text}}">
+  <div style="position: absolute; left: 0; right: 0; top: 0; height: 320px; padding-top: 54px; box-sizing: border-box" aria-hidden="true">
+    <div style="display: flex; flex-direction: column; align-items: center; gap: 4px; padding-bottom: 10px; border-bottom: 1px solid {{c.line}}; background: {{c.bg2}}">
+      <dc-import name="Avatar" size="46" skin="#8D5524" hair="#1C1714" hair-style="bun" bg="#FFC857" shirt="#E0453A" hint-size="46px,46px"></dc-import>
+      <div style="font-size: 12px; font-weight: 600">Amaka</div>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 6px; padding: 16px 14px">
+      <div style="align-self: flex-end; padding: 9px 14px; border-radius: 20px; border-bottom-right-radius: 6px; background: #C93E1C; color: #fff; font-size: 16px">dodging? I was warming up</div>
+      <div style="align-self: flex-start; padding: 9px 14px; border-radius: 20px; border-bottom-left-radius: 6px; background: {{c.recv}}; font-size: 16px">bet. pick something</div>
+    </div>
+  </div>
+  <a href="Thread.dc.html" aria-label="Close games" style="position: absolute; inset: 0; background: rgba(0,0,0,.32)"></a>
+
+  <section aria-label="Games" style="position: absolute; left: 0; right: 0; bottom: 0; height: 620px; border-radius: 26px 26px 0 0; background: {{c.bg}}; display: flex; flex-direction: column; box-shadow: 0 -8px 30px rgba(0,0,0,.18)">
+    <div style="width: 40px; height: 5px; border-radius: 3px; background: {{c.line}}; align-self: center; margin-top: 8px"></div>
+    <div style="display: flex; align-items: center; justify-content: space-between; padding: 8px 16px 0">
+      <h2 style="margin: 0; font-family: 'Bricolage Grotesque', Figtree, sans-serif; font-size: 24px; font-weight: 700; letter-spacing: -0.4px">Games</h2>
+      <div style="display: flex; gap: 4px">
+        <button aria-label="Search games" style="width: 40px; height: 40px; border-radius: 50%; border: none; background: {{c.field}}; color: {{c.text}}; display: flex; align-items: center; justify-content: center; padding: 0">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+        </button>
+      </div>
+    </div>
+    <div style="display: flex; gap: 8px; padding: 12px 16px 10px; overflow-x: auto; flex-shrink: 0">
+      <sc-for list="{{cats}}" as="k" hint-placeholder-count="5">
+        <button onClick="{{k.pick}}" style="height: 34px; padding: 0 14px; border-radius: 999px; border: none; flex-shrink: 0; font: 600 14px Figtree, sans-serif; background: {{k.bgc}}; color: {{k.fg}}">{{k.label}}</button>
+      </sc-for>
+    </div>
+
+    <div style="flex: 1; overflow-y: auto; padding: 2px 16px 12px">
+      <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px">
+        <sc-for list="{{games}}" as="g" hint-placeholder-count="4">
+          <button onClick="{{g.pick}}" style="border: 3px solid {{g.ring}}; border-radius: 20px; padding: 0; overflow: hidden; background: {{c.bg2}}; text-align: left; color: {{c.text}}; font-family: Figtree, sans-serif; box-sizing: border-box">
+            <div style="height: 104px; position: relative; overflow: hidden; background: {{g.bg}}">
+              <sc-for list="{{g.shapes}}" as="s" hint-placeholder-count="3">
+                <span style="position: absolute; left: {{s.x}}; top: {{s.y}}; width: {{s.w}}; height: {{s.h}}; border-radius: {{s.r}}; background: {{s.c}}; transform: {{s.rot}}; color: {{s.tc}}; font-size: 13px; font-weight: 800; display: flex; align-items: center; justify-content: center; box-shadow: {{s.sh}}">{{s.t}}</span>
+              </sc-for>
+              <span style="position: absolute; right: 8px; bottom: 8px; height: 22px; padding: 0 8px 0 6px; border-radius: 11px; background: rgba(0,0,0,.6); color: #fff; font-size: 11px; font-weight: 700; display: flex; align-items: center; gap: 4px">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><path d="M7 4.5v15l13-7.5z"/></svg>{{g.dur}}
+              </span>
+              <sc-if value="{{g.space}}" hint-placeholder-val="{{false}}">
+                <span style="position: absolute; left: 8px; top: 8px; height: 20px; padding: 0 8px; border-radius: 10px; background: #FFFFFF; color: #1B140F; font-size: 10px; font-weight: 800; display: flex; align-items: center; letter-spacing: 0.3px">SPACE</span>
+              </sc-if>
+            </div>
+            <div style="padding: 8px 10px 10px; display: flex; flex-direction: column; gap: 2px">
+              <span style="font-size: 15px; font-weight: 700">{{g.name}}</span>
+              <span style="font-size: 12px; color: {{c.sub}}">{{g.meta}}</span>
+              <span style="display: flex; gap: 4px; margin-top: 4px">
+                <span style="height: 18px; padding: 0 6px; border-radius: 5px; background: {{c.freeSoft}}; color: {{c.free}}; font-size: 10px; font-weight: 800; display: flex; align-items: center">FREE</span>
+                <span style="height: 18px; padding: 0 6px; border-radius: 5px; background: {{c.brandSoft}}; color: {{c.brandText}}; font-size: 10px; font-weight: 800; display: flex; align-items: center">POOL {{g.from}}+</span>
+              </span>
+            </div>
+          </button>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="padding: 10px 16px 34px; border-top: 1px solid {{c.line}}; display: flex; flex-direction: column; gap: 10px">
+      <div style="display: flex; align-items: center; gap: 10px">
+        <div style="flex: 1; min-width: 0">
+          <div style="font-size: 15px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{sel.name}}</div>
+          <div style="font-size: 13px; font-weight: 600; color: {{sel.subColor}}">{{sel.sub}}</div>
+        </div>
+        <div style="padding: 3px; border-radius: 12px; background: {{c.field}}; display: flex; gap: 3px">
+          <button onClick="{{toFree}}" style="height: 34px; padding: 0 14px; border-radius: 9px; border: none; font: 700 14px Figtree, sans-serif; background: {{sel.freeBg}}; color: {{sel.freeFg}}">Free</button>
+          <button onClick="{{toPool}}" style="height: 34px; padding: 0 14px; border-radius: 9px; border: none; font: 700 14px Figtree, sans-serif; background: {{sel.poolBg}}; color: {{sel.poolFg}}">Pool</button>
+        </div>
+      </div>
+      <a href="{{sel.href}}" style="height: 50px; border-radius: 14px; background: {{sel.ctaBg}}; color: #fff; font-size: 16px; font-weight: 700; display: flex; align-items: center; justify-content: center; text-decoration: none">{{sel.cta}}</a>
+    </div>
+  </section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"$preview":{"width":390,"height":844}}'>
+const T={light:{bg:'#FBF8F3',bg2:'#F2ECE3',card:'#FFFFFF',text:'#1B140F',sub:'#6F655B',line:'#E6DDD0',recv:'#ECE4D8',field:'#EEE7DC',brand:'#C93E1C',brandText:'#B33416',brandSoft:'#FBE7DF',free:'#0E7C47',freeSoft:'#E3F6EA',sms:'#0067D6',money:'#0E7C47',moneySoft:'#E3F6EA',danger:'#C4314B',ink:'#1B140F',inkText:'#FFFFFF'},
+dark:{bg:'#0F0D0B',bg2:'#1D1916',card:'#1D1916',text:'#F7F1E8',sub:'#ABA196',line:'#2E2823',recv:'#2A2420',field:'#1D1916',brand:'#C93E1C',brandText:'#FF8F6B',brandSoft:'#3A170C',free:'#3DDC84',freeSoft:'#11301F',sms:'#0067D6',money:'#3DDC84',moneySoft:'#11301F',danger:'#FF6B81',ink:'#F7F1E8',inkText:'#1B140F'}};
+function S(x,y,w,h,r,c,o){o=o||{};return {x:x+'px',y:y+'px',w:w+'px',h:h+'px',r:r,c:c,rot:o.rot||'none',t:o.t||'',tc:o.tc||'#000',sh:o.sh||'none'};}
+function ball(x,y,c1,c2){return S(x,y,20,20,'50%','radial-gradient(circle at 35% 30%, #fff, '+c1+' 45%, '+c2+')');}
+const card='0 2px 6px rgba(0,0,0,.25)';
+const GAMES=[
+ {name:'8 Ball',meta:'2 players · 3D',from:'₦200',play:'Play8Ball.dc.html',cats:['two','sports'],dur:'0:08',bg:'radial-gradient(circle at 50% 45%, #22A066, #0D5235)',shapes:[ball(36,40,'#F5C518','#B38A00'),ball(60,54,'#E0453A','#9C1F17'),ball(84,38,'#2457D6','#12307A'),S(106,58,20,20,'50%','radial-gradient(circle at 35% 30%, #888, #111 55%)'),ball(136,70,'#EDEDED','#A8A8A8')]},
+ {name:'Darts',meta:'2 players · 3D',from:'₦200',play:'PlayDarts.dc.html',cats:['two','sports'],dur:'0:07',bg:'repeating-linear-gradient(90deg, #2A1A10 0 22px, #22150D 22px 24px)',shapes:[S(51,16,72,72,'50%','#141010'),S(57,22,60,60,'50%','repeating-conic-gradient(from -9deg, #C62828 0deg 18deg, #1E7A3E 18deg 36deg)'),S(61,26,52,52,'50%','repeating-conic-gradient(from -9deg, #151515 0deg 18deg, #EFE3C2 18deg 36deg)'),S(79,44,16,16,'50%','#1E7A3E'),S(83,48,8,8,'50%','#C62828')]},
+ {name:'Cup Pong',meta:'2 players · 3D',from:'₦100',play:'PlayCupPong.dc.html',cats:['two','sports'],dur:'0:06',bg:'linear-gradient(#3A1A14 0 40%, #2F6BEA 40%)',shapes:[[70,30],[88,30],[106,30],[79,44],[97,44],[88,58]].map(function(p){return S(p[0],p[1],18,20,'4px 4px 8px 8px','linear-gradient(90deg, #8E1218, #FF6B5E 45%, #8E1218)');}).concat([S(80,82,14,14,'50%','#FFFFFF')])},
+ {name:'Basketball',meta:'2 players · 3D',from:'₦200',play:'PlayBasketball.dc.html',cats:['two','sports'],dur:'0:09',bg:'linear-gradient(#1C2440 0 55%, #C98A4E 55%)',shapes:[S(56,14,62,40,'4px','rgba(255,255,255,.9)'),S(70,52,34,10,'50%','transparent',{sh:'0 0 0 4px #E8701E'}),S(108,62,34,34,'50%','radial-gradient(circle at 35% 30%, #FFB27A, #E8701E 50%, #9A3E08)')]},
+ {name:'Mini Golf',meta:'2–4 players',from:'₦100',play:'PlayMiniGolf.dc.html',cats:['two','sports'],dur:'0:10',bg:'repeating-linear-gradient(0deg, #3BA55C 0 14px, #33944F 14px 28px)',shapes:[S(110,20,16,10,'50%','#000'),S(116,0,3,26,'1px','#FFF'),S(119,2,16,10,'0','#E0453A'),S(60,60,60,12,'4px','#B5462E',{sh:'0 5px 0 #6A2414'}),S(40,80,12,12,'50%','#FFF')]},
+ {name:'Archery',meta:'2 players · 3D',from:'₦100',play:'PlayArchery.dc.html',cats:['two','sports'],dur:'0:08',bg:'linear-gradient(#5AA7E0 0 48%, #4E8A3A 48%)',shapes:[S(66,22,46,46,'50%','radial-gradient(circle, #F2C230 0 10%, #E0453A 10% 20%, #2F6BEA 20% 30%, #1B140F 30% 40%, #F6F2EA 40% 50%)'),S(86,46,3,50,'2px','#8A5A30',{rot:'rotate(8deg)'})]},
+ {name:'Tanks',meta:'2 players',from:'₦100',play:'PlayTanks.dc.html',cats:['two','arcade'],dur:'0:12',bg:'linear-gradient(#5A2A55, #E2704A 70%, #4A7A30 70%)',shapes:[S(24,64,34,10,'3px','#C93E1C'),S(30,56,16,10,'8px 8px 2px 2px','#C93E1C'),S(120,60,34,10,'3px','#2457D6'),S(128,52,16,10,'8px 8px 2px 2px','#2457D6')]},
+ {name:'Sea Battle',meta:'2 players · 3D',from:'₦500',play:'PlaySeaBattle.dc.html',cats:['two','board'],dur:'0:12',bg:'repeating-linear-gradient(0deg, rgba(255,255,255,.14) 0 1px, transparent 1px 18px), repeating-linear-gradient(90deg, rgba(255,255,255,.14) 0 1px, transparent 1px 18px), #17558F',shapes:[S(36,37,72,16,'8px','#9AA7B8'),S(54,30,16,22,'50% 50% 40% 40%','radial-gradient(ellipse at 50% 85%, #FFF3B0, #FF5A1F 60%, transparent 85%)'),S(126,72,12,12,'50%','transparent',{sh:'0 0 0 3px #fff'})]},
+ {name:'Chess',meta:'2 players',from:'₦500',play:'PlayChess.dc.html',cats:['two','board'],dur:'0:10',bg:'repeating-conic-gradient(#E8D3AE 0 25%, #9A6B42 0 50%) 0 0 / 26px 26px',shapes:[S(60,22,50,58,'0','transparent',{t:'\u265E\uFE0E',tc:'#1B140F'}),S(100,30,40,50,'0','transparent',{t:'\u265B\uFE0E',tc:'#F6EBD6'})]},
+ {name:'Checkers',meta:'2 players',from:'₦200',play:'PlayCheckers.dc.html',cats:['two','board'],dur:'0:09',bg:'repeating-conic-gradient(#E9D9B6 0 25%, #2F2A26 0 50%) 0 0 / 26px 26px',shapes:[S(40,40,24,24,'50%','#C93E1C',{sh:'0 3px 0 #7A1E0C'}),S(80,30,24,24,'50%','#1E1A17',{sh:'0 3px 0 #000'}),S(110,60,24,24,'50%','#C93E1C',{sh:'0 3px 0 #7A1E0C'})]},
+ {name:'Ayo / Mancala',meta:'2 players · 3D',from:'₦200',play:'PlayAyo.dc.html',cats:['two','board'],dur:'0:10',bg:'linear-gradient(#A86F3E, #7A4A22)',shapes:[0,1,2,3,4,5].map(function(i){return S(18+i*24,30,20,20,'50%','radial-gradient(#2A1608, #5A3418 70%)');}).concat([0,1,2,3,4,5].map(function(i){return S(18+i*24,58,20,20,'50%','radial-gradient(#2A1608, #5A3418 70%)');}))},
+ {name:'Ludo',meta:'2–4 players · 3D',from:'₦500',play:'PlayLudo.dc.html',cats:['two','space','board'],dur:'0:10',bg:'#FFFFFF',shapes:[S(0,0,86,52,'0','#E0453A'),S(87,0,86,52,'0','#2BB673'),S(0,52,86,52,'0','#2457D6'),S(87,52,86,52,'0','#FFB020'),S(66,32,40,40,'8px','#FFFFFF',{rot:'rotate(45deg)'})]},
+ {name:'Scrabble',meta:'2–4 players',from:'₦200',play:'PlayScrabble.dc.html',cats:['two','word','board'],dur:'0:10',bg:'#2E6A52',shapes:['J','O','L','L','O','F'].map(function(t,i){return S(20+i*23,40,21,24,'4px','linear-gradient(#FFF0CC, #EBCF95)',{t:t,tc:'#3A2A14',sh:'0 3px 0 #A57A3C'});})},
+ {name:'Word Hunt',meta:'2 players',from:'₦200',play:'PlayWordHunt.dc.html',cats:['two','word'],dur:'0:10',bg:'#FFB020',shapes:['W','O','R','D','H','U','N','T'].map(function(t,i){return S(24+(i%4)*32,20+Math.floor(i/4)*34,28,28,'7px','#FFFFFF',{t:t,tc:'#7A4A00',sh:'0 3px 0 #C98500'});})},
+ {name:'Anagrams',meta:'2 players',from:'₦100',play:'PlayAnagrams.dc.html',cats:['two','word'],dur:'0:09',bg:'linear-gradient(#5A3418, #3A200C)',shapes:['G','A','N','R','O','E'].map(function(t,i){return S(18+i*24,40,22,26,'5px','linear-gradient(#FFF3D6, #E8C988)',{t:t,tc:'#3A2A14',sh:'0 3px 0 #A57A3C'});})},
+ {name:'Filler',meta:'2 players',from:'₦100',play:'PlayFiller.dc.html',cats:['two','arcade'],dur:'0:08',bg:'#15120F',shapes:[0,1,2,3,4,5,6,7,8,9,10,11].map(function(i){var c=['#E0453A','#F2B90F','#2BB673','#2457D6','#7A4FCF','#3A332E'][(i*7)%6];return S(30+(i%6)*20,24+Math.floor(i/6)*22,18,18,'4px',c,{sh:'2px 2px 0 rgba(0,0,0,.4)'});})},
+ {name:'Dots & Boxes',meta:'2 players',from:'₦100',play:'PlayDotsBoxes.dc.html',cats:['two','board'],dur:'0:08',bg:'#F2E8D2',shapes:[S(40,24,40,40,'4px','rgba(201,62,28,.85)',{t:'K',tc:'#fff'}),S(84,24,40,40,'4px','rgba(36,87,214,.85)',{t:'B',tc:'#fff'}),S(40,68,84,5,'3px','#C93E1C')]},
+ {name:'Crazy Cards',meta:'Space · 2–6 players',from:'₦200',play:'PlayCrazyCards.dc.html',cats:['space','cards'],space:true,dur:'0:09',bg:'radial-gradient(circle at 50% 40%, #1F7A5A, #0F4A36)',shapes:[S(44,24,40,58,'8px','#F2B90F',{rot:'rotate(-16deg)',t:'7',tc:'#fff',sh:card}),S(64,20,40,58,'8px','#1F9A4E',{rot:'rotate(-4deg)',t:'2',tc:'#fff',sh:card}),S(84,22,40,58,'8px','#1C6DD0',{rot:'rotate(8deg)',t:'+2',tc:'#FFFFFF',sh:card}),S(102,28,40,58,'8px','#D7262E',{rot:'rotate(20deg)',t:'4',tc:'#fff',sh:card})]},
+ {name:'Whot!',meta:'Space · 2–6 players',from:'₦200',play:'PlayWhot.dc.html',cats:['space','cards'],space:true,dur:'0:07',bg:'linear-gradient(#6B3E22, #8A532E)',shapes:[S(50,22,42,60,'8px','#F8F1E2',{rot:'rotate(-8deg)',sh:card}),S(60,40,22,22,'50%','#7A1E2E',{rot:'rotate(-8deg)'}),S(90,24,42,60,'8px','#F8F1E2',{rot:'rotate(10deg)',sh:card}),S(101,44,20,20,'3px','#7A1E2E',{rot:'rotate(10deg)'})]},
+ {name:'Charades',meta:'Space · 3–10 players',from:'₦200',play:'PlayCharades.dc.html',cats:['space','party'],space:true,dur:'0:10',bg:'radial-gradient(circle at 50% 30%, #6A2414, #2A0E08)',shapes:[S(56,14,62,80,'10px','linear-gradient(#FFFBF2, #F2E6CE)',{rot:'rotate(-6deg)',t:'ACT',tc:'#C93E1C',sh:card})]},
+ {name:'Imposter',meta:'Space · 4–10 players',from:'₦300',play:'PlayImposter.dc.html',cats:['space','party'],space:true,dur:'0:11',bg:'radial-gradient(ellipse at 50% 60%, #2E6A52, #1F4A3A 60%, #120A06)',shapes:[S(70,30,34,34,'50%','#3A332E',{t:'?',tc:'#FF8F6B'}),S(30,50,22,22,'50%','#C9B8FF'),S(124,50,22,22,'50%','#FFC857'),S(76,74,22,22,'50%','#8FD3FF')]},
+ {name:'Werewolf',meta:'Space · 5–12 players',from:'₦500',play:'PlayWerewolf.dc.html',cats:['space','party'],space:true,dur:'0:12',bg:'linear-gradient(#060A1C, #10183A 60%, #1A140C 60%)',shapes:[S(120,10,24,24,'50%','#FFF8E0'),S(72,56,30,40,'50% 50% 45% 45%','radial-gradient(ellipse at 50% 85%, #FFF3B0, #FF5A1F 60%, transparent 85%)')]},
+ {name:'Doodle Guess',meta:'Space · 3–8 players',from:'₦100',play:'DoodleRoom.dc.html',cats:['space','party','word'],space:true,dur:'0:11',bg:'#F5F0FF',shapes:[S(120,14,30,30,'50%','#FFB020'),S(44,30,32,32,'4px','#E0453A',{rot:'rotate(45deg)'}),S(38,48,44,38,'4px','#C93E1C'),S(96,70,64,8,'4px','#1B140F',{rot:'rotate(-30deg)'})]}
+];
+const CATS=[['all','All'],['party','Party'],['board','Board'],['sports','Sports'],['word','Word'],['cards','Cards'],['space','Spaces 3+'],['arcade','Arcade']];
+class Component extends DCLogic {
+  constructor(p){ super(p); this.state = { cat: 'all', picked: '8 Ball', mode: 'pool' }; }
+  renderVals() {
+    const c = T[this.props.theme === 'dark' ? 'dark' : 'light'];
+    const s = this.state;
+    const list = GAMES.filter((g) => s.cat === 'all' || g.cats.indexOf(s.cat) >= 0);
+    const g0 = GAMES.find((g) => g.name === s.picked) || GAMES[0];
+    return {
+      c,
+      cats: CATS.map(([id, label]) => ({ label, bgc: s.cat === id ? c.ink : c.field, fg: s.cat === id ? c.inkText : c.text, pick: () => this.setState({ cat: id }) })),
+      games: list.map((g) => Object.assign({}, g, { space: !!g.space, ring: g.name === s.picked ? '#C93E1C' : 'transparent', pick: () => this.setState({ picked: g.name }) })),
+      toFree: () => this.setState({ mode: 'free' }), toPool: () => this.setState({ mode: 'pool' }),
+      sel: (function(){
+        const pool = s.mode === 'pool';
+        return {
+          name: g0.name,
+          sub: pool ? (g0.space ? 'Pool · entry from ' + g0.from + ' a seat' : 'Pool · stakes from ' + g0.from) : 'Free · XP and streaks, no cash',
+          subColor: pool ? c.brandText : c.free,
+          freeBg: pool ? 'transparent' : c.bg, freeFg: pool ? c.sub : c.free,
+          poolBg: pool ? c.bg : 'transparent', poolFg: pool ? c.brandText : c.sub,
+          cta: g0.space ? (pool ? 'Set up pool space' : 'Set up free space') : (pool ? 'Choose stake' : 'Send free game'),
+          ctaBg: pool ? '#C93E1C' : '#0E7C47',
+          href: g0.space ? 'CreateRoom.dc.html' : (pool ? 'ModeSheet.dc.html' : g0.play)
+        };
+      })()
+    };
+  }
+}
+</script>
+</body>
+</html>

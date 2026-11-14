@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Dyce — Find friends</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&amp;family=Bricolage+Grotesque:wght@600;700;800&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; padding: 54px 24px 34px; display: flex; flex-direction: column; font-family: Figtree, -apple-system, system-ui, sans-serif; background: {{c.bg}}; color: {{c.text}}">
+  <div style="display: flex; align-items: center; justify-content: space-between; height: 44px">
+    <a href="Username.dc.html" aria-label="Back" style="width: 44px; height: 44px; display: flex; align-items: center; color: {{c.text}}">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
+    </a>
+    <div style="display: flex; gap: 6px" aria-label="Step 3 of 3">
+      <span style="width: 6px; height: 6px; border-radius: 3px; background: #C93E1C"></span>
+      <span style="width: 6px; height: 6px; border-radius: 3px; background: #C93E1C"></span>
+      <span style="width: 22px; height: 6px; border-radius: 3px; background: #C93E1C"></span>
+    </div>
+    <a href="AvatarBuilder.dc.html" style="height: 44px; display: flex; align-items: center; color: {{c.sub}}; font-size: 15px; font-weight: 500; text-decoration: none">Skip</a>
+  </div>
+
+  <h1 style="margin: 24px 0 8px; font-family: 'Bricolage Grotesque', Figtree, sans-serif; font-size: 30px; line-height: 1.1; font-weight: 700; letter-spacing: -0.5px">Your people are already here</h1>
+  <p style="margin: 0 0 22px; font-size: 16px; line-height: 1.45; color: {{c.sub}}">Allow contacts to see who's on Dyce. Anyone who isn't gets a fun invite link by text.</p>
+
+  <div style="border-radius: 22px; background: {{c.bg2}}; padding: 6px 14px">
+    <sc-for list="{{people}}" as="p" hint-placeholder-count="5">
+      <div style="display: flex; align-items: center; gap: 12px; height: 62px; border-bottom: 1px solid {{c.line}}">
+        <sc-if value="{{p.on}}" hint-placeholder-val="{{true}}">
+          <dc-import name="Avatar" size="42" skin="{{p.skin}}" hair="{{p.hair}}" hair-style="{{p.hs}}" bg="{{p.bg}}" shirt="{{p.shirt}}" hint-size="42px,42px"></dc-import>
+        </sc-if>
+        <sc-if value="{{p.off}}" hint-placeholder-val="{{false}}">
+          <div style="width: 42px; height: 42px; border-radius: 50%; background: {{c.line}}; color: {{c.sub}}; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 15px">{{p.ini}}</div>
+        </sc-if>
+        <div style="flex: 1; min-width: 0">
+          <div style="font-size: 16px; font-weight: 600">{{p.name}}</div>
+          <div style="font-size: 13px; color: {{c.sub}}">{{p.meta}}</div>
+        </div>
+        <span style="padding: 5px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; color: #FFFFFF; background: {{p.tagBg}}">{{p.tag}}</span>
+      </div>
+    </sc-for>
+  </div>
+
+  <div style="display: flex; gap: 10px; align-items: flex-start; margin-top: 18px; font-size: 13px; line-height: 1.45; color: {{c.sub}}">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0; margin-top: 1px"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+    <span>Numbers are matched as hashes and never shown to strangers.</span>
+  </div>
+
+  <a href="AvatarBuilder.dc.html" style="margin-top: auto; height: 54px; border-radius: 16px; background: #C93E1C; color: #FFFFFF; font-size: 17px; font-weight: 600; display: flex; align-items: center; justify-content: center; text-decoration: none">Allow contacts</a>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"$preview":{"width":390,"height":844}}'>
+const T={light:{bg:'#FBF8F3',bg2:'#F2ECE3',card:'#FFFFFF',text:'#1B140F',sub:'#6F655B',line:'#E6DDD0',recv:'#ECE4D8',field:'#EEE7DC',brand:'#C93E1C',brandText:'#B33416',brandSoft:'#FBE7DF',sms:'#0067D6',money:'#0E7C47',moneySoft:'#E3F6EA',danger:'#C4314B',ink:'#1B140F',inkText:'#FFFFFF'},
+dark:{bg:'#0F0D0B',bg2:'#15120F',card:'#1D1916',text:'#F7F1E8',sub:'#ABA196',line:'#2E2823',recv:'#2A2420',field:'#1D1916',brand:'#C93E1C',brandText:'#FF8F6B',brandSoft:'#3A170C',sms:'#0067D6',money:'#3DDC84',moneySoft:'#11301F',danger:'#FF6B81',ink:'#F7F1E8',inkText:'#1B140F'}};
+class Component extends DCLogic {
+  renderVals() {
+    const on = (name, meta, skin, hair, hs, bg, shirt) => ({ name, meta, skin, hair, hs, bg, shirt, on: true, off: false, tag: 'On Dyce', tagBg: '#C93E1C' });
+    const off = (name, meta, ini) => ({ name, meta, ini, on: false, off: true, tag: 'Invite', tagBg: '#0067D6' });
+    return {
+      c: T[this.props.theme === 'dark' ? 'dark' : 'light'],
+      people: [
+        on('Amaka Obi', '@amaka.o · Android', '#8D5524', '#1C1714', 'bun', '#FFC857', '#E0453A'),
+        on('Tunde Bakare', '@tundeb · iPhone', '#5C3A21', '#111111', 'waves', '#8FD3FF', '#1F2937'),
+        off('Tolu Ade', 'Not on Dyce yet', 'TA'),
+        on('Zainab M.', '@zee · iPhone', '#C68642', '#2A1A12', 'long', '#B8F2C8', '#C93E1C'),
+        off('Femi (Work)', 'Not on Dyce yet', 'FW')
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

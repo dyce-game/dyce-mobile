@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Dyce — Ayo / Mancala in 3D</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800;900&amp;family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; font-family: Figtree, -apple-system, system-ui, sans-serif; color: #FFFFFF; background: radial-gradient(ellipse at 50% 30%, #3A2416, #120A06 75%)">
+  <span style="position: absolute; inset: 0; background: radial-gradient(ellipse 80% 40% at 50% 45%, rgba(255,200,120,.25), transparent 70%)" aria-hidden="true"></span>
+  <div style="position: absolute; left: 50%; top: 170px; transform: translateX(-50%); height: 36px; padding: 3px; border-radius: 18px; background: rgba(0,0,0,.35); display: flex; gap: 3px">
+    <span style="height: 30px; padding: 0 14px; border-radius: 15px; background: {{tabAyo}}; color: {{tabAyoFg}}; font-size: 13px; font-weight: 800; display: flex; align-items: center">Ayo Olopon</span>
+    <span style="height: 30px; padding: 0 14px; border-radius: 15px; background: {{tabMan}}; color: {{tabManFg}}; font-size: 13px; font-weight: 800; display: flex; align-items: center">Mancala</span>
+  </div>
+  <div style="position: absolute; left: 15px; top: 250px; width: 360px; height: 230px; perspective: 900px" role="img" aria-label="{{aria}}">
+    <div style="position: absolute; inset: 0; transform: rotateX(50deg); transform-style: preserve-3d">
+      <span style="position: absolute; inset: 0; border-radius: 40px; background: linear-gradient(180deg, #8A5A30, #A86F3E 50%, #7A4A22); box-shadow: 0 14px 0 #4A2812, 0 40px 50px rgba(0,0,0,.6), inset 0 2px 0 rgba(255,220,170,.35)"></span>
+      <span style="position: absolute; inset: 0; border-radius: 40px; background: repeating-linear-gradient(90deg, rgba(0,0,0,.05) 0 3px, transparent 3px 14px)"></span>
+      <sc-for list="{{pits}}" as="p" hint-placeholder-count="12">
+        <span style="position: absolute; left: {{p.x}}; top: {{p.y}}; width: {{p.w}}; height: {{p.h}}; border-radius: {{p.r}}; background: radial-gradient(ellipse at 50% 35%, #2A1608, #5A3418 70%, #7A4A22); box-shadow: inset 0 6px 10px rgba(0,0,0,.6), 0 1px 0 rgba(255,220,170,.3), 0 0 0 {{p.ring}} #E3A93B"></span>
+        <span style="position: absolute; left: {{p.lx}}; top: {{p.ly}}; width: 30px; text-align: center; font-size: 13px; font-weight: 900; color: {{p.lc}}">{{p.n}}</span>
+      </sc-for>
+      <sc-for list="{{seeds}}" as="s" hint-placeholder-count="40">
+        <span style="position: absolute; left: {{s.x}}; top: {{s.y}}; width: 11px; height: 8px; border-radius: 50%; background: {{s.c}}; box-shadow: 0 2px 0 rgba(0,0,0,.45); transform: rotate({{s.r}})"></span>
+      </sc-for>
+    </div>
+  </div>
+  <div style="position: absolute; left: 20px; right: 20px; top: 520px; display: flex; justify-content: space-between; font-size: 13px; font-weight: 800"><span>Amaka captured {{capThem}}</span><span style="color: #FFD27A">You captured {{capMe}}</span></div>
+  <div style="position: absolute; left: 12px; right: 12px; top: 54px; display: flex; align-items: center; justify-content: space-between">
+    <a href="Thread.dc.html" aria-label="Back to chat" style="height: 40px; padding: 0 14px; border-radius: 20px; background: rgba(255,255,255,.12); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,.16); color: #fff; font-size: 14px; font-weight: 700; display: flex; align-items: center; gap: 4px; text-decoration: none">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>Chat</a>
+    <span style="height: 30px; padding: 0 12px; border-radius: 15px; background: {{modeBg}}; box-shadow: 0 2px 0 rgba(0,0,0,.35); font-size: 12px; font-weight: 800; letter-spacing: 0.4px; display: flex; align-items: center">{{modeLabel}}</span>
+    <a href="GameMenu.dc.html" aria-label="Game menu" style="width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,.12); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,.16); display: flex; align-items: center; justify-content: center">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
+    </a>
+  </div>
+  <div style="position: absolute; left: 50%; top: 106px; transform: translateX(-50%); height: 46px; padding: 0 16px 0 12px; border-radius: 23px; background: rgba(0,0,0,.38); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,.14); display: flex; align-items: center; gap: 8px; white-space: nowrap"><div style="display: flex"><div style="margin-left: -8px; border-radius: 50%; box-shadow: 0 0 0 2px rgba(0,0,0,.4)"><dc-import name="Avatar" size="34" skin="#8D5524" hair="#1C1714" hair-style="bun" bg="#FFC857" shirt="#E0453A" hint-size="34px,34px"></dc-import></div></div><span style="font-size: 13px; font-weight: 800">Amaka · sowing done</span></div>
+  <div style="position: absolute; left: 14px; right: 14px; bottom: 30px; display: flex; align-items: center; gap: 12px; padding: 10px 10px 10px 12px; border-radius: 30px; background: rgba(0,0,0,.38); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,.14)">
+    <div style="position: relative; flex-shrink: 0"><dc-import name="Avatar" size="42" skin="#8D5524" hair="#1C1714" hair-style="afro" bg="#C9B8FF" shirt="#6E4BFF" hint-size="42px,42px"></dc-import><span style="position: absolute; inset: -4px; border-radius: 50%; border: 3px solid #E3A93B; border-right-color: transparent"></span></div>
+    <div style="flex: 1; min-width: 0"><div style="font-size: 14px; font-weight: 800">Your turn · pick a pit</div><div style="font-size: 12px; opacity: .82">Pit 5 has 7 seeds · lands in her row, captures 3</div></div>
+    <button style="height: 50px; padding: 0 18px; border-radius: 25px; border: none; background: #E3A93B; box-shadow: 0 4px 0 #A86F12, inset 0 2px 0 rgba(255,255,255,.25); color: #3A2400; font: 900 15px Figtree, sans-serif; flex-shrink: 0">Sow</button>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"mode":{"editor":"enum","options":["pool","free"],"default":"free"},"variant":{"editor":"enum","options":["ayo","mancala"],"default":"ayo"},"$preview":{"width":390,"height":844}}'>
+const POT='₦1,000', MULTI=false;
+function poly(pts){ return 'polygon(' + pts.map(function(p){ return p[0].toFixed(1) + 'px ' + p[1].toFixed(1) + 'px'; }).join(', ') + ')'; }
+function rnd(seed){ var x = Math.sin(seed * 9301 + 49297) * 233280; return x - Math.floor(x); }
+
+const SEEDA=['radial-gradient(circle at 35% 30%, #D8C3A0, #8B6F47 60%, #4A3A22)','radial-gradient(circle at 35% 30%, #C9B48E, #7A5E3A 60%, #3A2C18)'];
+const SEEDM=['radial-gradient(circle at 35% 30%, #9DF2FF, #1C9AD0)','radial-gradient(circle at 35% 30%, #FFB4C6, #D7266E)','radial-gradient(circle at 35% 30%, #FFE08A, #E3A93B)','radial-gradient(circle at 35% 30%, #B8F2C8, #17834F)'];
+function scene(props){
+  const ayo=props.variant!=='mancala';
+  const top=ayo?[4,0,6,5,4,4]:[4,4,0,5,5,5], bot=ayo?[5,4,4,0,7,3]:[5,0,6,5,5,4];
+  const pits=[], seeds=[]; let sd=1;
+  const x0=ayo?18:66, step=ayo?55:40, pw=ayo?46:34;
+  function pit(cx,cy,w,h,n,mine,hi,r){
+    pits.push({x:(cx-w/2)+'px',y:(cy-h/2)+'px',w:w+'px',h:h+'px',r:r,n:String(n),lx:(cx-15)+'px',ly:(mine?cy+h/2+4:cy-h/2-18)+'px',lc:mine?'#FFE6B0':'#F2DCC0',ring:hi?'3px':'0px'});
+    for(let i=0;i<n;i++){ const a=rnd(sd++)*6.28, rr=rnd(sd++)*(Math.min(w,h)/2-9); seeds.push({x:(cx+Math.cos(a)*rr-5)+'px',y:(cy+Math.sin(a)*rr*0.85-4)+'px',c:(ayo?SEEDA:SEEDM)[Math.floor(rnd(sd++)*(ayo?2:4))],r:Math.floor(rnd(sd++)*180)+'deg'}); }
+  }
+  top.forEach(function(n,i){ pit(x0+pw/2+i*step, 66, pw, pw, n, false, false, '50%'); });
+  bot.forEach(function(n,i){ pit(x0+pw/2+i*step, 166, pw, pw, n, true, i===4, '50%'); });
+  if(!ayo){ pit(30,116,40,150,11,false,false,'20px'); pit(330,116,40,150,9,true,false,'20px'); }
+  return {pits:pits,seeds:seeds,capThem:ayo?'12':'11',capMe:ayo?'14':'9',
+    tabAyo:ayo?'#E3A93B':'transparent',tabAyoFg:ayo?'#3A2400':'#FFFFFF',tabMan:ayo?'transparent':'#E3A93B',tabManFg:ayo?'#FFFFFF':'#3A2400',
+    aria: ayo?'Ayo Olopon board, two rows of six pits with seeds':'Mancala board with stores at each end'};
+}
+class Component extends DCLogic {
+  renderVals() {
+    const pool = this.props.mode !== 'free';
+    return Object.assign({ modeLabel: pool ? (MULTI ? 'SPACE POOL · ' : 'POOL · ') + POT + ' POT' : (MULTI ? 'FREE SPACE · XP' : 'FREE · +25 XP'), modeBg: pool ? '#C93E1C' : '#17834F' }, scene(this.props, this));
+  }
+}
+</script>
+</body>
+</html>

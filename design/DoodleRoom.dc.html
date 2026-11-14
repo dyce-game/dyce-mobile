@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Dyce — Doodle Guess space in play</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&amp;family=Bricolage+Grotesque:wght@600;700;800&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; padding-top: 54px; display: flex; flex-direction: column; font-family: Figtree, -apple-system, system-ui, sans-serif; background: {{c.bg}}; color: {{c.text}}; overflow: hidden">
+  <div style="display: flex; align-items: center; gap: 10px; padding: 0 14px; height: 48px">
+    <a href="Lobby.dc.html" aria-label="Leave space" style="width: 40px; height: 40px; border-radius: 12px; background: {{c.field}}; color: {{c.text}}; display: flex; align-items: center; justify-content: center">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
+    </a>
+    <div style="flex: 1">
+      <div style="font-size: 15px; font-weight: 700">Doodle Guess · Round 2 of 3</div>
+      <div style="font-size: 12px; color: {{c.brandText}}; font-weight: 700">Pool ₦2,400 · 50 / 30 / 20</div>
+    </div>
+    <div style="width: 48px; height: 48px; border-radius: 50%; background: conic-gradient(#FF7A1A 0 70%, {{c.field}} 70%); display: flex; align-items: center; justify-content: center" role="img" aria-label="42 seconds left">
+      <span style="width: 38px; height: 38px; border-radius: 50%; background: {{c.bg}}; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 800">42</span>
+    </div>
+  </div>
+
+  <div style="display: flex; gap: 8px; padding: 8px 14px; overflow: hidden">
+    <sc-for list="{{players}}" as="p" hint-placeholder-count="6">
+      <div style="display: flex; flex-direction: column; align-items: center; gap: 2px; width: 54px; flex-shrink: 0; position: relative">
+        <div style="border-radius: 50%; border: 3px solid {{p.ring}}">
+          <dc-import name="Avatar" size="40" skin="{{p.skin}}" hair="{{p.hair}}" hair-style="{{p.hs}}" bg="{{p.bg}}" shirt="{{p.shirt}}" hint-size="40px,40px"></dc-import>
+        </div>
+        <span style="font-size: 11px; font-weight: 600; white-space: nowrap">{{p.name}}</span>
+        <span style="font-size: 11px; font-weight: 800; color: {{p.ptsColor}}">{{p.pts}}</span>
+      </div>
+    </sc-for>
+  </div>
+
+  <div style="margin: 4px 14px 0; display: flex; justify-content: center; gap: 6px; align-items: center">
+    <span style="font-size: 12px; color: {{c.sub}}; font-weight: 600; margin-right: 6px">Ngozi is drawing</span>
+    <sc-for list="{{hint}}" as="h" hint-placeholder-count="6">
+      <span style="width: 22px; height: 30px; border-bottom: 3px solid {{c.text}}; font-size: 20px; font-weight: 800; text-align: center">{{h}}</span>
+    </sc-for>
+    <span style="font-size: 12px; color: {{c.sub}}; margin-left: 4px">6</span>
+  </div>
+
+  <div style="margin: 10px 14px 0; height: 300px; border-radius: 22px; background: #FFFFFF; position: relative; overflow: hidden; border: 1px solid {{c.line}}" role="img" aria-label="Drawing in progress">
+    <span style="position: absolute; left: 130px; top: 40px; width: 14px; height: 50px; border-radius: 7px; border: 3px solid #9AA7B8; border-color: #9AA7B8 transparent transparent #9AA7B8; transform: rotate(10deg)"></span>
+    <span style="position: absolute; left: 170px; top: 30px; width: 14px; height: 56px; border-radius: 7px; border: 3px solid #9AA7B8; border-color: #9AA7B8 transparent transparent #9AA7B8; transform: rotate(-6deg)"></span>
+    <span style="position: absolute; left: 210px; top: 42px; width: 14px; height: 46px; border-radius: 7px; border: 3px solid #9AA7B8; border-color: #9AA7B8 transparent transparent #9AA7B8; transform: rotate(8deg)"></span>
+    <span style="position: absolute; left: 70px; top: 110px; width: 220px; height: 34px; border-radius: 50%; background: #E4572E"></span>
+    <span style="position: absolute; left: 76px; top: 98px; width: 208px; height: 30px; border-radius: 50%; background: #F08A3E"></span>
+    <span style="position: absolute; left: 66px; top: 126px; width: 228px; height: 100px; border-radius: 0 0 90px 90px; background: #3A3A44"></span>
+    <span style="position: absolute; left: 40px; top: 140px; width: 34px; height: 14px; border-radius: 7px; background: #3A3A44"></span>
+    <span style="position: absolute; left: 286px; top: 140px; width: 34px; height: 14px; border-radius: 7px; background: #3A3A44"></span>
+    <span style="position: absolute; left: 90px; top: 250px; width: 180px; height: 8px; border-radius: 4px; background: #E0453A"></span>
+    <span style="position: absolute; right: 12px; bottom: 12px; padding: 4px 10px; border-radius: 10px; background: rgba(0,0,0,.6); color: #fff; font-size: 11px; font-weight: 700">You're guessing</span>
+  </div>
+
+  <div style="flex: 1; display: flex; flex-direction: column; justify-content: flex-end; gap: 4px; padding: 10px 14px 6px; overflow: hidden">
+    <sc-for list="{{feed}}" as="f" hint-placeholder-count="5">
+      <div style="font-size: 14px; line-height: 1.35; padding: 5px 10px; border-radius: 10px; background: {{f.bg}}; color: {{f.fg}}; align-self: flex-start; font-weight: {{f.w}}"><b>{{f.who}}</b> {{f.text}}</div>
+    </sc-for>
+  </div>
+
+  <div style="display: flex; gap: 8px; padding: 6px 12px 34px; align-items: center">
+    <div style="flex: 1; height: 44px; border-radius: 22px; border: 2px solid #C93E1C; display: flex; align-items: center; padding: 0 14px">
+      <label for="g" style="position: absolute; left: -9999px">Your guess</label>
+      <input id="g" value="jol" style="flex: 1; min-width: 0; border: none; background: none; font: 600 16px Figtree, sans-serif; color: {{c.text}}; outline: none">
+    </div>
+    <button style="height: 44px; padding: 0 18px; border-radius: 22px; border: none; background: #C93E1C; color: #fff; font: 700 15px Figtree, sans-serif">Guess</button>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"$preview":{"width":390,"height":844}}'>
+const T={light:{bg:'#FBF8F3',text:'#1B140F',sub:'#6F655B',line:'#E6DDD0',field:'#EEE7DC',brandText:'#B33416',money:'#0E7C47',close:'#FFF3D6',closeFg:'#7A4A00',hit:'#E3F6EA',hitFg:'#0E7C47',bubble:'#F2ECE3'},
+dark:{bg:'#0F0D0B',text:'#F7F1E8',sub:'#ABA196',line:'#2E2823',field:'#1D1916',brandText:'#FF8F6B',money:'#3DDC84',close:'#3A2A00',closeFg:'#FFD27A',hit:'#11301F',hitFg:'#3DDC84',bubble:'#1D1916'}};
+class Component extends DCLogic {
+  renderVals() {
+    const c = T[this.props.theme === 'dark' ? 'dark' : 'light'];
+    const p = (name, pts, skin, hair, hs, bg, shirt, ring, hot) => ({ name, pts, skin, hair, hs, bg, shirt, ring: ring || 'transparent', ptsColor: hot ? c.money : c.sub });
+    return {
+      c,
+      players: [
+        p('Ngozi', '310', '#A0662F', '#3B2219', 'long', '#FFB4C6', '#FFB020', '#FF7A1A'),
+        p('Tunde', '420', '#5C3A21', '#111111', 'waves', '#8FD3FF', '#1F2937', '#2BB673', true),
+        p('You', '260', '#8D5524', '#1C1714', 'afro', '#C9B8FF', '#C93E1C', '#C93E1C'),
+        p('Bayo', '180', '#F1C27D', '#1C1714', 'waves', '#FFC857', '#1F2937'),
+        p('Zee', '150', '#C68642', '#2A1A12', 'bun', '#B8F2C8', '#C93E1C'),
+        p('Femi', '90', '#8D5524', '#B7412E', 'short', '#ECE4D8', '#0E9F6E')
+      ],
+      hint: ['J','','','','','F'],
+      feed: [
+        { who: 'Bayo', text: 'rice', bg: c.bubble, fg: c.text, w: '400' },
+        { who: 'Zee', text: 'fried rice', bg: c.bubble, fg: c.text, w: '400' },
+        { who: 'Femi', text: 'is close!', bg: c.close, fg: c.closeFg, w: '600' },
+        { who: 'Tunde', text: 'guessed it · +120', bg: c.hit, fg: c.hitFg, w: '700' },
+        { who: 'Hint', text: 'Party food, Lagos owambe essential', bg: c.bubble, fg: c.sub, w: '500' }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

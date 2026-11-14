@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Dyce — Card games</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800;900&amp;family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; font-family: Figtree, -apple-system, system-ui, sans-serif; color: #FFFFFF; background: {{g.space}}">
+  <span style="position: absolute; inset: 0; clip-path: polygon(70px 250px, 320px 250px, 470px 844px, -80px 844px); background: {{g.table}}" aria-hidden="true"></span>
+  <span style="position: absolute; inset: 0; clip-path: polygon(70px 250px, 320px 250px, 470px 844px, -80px 844px); background: {{g.tableTex}}" aria-hidden="true"></span>
+  <span style="position: absolute; inset: 0; clip-path: polygon(70px 250px, 320px 250px, 470px 844px, -80px 844px); background: radial-gradient(ellipse 60% 40% at 50% 52%, rgba(255,235,190,.22), transparent 70%)" aria-hidden="true"></span>
+
+  <sc-for list="{{seats}}" as="s" hint-placeholder-count="3">
+    <div style="position: absolute; left: {{s.x}}; top: {{s.y}}; width: 96px; display: flex; flex-direction: column; align-items: center; gap: 4px">
+      <div style="position: relative; height: 44px; width: 70px">
+        <sc-for list="{{s.backs}}" as="b" hint-placeholder-count="3">
+          <span style="position: absolute; left: 21px; top: 0; width: 28px; height: 42px; border-radius: 4px; transform-origin: 50% 120%; transform: rotate({{b}}); background: {{g.backBg}}; box-shadow: inset 0 0 0 2px {{g.backEdge}}, 0 2px 4px rgba(0,0,0,.4)"></span>
+        </sc-for>
+      </div>
+      <div style="position: relative; margin-top: -14px; border-radius: 50%; box-shadow: 0 0 0 3px {{s.ring}}">
+        <dc-import name="Avatar" size="40" skin="{{s.skin}}" hair="{{s.hair}}" hair-style="{{s.hs}}" bg="{{s.bg}}" shirt="{{s.shirt}}" hint-size="40px,40px"></dc-import>
+        <span style="position: absolute; right: -10px; bottom: -4px; min-width: 22px; height: 22px; padding: 0 5px; box-sizing: border-box; border-radius: 11px; background: {{s.countBg}}; color: {{s.countFg}}; font-size: 12px; font-weight: 900; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 0 rgba(0,0,0,.35)">{{s.count}}</span>
+      </div>
+      <span style="font-size: 12px; font-weight: 800; text-shadow: 0 1px 2px rgba(0,0,0,.6)">{{s.name}}</span>
+    </div>
+  </sc-for>
+
+  <div style="position: absolute; left: 0; right: 0; top: 330px; height: 190px; perspective: 700px" aria-label="Draw pile and discard pile" role="img">
+    <sc-if value="{{isUno}}" hint-placeholder-val="{{true}}">
+      <span style="position: absolute; left: 50%; top: 50%; width: 300px; height: 150px; margin: -75px 0 0 -150px; border-radius: 50%; border: 2px dashed rgba(255,255,255,.28); transform: rotateX(48deg)"></span>
+    </sc-if>
+    <div style="position: absolute; left: 70px; top: 22px; transform: rotateX(30deg) rotateZ(-6deg); transform-style: preserve-3d">
+      <sc-for list="{{drawStack}}" as="d" hint-placeholder-count="4">
+        <span style="position: absolute; left: {{d}}; top: {{d}}; width: 92px; height: 138px; border-radius: 11px; background: {{g.backBg}}; box-shadow: inset 0 0 0 4px {{g.backEdge}}, 0 2px 0 rgba(0,0,0,.35)"></span>
+      </sc-for>
+      <span style="position: absolute; left: 6px; top: 6px; width: 92px; height: 138px; border-radius: 11px; background: {{g.backBg}}; box-shadow: inset 0 0 0 4px {{g.backEdge}}, 0 10px 18px rgba(0,0,0,.45); display: flex; align-items: center; justify-content: center">
+        <span style="width: 52px; height: 52px; border-radius: 10px; transform: rotate(45deg); background: {{g.backMark}}; box-shadow: inset 0 0 0 3px {{g.backEdge}}; display: flex; align-items: center; justify-content: center"><span style="transform: rotate(-45deg); font-family: 'Bricolage Grotesque', sans-serif; font-size: {{g.backFont}}; font-weight: 800; color: {{g.backMarkFg}}; letter-spacing: -0.3px">{{g.backWord}}</span></span>
+      </span>
+      <span style="position: absolute; left: 4px; top: 152px; width: 104px; text-align: center; font-size: 12px; font-weight: 800; opacity: .85">{{g.drawLabel}}</span>
+    </div>
+
+    <div style="position: absolute; left: 198px; top: 18px; transform: rotateX(30deg) rotateZ(8deg)">
+      <sc-for list="{{under}}" as="u" hint-placeholder-count="2">
+        <div style="position: absolute; left: 0; top: 0; transform: rotate({{u.r}})">
+          <dc-import name="Card" game="{{game}}" kind="{{u.kind}}" color="{{u.color}}" value="{{u.value}}" shape="{{u.shape}}" size="92" hint-size="92px,138px"></dc-import>
+        </div>
+      </sc-for>
+      <div style="position: absolute; left: 0; top: 0; filter: drop-shadow(0 12px 14px rgba(0,0,0,.45))">
+        <dc-import name="Card" game="{{game}}" kind="{{top.kind}}" color="{{top.color}}" value="{{top.value}}" shape="{{top.shape}}" size="92" hint-size="92px,138px"></dc-import>
+      </div>
+    </div>
+  </div>
+
+  <div style="position: absolute; left: 50%; top: 540px; transform: translateX(-50%); height: 34px; padding: 0 16px; border-radius: 17px; background: rgba(0,0,0,.45); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border: 1px solid rgba(255,255,255,.14); font-size: 13px; font-weight: 800; display: flex; align-items: center; white-space: nowrap">{{g.rule}}</div>
+
+  <div style="position: absolute; left: 0; right: 0; bottom: 0; height: 300px">
+    <sc-for list="{{hand}}" as="h" hint-placeholder-count="7">
+      <button onClick="{{h.pick}}" aria-label="{{h.aria}}" style="position: absolute; left: 153px; bottom: 96px; width: 84px; height: 126px; padding: 0; border: none; background: none; transform-origin: 50% 330%; transform: rotate({{h.a}}) translateY({{h.lift}}); opacity: {{h.op}}; filter: {{h.glow}}">
+        <dc-import name="Card" game="{{game}}" kind="{{h.kind}}" color="{{h.color}}" value="{{h.value}}" shape="{{h.shape}}" size="84" hint-size="84px,126px"></dc-import>
+      </button>
+    </sc-for>
+  </div>
+
+  <div style="position: absolute; left: 12px; right: 12px; top: 54px; display: flex; align-items: center; justify-content: space-between">
+    <a href="GroupChat.dc.html" aria-label="Back to group chat" style="height: 40px; padding: 0 14px; border-radius: 20px; background: rgba(255,255,255,.12); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,.16); color: #fff; font-size: 14px; font-weight: 700; display: flex; align-items: center; gap: 4px; text-decoration: none">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>Chat</a>
+    <span style="height: 30px; padding: 0 12px; border-radius: 15px; background: {{modeBg}}; box-shadow: 0 2px 0 rgba(0,0,0,.35); font-size: 12px; font-weight: 800; letter-spacing: 0.4px; display: flex; align-items: center">{{modeLabel}}</span>
+    <a href="GameMenu.dc.html" aria-label="Game menu" style="width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,.12); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,.16); display: flex; align-items: center; justify-content: center">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
+    </a>
+  </div>
+
+  <div style="position: absolute; left: 14px; right: 14px; bottom: 30px; display: flex; align-items: center; gap: 10px">
+    <div style="flex: 1; height: 54px; padding: 0 14px; border-radius: 27px; background: rgba(0,0,0,.45); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,.14); display: flex; align-items: center; gap: 10px">
+      <span style="width: 10px; height: 10px; border-radius: 50%; background: #E3A93B; box-shadow: 0 0 10px #E3A93B"></span>
+      <div><div style="font-size: 14px; font-weight: 800">{{status}}</div><div style="font-size: 12px; opacity: .8">{{g.meSub}}</div></div>
+    </div>
+    <button style="height: 54px; padding: 0 18px; border-radius: 27px; border: none; background: {{cta.bg}}; box-shadow: 0 4px 0 {{cta.edge}}, inset 0 2px 0 rgba(255,255,255,.25); color: {{cta.fg}}; font: 900 15px Figtree, sans-serif">{{cta.label}}</button>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"game":{"editor":"enum","options":["uno","whot"],"default":"uno"},"mode":{"editor":"enum","options":["pool","free"],"default":"pool"},"$preview":{"width":390,"height":844}}'>
+const P={
+ amaka:{name:'Amaka',skin:'#8D5524',hair:'#1C1714',hs:'bun',bg:'#FFC857',shirt:'#E0453A'},
+ tunde:{name:'Tunde',skin:'#5C3A21',hair:'#111111',hs:'waves',bg:'#8FD3FF',shirt:'#1F2937'},
+ zee:{name:'Zainab',skin:'#C68642',hair:'#2A1A12',hs:'long',bg:'#B8F2C8',shirt:'#6E4BFF'},
+ ife:{name:'Ifeoma',skin:'#A0662F',hair:'#3B2219',hs:'afro',bg:'#FFB4C6',shirt:'#0E9F6E'}
+};
+const G={
+ uno:{space:'radial-gradient(ellipse at 50% 20%, #1E3A34, #0B1714 70%)',table:'radial-gradient(ellipse at 50% 55%, #1F7A5A, #0F4A36 75%)',tableTex:'repeating-radial-gradient(circle at 40% 60%, rgba(0,0,0,.04) 0 1px, transparent 1px 3px)',
+   backBg:'radial-gradient(circle at 50% 40%, #2A2420, #0F0D0B)',backEdge:'#F6F2EA',backMark:'#C93E1C',backMarkFg:'#FFFFFF',backWord:'dyce',backFont:'15px',
+   drawLabel:'DRAW', rule:'Blue 7 on top · play blue, a 7 or a wild', meSub:'2 playable · Tunde is on 1 card', pot:'₦2,000'},
+ whot:{space:'radial-gradient(ellipse at 50% 20%, #3A2416, #120A06 70%)',table:'linear-gradient(#6B3E22, #8A532E 40%, #6B3E22)',tableTex:'repeating-linear-gradient(92deg, rgba(0,0,0,.08) 0 2px, transparent 2px 11px, rgba(255,220,170,.05) 11px 13px, transparent 13px 26px)',
+   backBg:'repeating-linear-gradient(45deg, #6A1424 0 6px, #7E1C2E 6px 12px), #6A1424',backEdge:'#F3E6CC',backMark:'#F3E6CC',backMarkFg:'#6A1424',backWord:'WHOT',backFont:'12px',
+   drawLabel:'MARKET', rule:'Pick two! Play a 2 or go to market', meSub:'Amaka played Pick Two · 2 playable', pot:'₦2,000'}
+};
+const UNO_HAND=[['num','blue','3'],['num','red','7'],['action','green','+2'],['num','yellow','9'],['skip','blue',''],['wild','wild',''],['num','red','4']];
+const WHOT_HAND=[['shape','','2','circle'],['shape','','5','triangle'],['shape','','7','cross'],['shape','','2','square'],['shape','','8','star'],['shape','','14','circle'],['whot','','20','star']];
+class Component extends DCLogic {
+  constructor(p){ super(p); this.state = { sel: p.game === 'whot' ? 0 : 0 }; }
+  renderVals() {
+    const game = this.props.game === 'whot' ? 'whot' : 'uno';
+    const g = G[game]; const pool = this.props.mode !== 'free';
+    const src = game === 'whot' ? WHOT_HAND : UNO_HAND;
+    const playable = game === 'whot' ? [0, 3, 6] : [0, 1, 4, 5];
+    const n = src.length, sel = this.state.sel;
+    const hand = src.map(([kind, color, value, shape], i) => {
+      const ok = playable.indexOf(i) >= 0, on = sel === i;
+      return { kind, color: color || 'none', value: value || '', shape: shape || 'none', a: ((i - (n - 1) / 2) * 8) + 'deg', lift: on ? '-30px' : (ok ? '-8px' : '0px'), op: ok ? '1' : '0.82',
+        glow: on ? 'drop-shadow(0 0 10px rgba(227,169,59,.95)) drop-shadow(0 8px 10px rgba(0,0,0,.4))' : 'drop-shadow(0 8px 10px rgba(0,0,0,.4))',
+        aria: (value || kind) + ' ' + (shape || color), pick: () => this.setState({ sel: on ? -1 : i }) };
+    });
+    const seat = (p, x, y, count, active) => Object.assign({}, p, { x, y, count, backs: ['-14deg', '0deg', '14deg'], ring: active ? '#E3A93B' : 'rgba(255,255,255,.6)', countBg: count === '1' ? '#C93E1C' : '#FFFFFF', countFg: count === '1' ? '#FFFFFF' : '#1B140F' });
+    const seats = game === 'whot'
+      ? [seat(P.amaka, '8px', '150px', '4'), seat(P.zee, '147px', '112px', '2'), seat(P.ife, '286px', '150px', '6')]
+      : [seat(P.amaka, '8px', '150px', '3'), seat(P.ife, '147px', '112px', '5'), seat(P.tunde, '286px', '150px', '1')];
+    const selCard = sel >= 0 ? src[sel] : null;
+    return {
+      g, game, isUno: game === 'uno', hand, seats,
+      modeLabel: pool ? 'SPACE POOL · ' + g.pot : 'FREE SPACE · XP', modeBg: pool ? '#C93E1C' : '#17834F',
+      drawStack: ['0px', '2px', '4px'],
+      under: game === 'whot' ? [{ kind: 'shape', color: 'none', value: '4', shape: 'triangle', r: '-16deg' }, { kind: 'shape', color: 'none', value: '2', shape: 'star', r: '10deg' }] : [{ kind: 'num', color: 'red', value: '7', shape: 'none', r: '-18deg' }, { kind: 'num', color: 'blue', value: '2', shape: 'none', r: '12deg' }],
+      top: game === 'whot' ? { kind: 'shape', color: 'none', value: '2', shape: 'circle' } : { kind: 'num', color: 'blue', value: '7', shape: 'none' },
+      status: selCard ? 'Play ' + (game === 'whot' ? (selCard[2] + ' ' + selCard[3]) : (selCard[2] || selCard[0]) + ' ' + selCard[1]) + '?' : 'Your turn · ' + n + ' cards',
+      cta: selCard ? { label: 'Play card', bg: '#C93E1C', edge: '#8A2410', fg: '#FFFFFF' } : (game === 'whot' ? { label: 'Go market', bg: '#F3E6CC', edge: '#B9A57E', fg: '#6A1424' } : { label: 'Last card!', bg: '#E3A93B', edge: '#A86F12', fg: '#3A2400' })
+    };
+  }
+}
+</script>
+</body>
+</html>
