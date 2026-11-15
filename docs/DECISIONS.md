@@ -2,6 +2,9 @@
 
 One entry per decision, newest first.
 
+## ADR-012 · Wallet API, money cards and request codes · 2026-11-15
+Backend decision: see `../dyce-backend/docs/DECISIONS.md`. App side: the Wallet tab, Send, Request (QR), Pay a code, receipts and chat money cards are in `src/features/wallet` and `src/features/chat/components/MoneyCard.tsx`; the QR is drawn with `qrcode-generator` + `react-native-svg` (always dark on white); the Pay sheet and request screens read everything from the server.
+
 ## ADR-011 · Two repositories: the Expo app (Dyce) and the backend (dyce-backend) · 2026-11-15
 Full text in `../dyce-backend/docs/DECISIONS.md`. App side: this repo is the Expo app at its root (no `apps/mobile`) plus `packages/ui`. `@dyce/shared` and `@dyce/games` are linked from `../dyce-backend/packages/*` (`link:` dependencies) and consumed as TypeScript source through the `dyce-source` condition. `metro.config.js` watches the linked folder and resolves every package from this project's `node_modules`; `tsconfig.json` sets `preserveSymlinks`; Jest maps both packages to source. Both folders must sit side by side; a release build pins the backend commit. Owner: platform-architect
 

@@ -2,6 +2,7 @@ import { StyleSheet, View } from 'react-native';
 import { Text, brand, useTheme } from '@dyce/ui';
 import { PillButton } from '@/components/PillButton';
 import { clockTime, type ThreadItem, type ThreadMessage } from '../chat-logic';
+import { MoneyCard } from './MoneyCard';
 
 type MessageItem = Extract<ThreadItem, { kind: 'message' }>;
 
@@ -46,23 +47,29 @@ export function MessageBubble({
 
   return (
     <View style={[styles.row, mine ? styles.mine : styles.theirs, { marginTop: first ? 8 : 2 }]}>
-      <View
-        accessible
-        accessibilityLabel={`${who}: ${message.body}, ${clockTime(message.createdAt)}`}
-        style={[
-          styles.bubble,
-          { backgroundColor: bg, opacity: message.status === 'sending' ? 0.7 : 1 },
-          mine
-            ? { borderBottomRightRadius: last ? 6 : 20 }
-            : { borderBottomLeftRadius: last ? 6 : 20 },
-          mine ? { borderTopRightRadius: first ? 20 : 8 } : { borderTopLeftRadius: first ? 20 : 8 },
-          failed ? { borderWidth: 1.5, borderColor: colors.accent } : null,
-        ]}
-      >
-        <Text selectable style={[styles.text, { color: fg }]}>
-          {message.body}
-        </Text>
-      </View>
+      {message.kind !== 'text' ? (
+        <MoneyCard message={message} mine={mine} />
+      ) : (
+        <View
+          accessible
+          accessibilityLabel={`${who}: ${message.body}, ${clockTime(message.createdAt)}`}
+          style={[
+            styles.bubble,
+            { backgroundColor: bg, opacity: message.status === 'sending' ? 0.7 : 1 },
+            mine
+              ? { borderBottomRightRadius: last ? 6 : 20 }
+              : { borderBottomLeftRadius: last ? 6 : 20 },
+            mine
+              ? { borderTopRightRadius: first ? 20 : 8 }
+              : { borderTopLeftRadius: first ? 20 : 8 },
+            failed ? { borderWidth: 1.5, borderColor: colors.accent } : null,
+          ]}
+        >
+          <Text selectable style={[styles.text, { color: fg }]}>
+            {message.body}
+          </Text>
+        </View>
+      )}
 
       {failed ? (
         <View style={styles.failed} accessibilityLiveRegion="polite">

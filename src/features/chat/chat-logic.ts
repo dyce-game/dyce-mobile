@@ -111,7 +111,17 @@ export function upsertMessage(
   message: Message,
 ): MessagesData | undefined {
   if (!data || data.pages.length === 0) return data;
-  if (data.pages.some((p) => p.messages.some((m) => m.id === message.id))) return data;
+  // Already have it. A money request card is the one thing that changes later (open -> paid), so take the newer copy.
+  if (data.pages.some((p) => p.messages.some((m) => m.id === message.id))) {
+    if (message.kind !== 'money_request') return data;
+    return {
+      ...data,
+      pages: data.pages.map((p) => ({
+        ...p,
+        messages: p.messages.map((m) => (m.id === message.id ? message : m)),
+      })),
+    };
+  }
   const [first, ...rest] = data.pages;
   const messages = [...first!.messages];
   // keep newest first: slot it in before the first message that is older

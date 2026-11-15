@@ -60,6 +60,42 @@ export function authErrorMessage(err: unknown): string {
       return "They haven't replied yet. You can send more once they do.";
     case 'message_requests_rate_limited':
       return "You've started a lot of new chats today. Try again tomorrow.";
+    case 'insufficient_funds':
+      return "You don't have enough Dyce Cash for that.";
+    case 'over_send_limit':
+      return "That's over the limit for one payment.";
+    case 'over_daily_limit':
+      return "That would go over today's sending limit. Try again tomorrow.";
+    case 'invalid_amount':
+      return 'Enter a whole-naira amount above zero.';
+    case 'amount_required':
+      return 'Enter how much to pay.';
+    case 'amount_mismatch':
+      return "That isn't the amount that was asked for.";
+    case 'self_payment':
+      return "You can't pay yourself.";
+    case 'recipient_unavailable':
+      return "That person can't receive money right now.";
+    case 'recipient_not_reachable':
+      return 'You can only send money to friends, contacts, or people you chat with.';
+    case 'request_not_found':
+      return "We couldn't find that request. Check the code and try again.";
+    case 'request_already_paid':
+      return 'That request has already been paid.';
+    case 'request_cancelled':
+      return 'That request was cancelled.';
+    case 'request_expired':
+      return 'That request has expired. Ask for a new code.';
+    case 'request_not_for_you':
+      return 'That request was made for someone else.';
+    case 'too_many_open_requests':
+      return 'You have too many open requests. Cancel one first.';
+    case 'topup_already_claimed':
+      return "You've already claimed today's top-up.";
+    case 'balance_too_high':
+      return "Top-ups are for when you're running low.";
+    case 'transaction_not_found':
+      return "We couldn't find that receipt.";
     case 'conversation_not_found':
       return "That chat isn't available.";
     default:

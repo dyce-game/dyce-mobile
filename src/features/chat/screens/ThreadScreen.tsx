@@ -107,7 +107,20 @@ export function ThreadScreen({ conversationId }: { conversationId: string }) {
           {typing ? 'typing…' : peer ? `@${peer.username}` : ' '}
         </Text>
       </View>
-      <View style={styles.side} />
+      <View style={styles.side}>
+        {peer ? (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Send Dyce Cash"
+            onPress={() => router.push(`/wallet/send?to=${peer.id}` as Href)}
+            style={styles.money}
+          >
+            <Text variant="headline" color="accent">
+              ₦
+            </Text>
+          </Pressable>
+        ) : null}
+      </View>
     </View>
   );
 
@@ -245,6 +258,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
   },
   side: { minWidth: 56, minHeight: 44, justifyContent: 'center', paddingLeft: 8 },
+  money: { minWidth: 44, minHeight: 44, alignItems: 'center', justifyContent: 'center' },
   title: { alignItems: 'center', gap: 2, flex: 1 },
   list: { paddingHorizontal: 14, paddingVertical: 10 },
   more: { padding: 12 },
