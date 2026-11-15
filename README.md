@@ -1,14 +1,16 @@
-# Dyce — Claude Code build kit
+# Dyce — the Expo app
 
-Everything Claude Code needs to build Dyce (Expo + Supabase + Colyseus) with a team of sub-agents.
+> Dyce is two repos (ADR-011): this one is the **Expo app** plus the product docs and design; the NestJS API, database and shared packages are in the sibling repo **`../dyce-backend`**. Check both out side by side, run `pnpm install` in `dyce-backend` first, then here (`pnpm dev` to start Expo).
+
+# Original build kit
+
+The kit Claude Code uses to build Dyce with a team of sub-agents. ARCHITECTURE.md and WALLET_AND_QR.md now live in `../dyce-backend/docs/`; the backend is NestJS + PostgreSQL (ADR-004), not Supabase.
 
 ## What's inside
 ```
 CLAUDE.md                     Project rules Claude Code loads every session
 .claude/agents/*.md           19 sub-agents (one per role), ready for Claude Code
 docs/SPEC.md                  Product spec (source of truth)
-docs/ARCHITECTURE.md          Stack, repo layout, data model, game engine contract, realtime
-docs/WALLET_AND_QR.md         Ledger, Pools, Send, Request-with-QR, Scan-to-pay, limits, tests
 docs/GAMES.md                 23-game catalogue: 2D/3D, async/live, rules notes, launch order
 docs/DESIGN_SYSTEM.md         "Tabletop" tokens, components, avatar, motion
 docs/BUILD_PLAN.md            Phases, parallel lanes, kickoff prompts, definition of done

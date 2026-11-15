@@ -6,7 +6,6 @@ expo-env.d.ts
 design
 assets
 pnpm-lock.yaml
-apps/api/db/migrations
 # Product docs, agent briefs and project rules are authored prose from the build kit: not auto-formatted.
 docs
 .claude

@@ -1,5 +1,4 @@
 packages:
-  - apps/*
   - packages/*
 
 # Metro (React Native) needs a flat node_modules. See ADR-006.

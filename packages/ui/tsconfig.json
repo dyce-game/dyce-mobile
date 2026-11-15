@@ -3,6 +3,7 @@
   "compilerOptions": {
     "jsx": "react-native",
     "customConditions": ["dyce-source"],
+    "preserveSymlinks": true,
     "lib": ["ES2022"],
     "types": ["jest", "node"]
   },

@@ -1,8 +1,9 @@
 import js from '@eslint/js';
 import tseslint from 'typescript-eslint';
 
-// Flat config shared by every workspace. Type-aware rules are intentionally off for speed;
-// `pnpm typecheck` is the type gate.
+// Flat config for the app and packages/ui. Type-aware rules are intentionally off for speed;
+// `pnpm typecheck` is the type gate. (The backend has its own config, including the Math.random ban for
+// the deterministic game engines.)
 export default tseslint.config(
   {
     ignores: [
@@ -12,6 +13,7 @@ export default tseslint.config(
       'design/**',
       'assets/**',
       '**/*.cjs',
+      'metro.config.js',
     ],
   },
   js.configs.recommended,
@@ -24,20 +26,7 @@ export default tseslint.config(
       ],
       '@typescript-eslint/consistent-type-imports': ['error', { fixStyle: 'inline-type-imports' }],
       'no-console': ['warn', { allow: ['warn', 'error', 'log'] }],
-      // Money is integer kobo: floats and Math.random have no place in game/money code.
-      'no-restricted-syntax': [
-        'error',
-        {
-          selector: "CallExpression[callee.object.name='Math'][callee.property.name='random']",
-          message: 'Use the seeded RNG from @dyce/games (rng.ts). Engines must be deterministic.',
-        },
-      ],
     },
-  },
-  {
-    // Tests, scripts and the app shell may use Math.random / Date freely.
-    files: ['**/*.test.ts', '**/scripts/**', '**/db/testing/**', 'apps/**'],
-    rules: { 'no-restricted-syntax': 'off' },
   },
   {
     files: ['**/*.mjs', '**/*.js'],

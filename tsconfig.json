@@ -1,0 +1,17 @@
+{
+  "extends": "expo/tsconfig.base",
+  "compilerOptions": {
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
+    "customConditions": ["dyce-source"],
+    // @dyce/shared and @dyce/games are linked from ../dyce-backend. Keep the symlinked path so their
+    // imports (zod, libphonenumber-js) resolve from THIS project's node_modules, as Metro does.
+    "preserveSymlinks": true,
+    "baseUrl": ".",
+    "paths": { "@/*": ["src/*"] }
+  },
+  "include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts"],
+  "exclude": ["node_modules", "packages", "design", "assets", "e2e"]
+}

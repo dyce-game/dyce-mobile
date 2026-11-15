@@ -1,6 +1,9 @@
 # Status
 
-Last updated: 2026-11-15 (Phase 0 done except the items below; Phase 1: auth + OTP, contacts matching, friends list with accept/ignore, and 1:1 messaging with Requests and live delivery done).
+Last updated: 2026-11-15 (repo split: see below) (Phase 0 done except the items below; Phase 1: auth + OTP, contacts matching, friends list with accept/ignore, and 1:1 messaging with Requests and live delivery done).
+
+## Repositories (ADR-011)
+The app is this repo (at its root, plus `packages/ui`); the API, database, `@dyce/shared` and `@dyce/games` are in `../dyce-backend` (its own `docs/STATUS.md` has the server detail and test counts: 142 unit + 210 PostgreSQL tests). The app links the two packages by path. Verified after the split: app typecheck, lint, 112 tests (99 app + 13 ui) and `pnpm export:web`, including with the backend's `node_modules` absent; the backend's tests, HTTP e2e, smoke and determinism pass on their own. Paths below that say `apps/api`, `packages/shared` or `apps/mobile` predate the split (see CLAUDE.md for the mapping). Neither repo has a remote or committed CI run yet.
 
 ## Done and verified
 - Repo, monorepo tooling, ADR-004 (NestJS + plain PostgreSQL replaces Supabase). See earlier commits.

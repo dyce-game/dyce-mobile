@@ -10,7 +10,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "@dyce/shared": "workspace:*"
+    "@dyce/shared": "link:../../../dyce-backend/packages/shared"
   },
   "peerDependencies": {
     "expo-blur": "*",

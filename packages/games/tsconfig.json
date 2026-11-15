@@ -1,8 +1,0 @@
-{
-  "extends": "../../tsconfig.base.json",
-  "compilerOptions": {
-    "types": ["jest", "node"],
-    "erasableSyntaxOnly": true
-  },
-  "include": ["src", "scripts"]
-}

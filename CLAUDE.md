@@ -1,78 +1,69 @@
-# Dyce — project rules for Claude Code
+# Dyce — project rules for Claude Code (the Expo app)
 
 Dyce is a chat-first mobile app for playing games with friends, family and strangers. It looks and feels like a messaging app (inspired by iMessage + iMessage games), with games launched from the composer, multiplayer **Spaces**, and a virtual-cash **Wallet** (every user starts with **₦200k Dyce Cash**). Android and iOS users play together.
 
+**Two repositories (ADR-011).** This repo (`Dyce`) is the **Expo app**. The server lives in the sibling repo **`../dyce-backend`** (NestJS API on PostgreSQL, `packages/shared`, `packages/games`, later the Colyseus game server). Keep both checked out side by side. This repo is also the home of the product docs, the build plan, `STATUS.md` and the design.
+
 Source of truth, in this order. Read the relevant ones before changing anything:
 1. `docs/SPEC.md` — what the product does (features, rules, copy).
-2. `docs/ARCHITECTURE.md` — stack, repo layout, data model, realtime, game engine contract.
-3. `docs/WALLET_AND_QR.md` — ledger, Pool money rules, QR request/scan-to-pay.
-4. `docs/GAMES.md` — game catalogue, 2D vs 3D, async vs realtime, per-game rules.
-5. `docs/DESIGN_SYSTEM.md` — tokens, components, motion. Visual reference screens live in `design/` (`design/SCREENS.md` maps each file to its route; view them in the design canvas or the PNG exports in `design/png/` if present, and read the files for exact values).
-6. `docs/BUILD_PLAN.md` — phases, owners, definition of done.
+2. `../dyce-backend/docs/ARCHITECTURE.md` — stack, data model, realtime, game engine contract. `../dyce-backend/docs/WALLET_AND_QR.md` — ledger, Pool money rules, QR request/scan-to-pay.
+3. `docs/GAMES.md` — game catalogue, 2D vs 3D, async vs realtime, per-game rules.
+4. `docs/DESIGN_SYSTEM.md` — tokens, components, motion. Reference screens live in `design/` (`design/SCREENS.md` maps each file to its route).
+5. `docs/BUILD_PLAN.md` — phases, owners, definition of done. `docs/STATUS.md` — where we are.
 
 If the docs and the design disagree, the docs win. If the docs are silent, follow the design. If both are silent, pick the simplest option, write it down in `docs/DECISIONS.md` (ADR style, one paragraph), and continue.
 
-## Stack (do not swap without an ADR)
-- **App:** Expo (latest stable SDK at kickoff; check `npx expo --version` and the Expo changelog before upgrading), TypeScript strict, **Expo Router** (file-based), EAS Build / Submit / Update. Expo web output is used only for the **guest web game** (invite links).
-- **UI:** react-native-reanimated, react-native-gesture-handler, expo-blur (glass), expo-image, expo-video (game thumbnails), expo-haptics, expo-font (Figtree + Bricolage Grotesque), react-native-svg.
-- **2D games:** @shopify/react-native-skia. **3D games:** @react-three/fiber/native + expo-gl (+ drei where it works on native).
-- **State:** TanStack Query for server state, Zustand for local/UI state. No Redux.
-- **Backend (ADR-004):** **NestJS** API in `apps/api` (REST + WebSocket gateway for chat realtime) on **plain PostgreSQL** with **plain SQL migrations** in `apps/api/db/migrations`. No Supabase. NestJS owns auth (phone OTP via Termii/Twilio, JWT access + refresh), contact matching, messaging, moves for async games, QR requests, invites and push. Money and game moves only change through Postgres functions called by NestJS services — never through direct table writes, and the app never talks to Postgres directly.
-- **Realtime game server:** Colyseus (Node, TypeScript) for live multiplayer (Spaces, party games, card games, Ludo). Separate app, verifies the NestJS-issued JWT.
-- **Shared logic:** `packages/games` (pure TypeScript rules engines, deterministic, no Node/DOM/RN APIs, so the same code runs in the app, in NestJS and in Colyseus). Relative imports inside `packages/games` and `packages/shared` use explicit `.ts` extensions so Node's type-stripping runs them directly (ADR-005).
-
-> **Supabase → NestJS mapping.** Several docs and agent files written before ADR-004 still say Supabase. Read them as: Edge Function → NestJS module/endpoint · RLS → NestJS guards + membership checks in the service layer, with SQL constraints/functions as the last line of defence · Supabase Auth → `apps/api` auth module · Supabase Realtime → NestJS WebSocket gateway · pgTAP → Jest integration tests against a real Postgres (`pnpm test:db`) · `supabase/` → `apps/api/db/` · `supabase-backend-engineer` owns `apps/api` and `apps/api/db`. Everything about money, ledger, matches and fairness is unchanged.
-- **Validation:** zod schemas in `packages/shared`, used on both client and server.
-- **Quality:** Jest + React Native Testing Library, Maestro for e2e flows, ESLint + Prettier, Sentry (@sentry/react-native), PostHog for product analytics.
+> Docs and agent files written before the split mention `apps/mobile`, `apps/api`, `packages/shared`, `packages/games`, Supabase, Edge Functions. Read them as: `apps/mobile/x` is now `x` at this repo's root · `apps/api`, `packages/shared`, `packages/games` are in `../dyce-backend` · Supabase/Edge Functions/RLS/Realtime/pgTAP map to the NestJS API, guards and service checks, the `/realtime` WebSocket, and Jest on real PostgreSQL (ADR-004).
 
 ## Repo layout
 ```
-apps/mobile        Expo app (iOS, Android, web guest)
-apps/api           NestJS API (REST + WebSocket), SQL migrations in db/migrations, seeds in db/seed
-apps/game-server   Colyseus server
-packages/games     Rules engines, one folder per game, plus the GameEngine contract
-packages/shared    zod schemas, types, money + formatting utils, constants
-packages/ui        Design tokens + primitives shared across the app
-design/            Design canvas export (reference only, never imported by code)
-docs/              Specs and decisions
+app/                Expo Router routes (thin; import from src/features)
+src/features/<feature>/   components, hooks, api, screens (auth, contacts, friends, chat, shell, ...)
+src/components, src/lib, src/navigation, src/providers
+packages/ui         design tokens + primitives (@dyce/ui), used only by the app
+design/             design canvas export (reference only, never imported)
+assets/             avatar profiles, stickers, reference packs
+docs/  e2e/         product docs; Maestro flows
 ```
-pnpm workspaces + Turborepo. Node LTS.
+`@dyce/shared` (zod schemas, money, formatting) and `@dyce/games` (rules engines) come from `../dyce-backend/packages/*`, linked by path and consumed as source. **Do not edit them from here as a side effect**: a contract change is a backend commit first, then an app commit. `metro.config.js`, `tsconfig.json` and `jest.config.cjs` hold the wiring.
+
+## Stack (do not swap without an ADR)
+- **App:** Expo (SDK 58), TypeScript strict, **Expo Router**, EAS Build / Submit / Update. Expo web output is used only for the **guest web game** (invite links).
+- **UI:** react-native-reanimated, react-native-gesture-handler, expo-blur (glass), expo-image, expo-video, expo-haptics, expo-font (Figtree + Bricolage Grotesque), react-native-svg.
+- **2D games:** @shopify/react-native-skia. **3D games:** @react-three/fiber/native + expo-gl.
+- **State:** TanStack Query for server state, Zustand for local/UI state. No Redux.
+- **Quality:** Jest (+ RNTL later), Maestro for e2e flows, ESLint + Prettier, Sentry, PostHog.
 
 ## Non-negotiables
-- **Money is integer kobo** (`bigint` in Postgres, `number` safe-range in TS via the `Kobo` branded type). Never floats. Display through `formatNaira()` in `packages/shared` (₦200k, ₦1,500, ₦12.5k rules are in `docs/WALLET_AND_QR.md`).
-- **Every money movement is a double-entry ledger transaction** created by a Postgres function with an idempotency key. Balances can never go negative. Clients never write to ledger tables (the API role has no direct INSERT/UPDATE on them; only the SECURITY DEFINER functions do).
-- **Dyce Cash is virtual and cannot be withdrawn or bought.** Do not add cash-out, card payments or real-money top-ups. If a task seems to need one, stop and raise it.
-- **Game outcomes are decided by the server.** The client renders and predicts; the server validates every move with `packages/games`, and physics games re-simulate from the submitted input and the match seed.
-- **Strangers never land in Chat.** Anything from someone who isn't a friend or a contact goes to Requests until accepted.
-- **Theme follows the device** (`useColorScheme`). There is no in-app theme toggle. Every screen ships light and dark.
+- **Money is integer kobo** (`Kobo` branded type). Never floats. Display through `formatNaira()` from `@dyce/shared`.
+- **Dyce Cash is virtual and cannot be withdrawn or bought.** No cash-out, card payments or real-money top-ups. If a task seems to need one, stop and raise it.
+- **Game outcomes are decided by the server.** The client renders and predicts.
+- **Strangers never land in Chat.** Anything from someone who isn't a friend goes to Requests until accepted.
+- **Theme follows the device** (`useColorScheme`). No in-app theme toggle. Every screen ships light and dark.
 - **No bottom navigation other than the Dyce tab bar** (Chat · Spaces · Wallet + separate search button). Profile is top-left, + is top-right on Chat and Spaces.
 - **No emoji as UI icons.** Use the SVG icon set in `packages/ui/icons`.
 - **Trademarks:** never ship the names Uno or Scrabble. Use "Crazy Cards" and "Word Tiles". Do not copy another app's game art.
-- Accessibility: every touchable has an accessible label; minimum touch target 44×44; text respects Dynamic Type up to 1.3×; colour is never the only signal (mode badges carry text).
-- Privacy: phone numbers are stored only as salted hashes for contact matching (E.164 via libphonenumber-js before hashing). Follow the Nigeria Data Protection Act 2023 notes in `docs/SPEC.md`.
+- Accessibility: every touchable has an accessible label; minimum touch target 44×44; text respects Dynamic Type up to 1.3×; colour is never the only signal.
+- Privacy: the app never stores phone numbers of people who aren't on Dyce; contacts are sent over TLS for server-side matching only.
 
 ## Conventions
-- Feature folders in `apps/mobile/src/features/<feature>/` (components, hooks, api, screens). Routes in `apps/mobile/app/` stay thin and import from features.
-- Components: function components, named exports, props typed with `type`, styles via the `ui` primitives + `StyleSheet` (no inline style objects in hot paths, no styled-components).
-- Data hooks: `useXQuery` / `useXMutation` in `features/<f>/api`. Query keys in `packages/shared/queryKeys.ts`.
-- Supabase: one migration per change (`supabase migration new <name>`), RLS on every table, pgTAP test for every function that moves money or changes match state.
-- Edge Functions: one folder per function, zod-validate input, return typed errors `{ code, message }`.
+- Routes in `app/` stay thin and import from features. Function components, named exports, props typed with `type`, styles via the `ui` primitives + `StyleSheet`.
+- Data hooks: `useXQuery` / `useXMutation` in the feature. Query keys in `@dyce/shared` (`queryKeys`).
 - Commits: Conventional Commits. Small PRs, one feature per branch.
-- Tests: rules engines need unit tests for every rule and a property test (random legal moves never break invariants). Money functions need tests for success, insufficient funds, idempotent retry, concurrent double-spend.
+- Tests: pure logic gets unit tests (merging, grouping, reconnect, optimistic state).
 
 ## Commands
 ```
-pnpm i
-pnpm dev               # turbo: expo start + game-server + supabase start
-pnpm -F mobile ios     # or android / web
-pnpm test              # all unit tests
-pnpm test:db           # supabase test db (pgTAP)
-pnpm e2e               # maestro test e2e/
-pnpm lint && pnpm typecheck
+pnpm install            # install ../dyce-backend first (pnpm install there), then here
+pnpm dev                # expo start (web: pnpm web; Metro needs reloads: don't set CI=1)
+pnpm test               # app + ui unit tests
+pnpm lint && pnpm typecheck && pnpm format:check
+pnpm export:web         # proves the app bundles
+pnpm e2e                # maestro test e2e/
 ```
-(The Platform Architect creates these scripts in Phase 0. Keep this list in sync with `package.json`.)
 
 ## How to work here
-- The lead session plans and delegates to the agents in `.claude/agents/`. Each agent owns an area (see `docs/BUILD_PLAN.md`). Don't edit another agent's area without a note in the PR description.
-- Before starting a task: read the doc sections it touches and the matching `design/` screens. After finishing: run lint, typecheck and the tests for the area, then update docs if behaviour changed.
-- When you're unsure whether something is in scope, check SPEC.md. If it isn't there, it's out of scope for now — list it in `docs/BACKLOG.md`.
+- The lead session plans and delegates to the agents in `.claude/agents/`. Each agent owns an area (see `docs/BUILD_PLAN.md`). Backend-heavy roles also exist in `../dyce-backend/.claude/agents/`.
+- Before a task: read the doc sections it touches and the matching `design/` screens. After: run lint, typecheck and the tests, then update docs if behaviour changed.
+- A feature that needs a new endpoint or contract: do the backend first (its tests must pass), then the app.
+- If something isn't in the SPEC, it's out of scope for now: add it to `docs/BACKLOG.md`.

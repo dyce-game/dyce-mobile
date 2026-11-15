@@ -9,77 +9,61 @@ concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
+# The app links @dyce/shared and @dyce/games from the sibling dyce-backend repo (ADR-011), so every job checks
+# out both side by side. Replace OWNER with the GitHub owner, add a BACKEND_REPO_TOKEN secret if the backend
+# repo is private, and pin `ref` to the backend commit a release build was made against.
 jobs:
   check:
-    name: Lint, typecheck, unit tests, determinism
+    name: Lint, typecheck, unit tests
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: Dyce
     steps:
       - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4 # version comes from "packageManager" in package.json
+        with:
+          path: Dyce
+      - uses: actions/checkout@v4
+        with:
+          repository: OWNER/dyce-backend
+          path: dyce-backend
+          token: ${{ secrets.BACKEND_REPO_TOKEN || github.token }}
+      - uses: pnpm/action-setup@v4
+        with:
+          package_json_file: Dyce/package.json
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: pnpm
+          cache-dependency-path: Dyce/pnpm-lock.yaml
       - run: pnpm install --frozen-lockfile
       - run: pnpm format:check
       - run: pnpm lint
       - run: pnpm typecheck
       - run: pnpm test
-      # Same engine scenario in Node here; Hermes runs it via the app's dev/determinism screen.
-      - run: pnpm test:determinism
 
-  database:
-    name: Database tests (real PostgreSQL)
+  web-export:
+    name: App bundles (web export)
     runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres:17
-        env:
-          POSTGRES_PASSWORD: postgres
-        ports: ['5432:5432']
-        options: >-
-          --health-cmd "pg_isready -U postgres"
-          --health-interval 5s
-          --health-timeout 5s
-          --health-retries 10
-    env:
-      TEST_DATABASE_ADMIN_URL: postgres://postgres:postgres@localhost:5432/postgres
+    defaults:
+      run:
+        working-directory: Dyce
     steps:
       - uses: actions/checkout@v4
+        with:
+          path: Dyce
+      - uses: actions/checkout@v4
+        with:
+          repository: OWNER/dyce-backend
+          path: dyce-backend
+          token: ${{ secrets.BACKEND_REPO_TOKEN || github.token }}
       - uses: pnpm/action-setup@v4
+        with:
+          package_json_file: Dyce/package.json
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: pnpm
+          cache-dependency-path: Dyce/pnpm-lock.yaml
       - run: pnpm install --frozen-lockfile
-      # With TEST_DATABASE_ADMIN_URL set, the runner uses this service instead of an embedded server.
-      - run: pnpm test:db
-
-  api-smoke:
-    name: API builds and boots
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm -F @dyce/shared build && pnpm -F @dyce/games build && pnpm -F @dyce/api build
-      - run: pnpm -F @dyce/api smoke
-      - run: pnpm -F @dyce/api e2e
-
-  mobile-web:
-    name: Mobile app bundles (web export)
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm -F @dyce/shared build && pnpm -F @dyce/games build
-      - run: pnpm -F @dyce/mobile export:web
+      - run: pnpm export:web

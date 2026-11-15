@@ -1,9 +1,9 @@
 node_modules/
-.turbo/
 dist/
 coverage/
 .expo/
 .expo-shared/
+expo-env.d.ts
 *.log
 .DS_Store
 .env
@@ -13,9 +13,3 @@ ios/
 android/
 web-build/
 *.tsbuildinfo
-supabase/.branches/
-supabase/.temp/
-supabase/functions/.env
-
-# local embedded dev database
-.dev-db/
