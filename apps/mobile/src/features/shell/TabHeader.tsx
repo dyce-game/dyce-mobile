@@ -1,9 +1,15 @@
+import type { ReactNode } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
+import { useRouter, type Href } from 'expo-router';
 import { Icon, Text, brand, useTheme } from '@dyce/ui';
+import { useFriendRequestsQuery } from '@/features/friends/use-friends';
 
 /**
  * Tab title row. Profile avatar top-left (ember ring), optional "+" top-right (Chat and Spaces only).
- * Real avatars arrive with the avatar engine in Phase 1; this shows the user's initial.
+ * Real avatars arrive with the avatar engine in Phase 1; this shows a placeholder initial.
+ *
+ * Until the Profile screen exists, the avatar opens Friends (which the design reaches from Profile), and
+ * shows how many friend requests are waiting.
  */
 export function TabHeader({
   title,
@@ -12,18 +18,35 @@ export function TabHeader({
 }: {
   title: string;
   onPlus?: () => void;
-  right?: React.ReactNode;
+  right?: ReactNode;
 }) {
   const { colors } = useTheme();
+  const router = useRouter();
+  const waiting = useFriendRequestsQuery().data?.incoming.length ?? 0;
   return (
     <View style={styles.wrap}>
       <View style={styles.top}>
         <Pressable
           accessibilityRole="button"
-          accessibilityLabel="Your profile"
+          accessibilityLabel={
+            waiting > 0
+              ? `Friends, ${waiting} ${waiting === 1 ? 'request' : 'requests'} waiting`
+              : 'Friends'
+          }
+          onPress={() => router.push('/friends' as Href)}
           style={[styles.avatar, { borderColor: brand.ember.fill, backgroundColor: colors.chip }]}
         >
           <Text variant="callout">K</Text>
+          {waiting > 0 ? (
+            <View
+              style={[styles.badge, { backgroundColor: brand.ember.fill, borderColor: colors.bg }]}
+              aria-hidden
+            >
+              <Text variant="caption" style={{ color: brand.ember.text }}>
+                {waiting > 9 ? '9+' : waiting}
+              </Text>
+            </View>
+          ) : null}
         </Pressable>
         {right ??
           (onPlus ? (
@@ -55,6 +78,18 @@ const styles = StyleSheet.create({
     height: 44,
     borderRadius: 22,
     borderWidth: 3,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  badge: {
+    position: 'absolute',
+    top: -8,
+    right: -10,
+    minWidth: 20,
+    height: 20,
+    borderRadius: 10,
+    borderWidth: 2,
+    paddingHorizontal: 4,
     alignItems: 'center',
     justifyContent: 'center',
   },

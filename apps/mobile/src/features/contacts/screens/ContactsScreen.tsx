@@ -7,7 +7,9 @@ import { prepareContacts } from '@dyce/shared';
 import { Text, TokenButton, useTheme } from '@dyce/ui';
 import { authApi, contactsApi, sessionStore } from '@/lib/api';
 import { track } from '@/lib/analytics';
+import { ScreenHeader } from '@/components/ScreenHeader';
 import { AuthHeader } from '@/features/auth/components/AuthHeader';
+import { useRefreshFriends } from '@/features/friends/use-friends';
 import { authErrorMessage } from '@/features/auth/messages';
 import { hrefForStep } from '@/features/auth/routes';
 import { FindByUsername } from '../components/FindByUsername';
@@ -28,9 +30,12 @@ type Stage = 'checking' | 'intro' | 'syncing' | 'results' | 'denied';
  * server keeps only the ids of people who are on Dyce. If they say no (or there is no address book, as on
  * web) we show "Allow in Settings" and "Find by username" instead of a dead end.
  */
-export function ContactsScreen() {
+export function ContactsScreen({ mode = 'onboarding' }: { mode?: 'onboarding' | 'standalone' }) {
   const router = useRouter();
   const { colors } = useTheme();
+  const refreshFriends = useRefreshFriends();
+  // standalone = opened later from "Add friends": no onboarding header, no step to complete.
+  const standalone = mode === 'standalone';
   const [stage, setStage] = useState<Stage>('checking');
   const [permission, setPermission] = useState<PermissionInfo | null>(null);
   const [matches, setMatches] = useState<SyncedMatch[]>([]);
@@ -90,6 +95,7 @@ export function ContactsScreen() {
     try {
       const res = await contactsApi.addFriend(item.user.id);
       setMatches((prev) => withRelationship(prev, item.user.id, res.relationship));
+      refreshFriends();
     } catch (err) {
       setError(authErrorMessage(err));
     } finally {
@@ -98,6 +104,11 @@ export function ContactsScreen() {
   }
 
   async function finish() {
+    if (standalone) {
+      if (router.canGoBack()) router.back();
+      else router.replace('/friends' as Href);
+      return;
+    }
     setFinishing(true);
     try {
       const res = await authApi.completeStep('contacts');
@@ -126,9 +137,11 @@ export function ContactsScreen() {
   return (
     <SafeAreaView style={[styles.root, { backgroundColor: colors.bg }]}>
       <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-        <AuthHeader step={3} right={skip} />
-
-        {stage === 'checking' ? null : null}
+        {standalone ? (
+          <ScreenHeader title="Find friends" fallback="/friends" />
+        ) : (
+          <AuthHeader step={3} right={skip} />
+        )}
 
         {stage === 'intro' ? (
           <View style={styles.block}>
@@ -226,9 +239,11 @@ export function ContactsScreen() {
             label={
               finishing
                 ? 'One moment…'
-                : stage === 'denied'
-                  ? 'Continue without contacts'
-                  : 'Continue'
+                : standalone
+                  ? 'Done'
+                  : stage === 'denied'
+                    ? 'Continue without contacts'
+                    : 'Continue'
             }
             disabled={finishing}
             onPress={() => void finish()}

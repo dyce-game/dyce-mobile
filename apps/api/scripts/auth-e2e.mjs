@@ -287,6 +287,76 @@ try {
   r = await call('GET', '/contacts/suggestions', { token: s1.accessToken });
   assert.deepEqual(r.json.suggestions, [], 'friends are no longer suggestions');
 
+  // ---- friends list, ignore, remove ------------------------------------------------------------
+  step = 'friends list';
+  r = await call('GET', '/friends');
+  assert.equal(r.status, 401);
+  r = await call('GET', '/friends', { token: s1.accessToken });
+  assert.deepEqual(
+    r.json.friends.map((f) => f.username),
+    ['tunde.c'],
+  );
+  assert.deepEqual(Object.keys(r.json.friends[0]).sort(), [
+    'displayName',
+    'id',
+    'since',
+    'username',
+  ]);
+  r = await call('GET', '/friends/requests', { token: s1.accessToken });
+  assert.deepEqual(r.json, { incoming: [], outgoing: [] });
+
+  r = await call('DELETE', `/friends/${s3.userId}`, { token: s1.accessToken }); // A removes C
+  assert.equal(r.status, 204);
+  r = await call('GET', '/friends', { token: s3.accessToken });
+  assert.deepEqual(r.json.friends, []);
+  r = await call('DELETE', `/friends/${s3.userId}`, { token: s1.accessToken }); // again: fine
+  assert.equal(r.status, 204);
+  r = await call('DELETE', '/friends/not-a-uuid', { token: s1.accessToken });
+  assert.equal(r.status, 422);
+
+  step = 'ignore';
+  r = await call('POST', '/friends/requests', {
+    token: s1.accessToken,
+    body: { userId: s3.userId },
+  });
+  assert.deepEqual(r.json, { relationship: 'pending_out' });
+  r = await call('GET', '/friends/requests', { token: s3.accessToken });
+  assert.deepEqual(
+    r.json.incoming.map((i) => [i.user.username, i.mutualFriends]),
+    [['ada.o', 0]],
+  );
+  r = await call('POST', `/friends/requests/${s1.userId}/decline`, { token: s3.accessToken }); // C: Ignore
+  assert.deepEqual(r.json, { relationship: 'none' });
+  r = await call('GET', '/friends/requests', { token: s3.accessToken });
+  assert.deepEqual(r.json.incoming, [], 'an ignored request leaves the recipient list');
+  r = await call('GET', '/friends/requests', { token: s1.accessToken });
+  assert.deepEqual(
+    r.json.outgoing.map((o) => [o.user.username, o.user.relationship]),
+    [['tunde.c', 'pending_out']],
+    'the sender is not told the request was ignored',
+  );
+  r = await call('POST', '/friends/requests', {
+    token: s1.accessToken,
+    body: { userId: s3.userId },
+  });
+  assert.deepEqual(r.json, { relationship: 'pending_out' }, 'cannot ask again after being ignored');
+
+  r = await call('POST', `/friends/requests/${s3.userId}/accept`, { token: s1.accessToken });
+  assert.equal(r.status, 404, "you can't accept your own outgoing request");
+  assert.equal(r.json.code, 'friend_request_not_found');
+  r = await call('POST', `/friends/requests/${s1.userId}/accept`, { token: s3.accessToken }); // C changes their mind
+  assert.deepEqual(r.json, { relationship: 'friends' });
+  r = await call('GET', '/friends', { token: s3.accessToken });
+  assert.deepEqual(
+    r.json.friends.map((f) => f.username),
+    ['ada.o'],
+  );
+
+  r = await call('DELETE', `/friends/requests/${s3.userId}`, { token: s1.accessToken }); // cancel nothing: fine
+  assert.equal(r.status, 204);
+  r = await call('GET', '/friends', { token: s1.accessToken });
+  assert.equal(r.json.friends.length, 1, 'cancelling a request never removes a friendship');
+
   r = await call('DELETE', '/contacts', { token: s1.accessToken });
   assert.equal(r.status, 204);
 

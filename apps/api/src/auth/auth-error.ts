@@ -22,7 +22,8 @@ export type AuthErrorCode =
   | 'user_not_found'
   | 'blocked'
   | 'requests_closed'
-  | 'cannot_add_self';
+  | 'cannot_add_self'
+  | 'friend_request_not_found';
 
 const STATUS: Record<AuthErrorCode, number> = {
   validation_failed: 422,
@@ -48,6 +49,7 @@ const STATUS: Record<AuthErrorCode, number> = {
   blocked: 403,
   requests_closed: 403,
   cannot_add_self: 422,
+  friend_request_not_found: 404,
 };
 
 /** An expected, user-facing failure. Mapped to `{ code, message, ...details }` by the HTTP filter. */

@@ -1,6 +1,8 @@
-import { Pressable, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import type { Relationship } from '@dyce/shared';
-import { Text, brand, useTheme } from '@dyce/ui';
+import { Text, useTheme } from '@dyce/ui';
+import { InitialAvatar } from '@/components/InitialAvatar';
+import { PillButton } from '@/components/PillButton';
 import { addAction } from '../sync';
 
 export type PersonRowProps = {
@@ -12,18 +14,13 @@ export type PersonRowProps = {
   onAdd: () => void;
 };
 
-/** One person: initial, names, and an Add / Accept / Requested / Friends button (44pt minimum target). */
+/** One person: initial, names, and an Add / Accept / Requested / Friends button. */
 export function PersonRow({ primary, username, relationship, busy, onAdd }: PersonRowProps) {
   const { colors } = useTheme();
   const action = addAction(relationship);
-  const active = action.pressable && !busy;
   return (
     <View style={[styles.row, { borderColor: colors.line }]}>
-      <View style={[styles.avatar, { backgroundColor: colors.brandSoft }]} aria-hidden>
-        <Text variant="callout" color="accent">
-          {(primary || username).slice(0, 1).toUpperCase()}
-        </Text>
-      </View>
+      <InitialAvatar name={primary || username} />
       <View style={styles.names}>
         <Text variant="callout" numberOfLines={1}>
           {primary || username}
@@ -32,48 +29,19 @@ export function PersonRow({ primary, username, relationship, busy, onAdd }: Pers
           @{username}
         </Text>
       </View>
-      <Pressable
-        accessibilityRole="button"
+      <PillButton
+        label={action.label}
+        tone={action.pressable ? 'primary' : 'neutral'}
+        disabled={!action.pressable}
+        busy={busy}
         accessibilityLabel={`${action.label} @${username}`}
-        accessibilityState={{ disabled: !active }}
-        disabled={!active}
         onPress={onAdd}
-        style={[
-          styles.button,
-          action.pressable
-            ? {
-                backgroundColor: brand.ember.fill,
-                borderBottomColor: brand.ember.edge,
-                borderBottomWidth: 3,
-              }
-            : { backgroundColor: colors.chip },
-          busy ? { opacity: 0.6 } : null,
-        ]}
-      >
-        <Text variant="callout" style={{ color: action.pressable ? brand.ember.text : colors.sub }}>
-          {busy ? '…' : action.label}
-        </Text>
-      </Pressable>
+      />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 64, borderBottomWidth: 1 },
-  avatar: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   names: { flex: 1, minWidth: 0 },
-  button: {
-    minHeight: 44,
-    minWidth: 92,
-    paddingHorizontal: 16,
-    borderRadius: 22,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
 });

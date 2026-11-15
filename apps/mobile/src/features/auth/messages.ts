@@ -54,6 +54,8 @@ export function authErrorMessage(err: unknown): string {
       return "They aren't taking new requests right now.";
     case 'cannot_add_self':
       return "That's you!";
+    case 'friend_request_not_found':
+      return "That request isn't there any more.";
     default:
       return 'Something went wrong. Please try again.';
   }

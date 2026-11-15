@@ -14,6 +14,7 @@ import type { z } from 'zod';
 import {
   contactsMatchSchema,
   friendRequestSchema,
+  userIdParamSchema,
   usernameSchema,
   type ContactsMatchRequest,
 } from '@dyce/shared';
@@ -56,6 +57,18 @@ export class ContactsController {
 export class FriendsController {
   constructor(@Inject(FriendsService) private readonly friends: FriendsService) {}
 
+  /** Your friends, A-Z. */
+  @Get()
+  list(@CurrentUser() user: AuthContext) {
+    return this.friends.list(user.userId);
+  }
+
+  /** Requests waiting for you (with mutual friend counts) and requests you sent. */
+  @Get('requests')
+  requests(@CurrentUser() user: AuthContext) {
+    return this.friends.requests(user.userId);
+  }
+
   @Post('requests')
   @HttpCode(200)
   @Throttle({ default: { limit: 30, ttl: 60_000 } })
@@ -64,6 +77,45 @@ export class FriendsController {
     @Body(new ZodPipe(friendRequestSchema)) body: { userId: string },
   ) {
     return this.friends.sendRequest(user.userId, body.userId);
+  }
+
+  @Post('requests/:userId/accept')
+  @HttpCode(200)
+  accept(
+    @CurrentUser() user: AuthContext,
+    @Param('userId', new ZodPipe(userIdParamSchema)) userId: string,
+  ) {
+    return this.friends.accept(user.userId, userId);
+  }
+
+  /** "Ignore": hides the request without telling the sender. */
+  @Post('requests/:userId/decline')
+  @HttpCode(200)
+  decline(
+    @CurrentUser() user: AuthContext,
+    @Param('userId', new ZodPipe(userIdParamSchema)) userId: string,
+  ) {
+    return this.friends.decline(user.userId, userId);
+  }
+
+  /** Withdraw a request you sent. */
+  @Delete('requests/:userId')
+  @HttpCode(204)
+  async cancel(
+    @CurrentUser() user: AuthContext,
+    @Param('userId', new ZodPipe(userIdParamSchema)) userId: string,
+  ): Promise<void> {
+    await this.friends.cancel(user.userId, userId);
+  }
+
+  /** Remove a friend. */
+  @Delete(':userId')
+  @HttpCode(204)
+  async remove(
+    @CurrentUser() user: AuthContext,
+    @Param('userId', new ZodPipe(userIdParamSchema)) userId: string,
+  ): Promise<void> {
+    await this.friends.remove(user.userId, userId);
   }
 }
 

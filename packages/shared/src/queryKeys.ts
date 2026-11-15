@@ -10,7 +10,10 @@ export const queryKeys = {
   conversation: (id: string) => ['conversation', id] as const,
   messages: (conversationId: string) => ['messages', conversationId] as const,
   requests: ['requests'] as const,
+  /** Prefix for everything friends-related: invalidating it refreshes the list and the requests. */
   friends: ['friends'] as const,
+  friendRequests: ['friends', 'requests'] as const,
+  contactSuggestions: ['contacts', 'suggestions'] as const,
   games: ['games'] as const,
   match: (id: string) => ['match', id] as const,
   spaces: (scope: string) => ['spaces', scope] as const,

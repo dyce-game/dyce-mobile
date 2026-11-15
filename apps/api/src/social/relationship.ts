@@ -12,7 +12,8 @@ export const FRIENDSHIP_JOIN = `
 
 export const RELATIONSHIP_EXPR = `
   CASE WHEN f.status = 'accepted' THEN 'friends'
-       WHEN f.status = 'pending' AND f.requested_by = $1::uuid THEN 'pending_out'
+       -- an ignored ("declined") request still looks pending to the person who sent it
+       WHEN f.status IN ('pending', 'declined') AND f.requested_by = $1::uuid THEN 'pending_out'
        WHEN f.status = 'pending' THEN 'pending_in'
        ELSE 'none' END`;
 
