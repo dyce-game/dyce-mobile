@@ -2,6 +2,17 @@
 
 One entry per decision, newest first.
 
+## ADR-009 · Friends list, accept and ignore · 2026-11-15
+Context: friend requests existed (ADR-008) but nobody could see, accept or decline them. SPEC says anything from a non-friend goes to Requests, and declining must not become a way to harass or to learn who ignored you.
+Decision:
+- **Endpoints:** `GET /friends` (A-Z), `GET /friends/requests` (`incoming` and `outgoing`, with mutual-friend counts), `POST /friends/requests/:userId/accept`, `POST /friends/requests/:userId/decline`, `DELETE /friends/requests/:userId` (cancel your own), `DELETE /friends/:userId` (remove). All idempotent; each pair is serialised with an advisory lock.
+- **Declined is a real state** (`friendship_status` gains `declined`, plus `responded_at`), not a deleted row. The row is what stops the same person re-sending and re-notifying you.
+- **Silent ignore.** The sender is never told. After you decline, their screen still says "Requested" (`pending_out`), they cannot re-send past it, and the daily request cap still applies.
+- **Adding back accepts.** If you later add someone whose request you declined, that is treated as accepting their request, so you become friends at once. Their own request is never overridden by a policy check, so accept always works.
+- **Remove is quiet and symmetric:** no notification, either side can no longer message as a friend; a later request starts fresh and is subject to `request_policy` again.
+- **Mobile:** Friends has All and Requests tabs; Requests shows "Want to be friends" (Accept/Ignore, mutual friends, age of request) above "You asked" (Cancel). The design's swipe-to-remove is replaced by a Remove button with an inline "Keep / Remove" confirm: swipe is not reachable with a screen reader and fails the 44pt target rule when hidden. Until the Profile screen exists, the Chat/Spaces/Wallet top-left avatar opens Friends and carries a count badge for waiting requests.
+Consequences: accepting from the Requests tab is the only place `declined` rows are created; block/report (trust-safety) will reuse the same row and must clear it. Owner: social-discovery-engineer
+
 ## ADR-008 · Contact matching and friend requests · 2026-11-14
 Context: onboarding must show "who from my contacts is on Dyce" without ever storing the address book (SPEC §4, NDPA 2023), and without turning into a tool for harvesting who is on Dyce.
 Decision:

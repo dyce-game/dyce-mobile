@@ -14,7 +14,9 @@ Owner: qa-engineer. This is the living plan; the lead updates the "Status" colum
 | Money, ledger, matches (SQL) | Jest + real PostgreSQL | `apps/api/db/tests` | `pnpm test:db` (embedded PG locally, service container in CI) |
 | Auth: OTP limits/lockout, sessions, profile, age gate, onboarding | Jest + real PostgreSQL | `apps/api/db/tests/auth.test.ts`, `profile.test.ts` | `pnpm test:db` |
 | Contacts matching + friend requests (privacy, blocks, limits, races) | Jest + real PostgreSQL | `apps/api/db/tests/contacts.test.ts` | `pnpm test:db` |
-| Auth + contacts over real HTTP (whole journey, throttling, production-safety) | script | `apps/api/scripts/auth-e2e.mjs` | `pnpm -F @dyce/api e2e` |
+| Friends list, accept, ignore, cancel, remove (silent ignore, races, blocks) | Jest + real PostgreSQL | `apps/api/db/tests/friends.test.ts` | `pnpm test:db` |
+| Friend row/tab logic (labels, relative time, mutual-friend text) | Jest | `apps/mobile/src/features/friends/friends.test.ts` | `pnpm test` |
+| Auth + contacts + friends over real HTTP (whole journey, throttling, production-safety) | script | `apps/api/scripts/auth-e2e.mjs` | `pnpm -F @dyce/api e2e` |
 | Contact syncing/batching, add-button states | Jest | `apps/mobile/src/features/contacts/contacts.test.ts` | `pnpm test` |
 | SMS providers, env validation, tokens, hashing | Jest | `apps/api/src/**/*.test.ts` | `pnpm test` |
 | App API client (single-flight refresh), session store, routing | Jest | `apps/mobile/src/features/auth/auth.test.ts` | `pnpm test` |
