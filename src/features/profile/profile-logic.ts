@@ -24,6 +24,45 @@ export function levelLabel(level: number, xp: number): string {
   return `Level ${level} · ${xp.toLocaleString('en-NG')} XP`;
 }
 
+/**
+ * How much XP fills one level: 75 times the level (the design's "Level 8 · 30 / 600 XP"). `xp` is progress inside
+ * the current level. Games award the XP later; until then everyone is at the start of Level 1.
+ */
+export function xpForLevel(level: number): number {
+  return 75 * Math.max(1, level);
+}
+
+/** 0..1 for the XP bar. */
+export function xpProgress(level: number, xp: number): number {
+  return Math.min(1, Math.max(0, xp / xpForLevel(level)));
+}
+
+/** "30 / 600 XP". */
+export function xpLabel(level: number, xp: number): string {
+  return `${xp.toLocaleString('en-NG')} / ${xpForLevel(level).toLocaleString('en-NG')} XP`;
+}
+
+export type ProfileStat = { key: string; label: string; value: string; money?: boolean };
+
+/** The four stat cards. Nothing has been played yet, so they read as a fresh start until games record results. */
+export function profileStats(): ProfileStat[] {
+  return [
+    { key: 'games', label: 'Games', value: '0' },
+    { key: 'winRate', label: 'Win rate', value: '—' },
+    { key: 'poolNet', label: 'Pool net', value: '₦0', money: true },
+    { key: 'bestPot', label: 'Best pot', value: '₦0' },
+  ];
+}
+
+/** Badges named in the SPEC, shown locked until earned (the badge system arrives with games). */
+export const BADGE_PREVIEW: { key: string; name: string; mark: string; color: string }[] = [
+  { key: 'first-win', name: 'First Win', mark: '1st', color: '#2BB673' },
+  { key: 'streak-10', name: '10 Streak', mark: '10', color: '#C2410C' },
+  { key: 'pool-shark', name: 'Pool Shark', mark: '₦', color: '#C93E1C' },
+  { key: 'space-host', name: 'Space Host', mark: '4+', color: '#B37A00' },
+  { key: 'whot-master', name: 'Whot Master', mark: 'W', color: '#9AA0AE' },
+];
+
 /** Whether a typed name can be saved, and what to tell the person when it can't. */
 export function nameProblem(raw: string): string | null {
   const name = raw.trim();
