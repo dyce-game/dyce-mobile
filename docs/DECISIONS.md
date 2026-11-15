@@ -2,6 +2,19 @@
 
 One entry per decision, newest first.
 
+## ADR-008 · Contact matching and friend requests · 2026-11-14
+Context: onboarding must show "who from my contacts is on Dyce" without ever storing the address book (SPEC §4, NDPA 2023), and without turning into a tool for harvesting who is on Dyce.
+Decision:
+- **Where hashing happens:** the device normalises numbers to E.164 and sends them over TLS in batches of at most 500; the **server** hashes each with the same keyed HMAC used at sign-in (`hashPhone`) and compares with `users.phone_hash`. A plain device-side hash would be trivially reversible (tiny keyspace). Numbers are not logged, validation errors don't echo them, and nothing about unmatched numbers is persisted.
+- **What is stored:** only `contact_links(owner, contact_user)` for matches, upserted. `DELETE /contacts` forgets them (data deletion). Links are never removed when a contact disappears from the phone (v1: upsert only).
+- **What the server returns:** for each match, the position of the number in the request plus `{ id, username, displayName, relationship }`. Never a phone number or hash. Positions let the app show the **device contact name**, which never leaves the phone. Users with no profile yet, disabled users, yourself, and anyone blocked in either direction are not returned.
+- **Abuse:** matching is a membership oracle ("is this number on Dyce?"), so it is capped per user per Lagos day (`contact_lookups_per_day`, default 10,000, counted before matching and rolled back if exceeded) plus a 30/min per-IP throttle. Known limit: an authenticated, phone-verified user can still test up to the cap per day. There is no "hide me from contact matching" setting yet (not in SPEC); worth a product decision.
+- **Reading national-format numbers:** contacts like `0803…` are interpreted with the **country of the user's own verified number** (stored in the session as an ISO code only), falling back to the device region. Using the device region alone silently dropped a Nigerian user's contacts on a phone set to US English (found in testing).
+- **Friend requests (minimal):** `POST /friends/requests` creates a pending request, or accepts one the other person already sent (reciprocal), idempotently and race-free (advisory lock per pair). Rules: someone who blocked you looks nonexistent; you can't add someone you blocked; the target's `request_policy` applies to *new* requests (`nobody` refuses, `fof` needs a mutual friend or a contact link; accepting is always allowed); 50 new requests per day. Listing, accepting, declining and removing friends belong to the social/discovery work.
+- **Find by username:** `GET /users/by-username/:username` is exact match only (no prefix search), so it can't be used to browse users.
+- **Denied path:** if contacts are refused (or the platform has no address book), the screen offers "Allow in Settings" and "Find by username" and lets the user continue.
+Consequences: contact matching depends on `PHONE_HASH_SALT` staying stable (see ADR-007). `expo-contacts` in SDK 58 moved its stable API to `expo-contacts/legacy`; we use that import. Owner: auth-onboarding-engineer
+
 ## ADR-007 · Phone OTP auth, sessions and the age gate · 2026-11-14
 Context: Phase 1 needs sign-in with a phone number only (no passwords, no social login in v1), safe against enumeration, SMS pumping and token theft, and privacy-preserving (NDPA 2023: no raw phone numbers stored or logged).
 Decision:
