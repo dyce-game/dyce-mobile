@@ -1,3 +1,4 @@
+import { formatNaira } from '@dyce/shared';
 import { ApiError } from './api-client';
 
 /** Short, warm, plain copy for every error the auth endpoints can return. No slang in system copy. */
@@ -108,6 +109,28 @@ export function authErrorMessage(err: unknown): string {
       return 'You can send games to friends. Add them as a friend first.';
     case 'pool_not_available':
       return "Pool isn't available yet. Play Free for now.";
+    case 'pool_not_supported':
+      return "This game can't be played for Dyce Cash yet. Play it free.";
+    case 'invalid_stake': {
+      const { minStakeKobo: min, maxStakeKobo: max } = err.details;
+      return typeof min === 'number' && typeof max === 'number'
+        ? `Pick a stake between ${formatNaira(min)} and ${formatNaira(max)}.`
+        : "That stake isn't allowed.";
+    }
+    case 'adult_required':
+      return 'Pools are for people who are 18 or older. You can still play free.';
+    case 'pool_frozen':
+      return 'Pool is paused on your account. You can still play free. Contact support to find out why.';
+    case 'over_pool_stake_limit':
+      return "That would go over today's pool limit. It resets at midnight.";
+    case 'over_pool_games_limit':
+      return "You've played the most pool games for today. They reset at midnight.";
+    case 'counter_not_allowed':
+      return "They didn't allow counter-offers on this one.";
+    case 'opponent_cannot_stake':
+      return "They can't cover that stake right now. Try again later, or decline.";
+    case 'match_closed':
+      return 'That game has already ended.';
     case 'match_not_open':
       return 'That game has already moved on.';
     case 'cannot_accept_own_invite':

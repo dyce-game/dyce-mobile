@@ -30,6 +30,9 @@ Every game supports **Free** and **Pool** (Pool hidden for under-18s). "Async" g
 
 Party games' Pool scoring: placements from points (Doodle, Charades teams, Imposter/Werewolf winning side split equally among the winning side).
 
+## Word Hunt rules as built (backend ADR-017 and ADR-019)
+4x4 grid, the same seeded grid for both players, each on their own time. The grid is hidden until you press Start; the round is 80 s from Start (the server allows 10 s more for the network; a later submit scores 0). Words need 3+ letters, touching cells (diagonals too), each cell once per word, and must be in the word list; duplicates count once. Points: 3 letters 1, 4 letters 2, 5 letters 4, 6 letters 6, 7 letters 9, 8+ letters 12 (the design's "+400" is a mock-up). A player's score shows to the other as soon as they are done ("Zainab played, 41 pts"); words stay hidden until both have finished. Highest score wins; equal scores are a draw. Free only for now (Pool is off for this game until it is checked).
+
 ## Per-game deliverables (same for every game)
 1. `packages/games/src/<slug>/engine.ts` implementing `GameEngine` + zod action schema + unit tests + property test.
 2. `apps/mobile/src/game-renderers/<slug>/` renderer using the shared game host shell.

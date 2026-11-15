@@ -44,6 +44,11 @@ export function applyRealtimeEvent(
       client.setQueryData<MatchView>(queryKeys.match(event.match.id), (cached) =>
         newerMatch(cached, event.match),
       );
+      // A Pool match moved money (stake locked, refund, payout): the balance follows.
+      if (event.match.mode === 'pool' || event.match.players.some((p) => p.stakedKobo > 0)) {
+        void client.invalidateQueries({ queryKey: queryKeys.wallet });
+        void client.invalidateQueries({ queryKey: queryKeys.poolInfo });
+      }
       return;
 
     case 'typing':

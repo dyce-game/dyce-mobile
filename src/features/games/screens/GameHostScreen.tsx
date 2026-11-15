@@ -7,15 +7,11 @@ import { UserAvatar } from '@/features/avatar/UserAvatar';
 import { ApiError } from '@/features/auth/api-client';
 import { authErrorMessage } from '@/features/auth/messages';
 import { useSession } from '@/features/auth/use-session';
+import { WordHuntBoard } from '../boards/WordHuntBoard';
+import { MatchInvitePanel } from '../components/MatchInvitePanel';
 import { PigBoard } from '../components/PigBoard';
-import { opponentOf, parsePigView } from '../games-logic';
-import {
-  useAcceptMatch,
-  useCancelMatch,
-  useDeclineMatch,
-  useMatchQuery,
-  useSubmitMove,
-} from '../use-games';
+import { opponentOf, parsePigView, parseWordHuntView } from '../games-logic';
+import { useMatchQuery, useSubmitMove } from '../use-games';
 
 /**
  * The game host (route g/[matchId]): the shared shell around a game: back to the chat, the mode badge, the
@@ -29,9 +25,6 @@ export function GameHostScreen({ matchId }: { matchId: string }) {
   const myId = useSession((s) => s.userId);
   const query = useMatchQuery(matchId);
   const move = useSubmitMove(matchId);
-  const accept = useAcceptMatch();
-  const decline = useDeclineMatch();
-  const cancel = useCancelMatch();
   const match = query.data;
 
   const goBack = () =>
@@ -95,51 +88,8 @@ export function GameHostScreen({ matchId }: { matchId: string }) {
         <ActivityIndicator color={colors.sub} />
       </Centered>
     );
-  } else if (match.status === 'invited') {
-    const mine = match.createdBy === myId;
-    const busy = accept.isPending || decline.isPending || cancel.isPending;
-    const err = accept.error ?? decline.error ?? cancel.error;
-    body = (
-      <Centered>
-        <Text variant="headline" style={styles.text}>
-          {mine ? `Waiting for ${oppName}` : `${oppName} wants to play ${match.gameName}`}
-        </Text>
-        <Text color="sub" style={styles.text}>
-          {mine
-            ? 'You can start as soon as they accept.'
-            : 'Free play: no cash moves. The first turn is theirs.'}
-        </Text>
-        {mine ? (
-          <TokenButton
-            label="Cancel invite"
-            tone="chip"
-            disabled={busy}
-            onPress={() => cancel.mutate(matchId)}
-          />
-        ) : (
-          <View style={styles.row}>
-            <TokenButton
-              label="Accept"
-              disabled={busy}
-              accessibilityLabel={`Accept ${match.gameName} from ${oppName}`}
-              onPress={() => accept.mutate(matchId)}
-            />
-            <TokenButton
-              label="Decline"
-              tone="chip"
-              disabled={busy}
-              accessibilityLabel={`Decline ${match.gameName} from ${oppName}`}
-              onPress={() => decline.mutate(matchId)}
-            />
-          </View>
-        )}
-        {err ? (
-          <Text variant="footnote" color="accent" accessibilityLiveRegion="polite">
-            {authErrorMessage(err)}
-          </Text>
-        ) : null}
-      </Centered>
-    );
+  } else if (match.status === 'invited' || match.status === 'countered') {
+    body = <MatchInvitePanel match={match} myId={myId} oppName={oppName} />;
   } else if (match.status === 'cancelled' || match.status === 'expired') {
     body = (
       <Centered>
@@ -151,7 +101,29 @@ export function GameHostScreen({ matchId }: { matchId: string }) {
     );
   } else {
     const pig = match.gameSlug === '_example' ? parsePigView(match.view) : null;
-    body = pig ? (
+    const wordHunt = match.gameSlug === 'word-hunt' ? parseWordHuntView(match.view) : null;
+    body = wordHunt ? (
+      <View style={styles.flex}>
+        <WordHuntBoard
+          matchId={match.id}
+          view={wordHunt}
+          players={match.players}
+          myId={myId}
+          busy={move.isPending}
+          onMove={(action) => move.mutate({ expectedVersion: match.stateVersion, action })}
+        />
+        {move.isError ? (
+          <Text
+            variant="footnote"
+            color="accent"
+            accessibilityLiveRegion="polite"
+            style={styles.text}
+          >
+            {authErrorMessage(move.error)}
+          </Text>
+        ) : null}
+      </View>
+    ) : pig ? (
       <ScrollView contentContainerStyle={styles.scroll}>
         <PigBoard
           view={pig}
@@ -196,6 +168,7 @@ function Centered({ children }: { children: React.ReactNode }) {
 
 const styles = StyleSheet.create({
   root: { flex: 1 },
+  flex: { flex: 1 },
   header: {
     flexDirection: 'row',
     alignItems: 'center',

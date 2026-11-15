@@ -1,4 +1,4 @@
-import type { GameCardPayload, GameInfo, MatchView } from '@dyce/shared';
+import { formatNaira, type GameCardPayload, type GameInfo, type MatchView } from '@dyce/shared';
 
 /**
  * Pure logic for game cards and matches: what a card says to each player, how a live update merges into
@@ -12,8 +12,11 @@ export type CardState = {
   text: string;
   /** Shows the YOUR TURN badge. */
   yourTurn: boolean;
-  /** An unanswered invite: the other person can answer, the sender can wait or take it back. */
-  invite: 'answer' | 'wait' | null;
+  /**
+   * An unanswered invite: the other person can answer, the sender can wait or take it back. In Pool the
+   * invitee's counter-offer is the same again the other way round: the sender answers it, the invitee waits.
+   */
+  invite: 'answer' | 'wait' | 'counter-answer' | 'counter-wait' | null;
   /** The main button, if there is one. */
   cta: 'play' | 'watch' | 'results' | null;
 };
@@ -26,13 +29,44 @@ export function cardState(
   peerName: string,
 ): CardState {
   const mine = senderId === myId;
+  const pool = payload.mode === 'pool';
+  const stake = formatNaira(payload.stakeKobo ?? 0);
+  const pot = formatNaira(payload.potKobo ?? 0);
   switch (payload.status) {
     case 'invited':
       return mine
-        ? { text: `Waiting for ${peerName}`, yourTurn: false, invite: 'wait', cta: null }
-        : { text: `${peerName} wants to play`, yourTurn: false, invite: 'answer', cta: null };
-    case 'active':
+        ? {
+            text: pool ? `Waiting for ${peerName} · ${stake} locked` : `Waiting for ${peerName}`,
+            yourTurn: false,
+            invite: 'wait',
+            cta: null,
+          }
+        : {
+            text: pool
+              ? `${peerName} locked ${stake}. Match it to play for ${pot}.`
+              : `${peerName} wants to play`,
+            yourTurn: false,
+            invite: 'answer',
+            cta: null,
+          };
     case 'countered': {
+      const c = payload.counterStakeKobo ?? 0;
+      const offer = c === 0 ? 'to play this one free' : `${formatNaira(c)} each`;
+      return mine
+        ? {
+            text: c === 0 ? `${peerName} asked to play free` : `${peerName} offered ${offer}`,
+            yourTurn: false,
+            invite: 'counter-answer',
+            cta: null,
+          }
+        : {
+            text: c === 0 ? 'You asked to play this one free' : `You offered ${offer}`,
+            yourTurn: false,
+            invite: 'counter-wait',
+            cta: null,
+          };
+    }
+    case 'active': {
       const yours = payload.currentTurn !== null && payload.currentTurn === myId;
       return yours
         ? { text: 'Your turn', yourTurn: true, invite: null, cta: 'play' }
@@ -41,18 +75,34 @@ export function cardState(
     case 'finished':
       return {
         text: payload.draw
-          ? "It's a draw"
+          ? pool
+            ? 'Pot split, stakes back'
+            : "It's a draw"
           : payload.winnerIds?.includes(myId ?? '')
-            ? 'You won'
-            : `${peerName} won`,
+            ? pool
+              ? `You won ${pot}`
+              : 'You won'
+            : pool
+              ? `${peerName} took ${pot}`
+              : `${peerName} won`,
         yourTurn: false,
         invite: null,
         cta: 'results',
       };
     case 'cancelled':
-      return { text: 'Invite cancelled', yourTurn: false, invite: null, cta: null };
+      return {
+        text: pool ? 'Invite cancelled · stake returned' : 'Invite cancelled',
+        yourTurn: false,
+        invite: null,
+        cta: null,
+      };
     case 'expired':
-      return { text: 'Invite expired', yourTurn: false, invite: null, cta: null };
+      return {
+        text: pool ? 'Invite expired · stake returned' : 'Invite expired',
+        yourTurn: false,
+        invite: null,
+        cta: null,
+      };
     default:
       return { text: 'In progress', yourTurn: false, invite: null, cta: 'watch' };
   }
@@ -199,4 +249,100 @@ export function resultCopy(
 /** The other player in a match. */
 export function opponentOf(match: MatchView, myId: string | null) {
   return match.players.find((p) => p.userId !== myId) ?? null;
+}
+
+// ---- Word Hunt ---------------------------------------------------------------------------------
+
+export type WordHuntStatus = 'idle' | 'playing' | 'done';
+
+/**
+ * What the server sends for Word Hunt (the engine's view). The grid is null until you start; a player's
+ * score is null until they are done; their words are null until you have finished too (or it is over).
+ */
+export type WordHuntView = {
+  players: string[];
+  roundMs: number;
+  board: string[] | null;
+  status: Record<string, WordHuntStatus>;
+  scores: Record<string, number | null>;
+  words: Record<string, string[] | null>;
+  /** Your own count of dropped words, once you are done. */
+  rejected: number | null;
+  possibleWords: number | null;
+  possibleScore: number | null;
+};
+
+const isRecord = (v: unknown): v is Record<string, unknown> =>
+  typeof v === 'object' && v !== null && !Array.isArray(v);
+
+export function parseWordHuntView(view: unknown): WordHuntView | null {
+  if (!isRecord(view)) return null;
+  const { players, roundMs, board, status, scores, words } = view;
+  if (!Array.isArray(players) || !players.every((p) => typeof p === 'string')) return null;
+  if (typeof roundMs !== 'number' || !isRecord(status) || !isRecord(scores) || !isRecord(words)) {
+    return null;
+  }
+  if (
+    board !== null &&
+    !(Array.isArray(board) && board.length === 16 && board.every((c) => typeof c === 'string'))
+  ) {
+    return null;
+  }
+  const outStatus: Record<string, WordHuntStatus> = {};
+  const outScores: Record<string, number | null> = {};
+  const outWords: Record<string, string[] | null> = {};
+  for (const id of players as string[]) {
+    const st = status[id];
+    if (st !== 'idle' && st !== 'playing' && st !== 'done') return null;
+    outStatus[id] = st;
+    const sc = scores[id];
+    outScores[id] = typeof sc === 'number' ? sc : null;
+    const w = words[id];
+    outWords[id] =
+      Array.isArray(w) && w.every((x) => typeof x === 'string') ? (w as string[]) : null;
+  }
+  const num = (v: unknown) => (typeof v === 'number' ? v : null);
+  return {
+    players: players as string[],
+    roundMs,
+    board: board as string[] | null,
+    status: outStatus,
+    scores: outScores,
+    words: outWords,
+    rejected: num(view.rejected),
+    possibleWords: num(view.possibleWords),
+    possibleScore: num(view.possibleScore),
+  };
+}
+
+/** Where you are in a Word Hunt round: not started, playing, finished and waiting, or the match is over. */
+export type WordHuntStage = 'intro' | 'playing' | 'waiting' | 'over';
+
+export function wordHuntStage(view: WordHuntView, myId: string | null): WordHuntStage {
+  const mine = myId ? view.status[myId] : undefined;
+  if (mine === 'playing') return 'playing';
+  if (mine === 'done')
+    return view.players.every((p) => view.status[p] === 'done') ? 'over' : 'waiting';
+  return 'intro';
+}
+
+/**
+ * Both players act at the same time, so the server's single `currentTurn` is only "the first one still
+ * playing". For the card and the host, whose move it is = whether you have finished yet.
+ */
+export function wordHuntMover(view: WordHuntView, myId: string | null): string | null {
+  if (myId && view.status[myId] !== 'done') return myId;
+  return view.players.find((p) => p !== myId && view.status[p] !== 'done') ?? null;
+}
+
+/** "You 38 · Zainab 41", for the results line. */
+export function wordHuntScoreLine(
+  view: WordHuntView,
+  myId: string | null,
+  nameOf: (id: string) => string,
+): string {
+  const order = [...view.players].sort((a, b) => (a === myId ? -1 : b === myId ? 1 : 0));
+  return order
+    .map((id) => `${id === myId ? 'You' : nameOf(id)} ${view.scores[id] ?? 0}`)
+    .join(' · ');
 }

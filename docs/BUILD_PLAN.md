@@ -82,9 +82,9 @@ Done when: from a chat you can send Word Hunt or Cup Pong in Free or Pool, play 
 ```
 Phase 2 vertical slice. game-platform-engineer builds the platform against the _example engine first (drawer with video tiles, mode sheet, create/respond match, host shell, submit-move, results, XP) and writes docs/ADDING_A_GAME.md. In parallel game-rules-engineer writes wordhunt, cuppong and whot engines with tests. When both are reviewed: games-2d-engineer builds Word Hunt, games-3d-engineer builds Cup Pong and the Whot table (cards per design/Card.dc.html), realtime-spaces-engineer builds the Spaces tab, create/join/lobby and the Whot CardRoom with reconnection, growth-invites-engineer builds SMS invites, links and the web guest game. code-reviewer on every branch; qa-engineer adds pool-loop, counter-offer, space-whot-reconnect and invite-web flows. Report payouts verified against the ledger.
 ```
-- [ ] Platform (drawer, modes, host shell, async, results, XP). **Slice 1 done (2026-11-15, ADR-016):** Free-mode async 1v1 against the `_example` (Pig) engine end to end, backend and app, and `docs/ADDING_A_GAME.md`. Left: Pool (stakes, counter-offer, refunds), turn timers and forfeit, XP/streaks, video tiles, push.
+- [ ] Platform (drawer, modes, host shell, async, results, XP). **Slice 1 done (2026-11-15, ADR-016):** Free-mode async 1v1 against the `_example` (Pig) engine end to end, backend and app, and `docs/ADDING_A_GAME.md`. **Slice 2 done (2026-11-15, ADR-018):** Pool for async 1v1 (stakes, age gate, counter-offer, refunds on decline / cancel / expiry, payout on finish), backend and app. Left: turn timers and forfeit, XP/streaks, video tiles, push, Pool in Spaces.
 - [ ] Word Hunt · Cup Pong · Whot! engines
-- [ ] Renderers for the three
+- [ ] Renderers for the three. **Word Hunt done (2026-11-15, app ADR-018, backend ADR-019):** Free async 1v1 from a chat, played to a result in two browser sessions, light and dark. Left for Word Hunt: Pool, turn timer and forfeit, thumbnail video, a Skia renderer, touch testing on devices. Cup Pong and Whot! renderers not started.
 - [ ] Spaces tab, lobby, CardRoom
 - [ ] SMS invites + web guest
 - [ ] Phase 2 sign-off

@@ -11,11 +11,15 @@ What it takes to put a new async 1v1 game on the platform (ADR-016). Pig (`_exam
 ## 2. The server (`../dyce-backend/apps/api`)
 - Add the engine to `src/matches/engines.ts` (`engine`, `cfg` for `init`, and `devOnly: true` only for reference games that must not ship).
 - Add a `games` row in a new migration (`slug`, `name`, `dimension`, `sync = 'async'`, player counts, `categories`, `supports_pool`, `enabled`). A game appears in `GET /games` when it has an enabled row **and** an engine entry.
+- If the game needs a clock (a time limit per round or move), add a `screenAction` to the entry: it sees the move, the mover's earlier moves with their timestamps and `now`, and returns the action to apply (Word Hunt turns a late submit into an empty one). Change the move, don't refuse it, or the player gets stuck.
+- Game slugs may contain hyphens (`word-hunt`); the engine's `slug`, the `games` row and the registry key must all match.
+- Games where both players act at once (Word Hunt) have no turn order: the match's `current_turn` is only the first unfinished player, so the app decides whose move it is from the player's own `view()` (see `wordHuntMover`).
 - Nothing else: create, accept, moves, version checks, idempotent retries, results, the chat card and realtime events are shared. Add engine-specific cases to a `db/tests` file if the game has server-side rules beyond the engine (e.g. a dictionary check).
 
 ## 3. The app (this repo)
 - `src/features/games/components/GameArt.tsx`: the picture for the drawer tile and the chat card (a video thumbnail later).
 - A board component (like `PigBoard.tsx`): render the server's `view`, send moves with `useSubmitMove` (`{ expectedVersion: match.stateVersion, action }`), enable controls only when `match.currentTurn === myId`. Parse the view with a small `parse<Game>View` function in `games-logic.ts` and test it.
+- 2D boards are plain React Native views behind a small renderer interface unless the game needs real drawing (ADR-018); a Skia renderer can replace the view renderer later. A game with a round clock keeps its own start time on the device so the round survives leaving the screen (`boards/use-word-hunt-round.ts`).
 - Add the game to the host screen (`GameHostScreen.tsx`) and the result screen (`GameResultScreen.tsx`) where they branch on `gameSlug`.
 - Both themes, accessibility labels on every control, 44pt targets, text that respects Dynamic Type.
 

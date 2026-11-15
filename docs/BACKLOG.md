@@ -15,7 +15,7 @@
 - FlashList and the 5,000-message scrolling pass on a mid-range Android
 
 ## Games platform follow-ups (deferred from ADR-016; server items are in dyce-backend/docs/BACKLOG.md)
-- Pool matches: stakes (`stake_pool`), age gate, mode sheet stake presets and pot, counter-offer (once), 24h no-reply refund, daily limits, payout on finish (`settle_match` already handles the ledger)
+- Pool follow-ups (the async 1v1 Pool shipped in ADR-018): "Run it back" (double or nothing rematch) and its mode-sheet switch, "Counter back" (SPEC allows one counter, so this needs a decision), personal Pool limits ("Change my limit", raises wait 24h), a custom stake amount, a "Dispute" button on the Pool result, Pool in Spaces
 - Turn timers and forfeit past the timer (`turn_deadline` is not set yet), "No reply in 24h" invite expiry as a scheduled job (today an invite expires when it is next read)
 - Push for "your turn", invites and results; the chat list preview ("Your turn") for a game card
 - XP, streaks, badges, the friends leaderboard and the result screen's XP/streak panels; stats on Profile and head-to-head in Chat info
