@@ -39,6 +39,8 @@ export const appConfigSchema = z.object({
   contact_lookups_per_day: z.number().int().default(10_000),
   /** New friend requests a user may send per day. */
   friend_requests_per_day: z.number().int().default(50),
+  /** Messages a non-friend can send before the other person replies or accepts. */
+  request_messages_before_accept: z.number().int().default(3),
   /** Pool daily limits (soft defaults; users may set lower personal limits). */
   pool_games_per_day: z.number().int().default(20),
   pool_staked_per_day_kobo: z.number().int().default(nairaToKobo(100_000)),

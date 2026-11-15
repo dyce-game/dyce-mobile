@@ -3,10 +3,12 @@
 // server's own log, exactly as a developer would.
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
+import { randomUUID } from 'node:crypto';
 import { mkdtemp, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import pg from 'pg';
+import { WebSocket } from 'ws';
 import EmbeddedPostgres from 'embedded-postgres';
 import { migrate } from '../db/migrator.ts';
 
@@ -57,6 +59,33 @@ async function call(method, path, { body, token } = {}) {
     /* not json */
   }
   return { status: res.status, json, headers: res.headers, text };
+}
+
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+/** Opens /realtime, authenticates with the first frame, and collects every frame the server sends. */
+async function connectWs(token, { expectClose = false } = {}) {
+  const ws = new WebSocket(`ws://127.0.0.1:${apiPort}/realtime`);
+  const out = { ws, frames: [], closeCode: null };
+  ws.on('message', (d) => out.frames.push(JSON.parse(d.toString())));
+  const closed = new Promise((resolve) =>
+    ws.on('close', (code) => {
+      out.closeCode = code;
+      resolve();
+    }),
+  );
+  await new Promise((resolve, reject) => {
+    ws.on('open', resolve);
+    ws.on('error', reject);
+  });
+  ws.send(JSON.stringify({ type: 'auth', token }));
+  out.next = async (n) => {
+    for (let i = 0; i < 100 && out.frames.length < n; i++) await sleep(20);
+    return out.frames;
+  };
+  if (expectClose) await closed;
+  else assert.deepEqual((await out.next(1))[0], { type: 'ready' }, 'socket did not become ready');
+  return out;
 }
 
 async function waitForCode(afterIndex) {
@@ -360,6 +389,142 @@ try {
   r = await call('DELETE', '/contacts', { token: s1.accessToken });
   assert.equal(r.status, 204);
 
+  // ---- messaging: conversations, requests and live delivery over a real WebSocket ----------------
+  step = 'messaging';
+  r = await call('POST', '/profile', {
+    token: s2.accessToken,
+    body: { username: 'bisi.m', displayName: 'Bisi' },
+  });
+  assert.ok(r.status < 300, `profile for second user: ${r.text}`);
+  // s1 (ada.o) and s3 (tunde.c) are friends; s2 (bisi.m) is a stranger to both.
+  r = await call('GET', '/conversations');
+  assert.equal(r.status, 401);
+  r = await call('POST', '/conversations/direct', {
+    token: s1.accessToken,
+    body: { userId: s3.userId },
+  });
+  assert.equal(r.status, 200, r.text);
+  const conv = r.json;
+  assert.equal(conv.state, 'active');
+  assert.equal(conv.peer.username, 'tunde.c');
+  assert.equal(conv.lastMessage, null);
+  r = await call('GET', '/conversations', { token: s1.accessToken });
+  assert.deepEqual(r.json.conversations, [], 'an empty conversation is not listed');
+
+  const live1 = await connectWs(s1.accessToken);
+  const live3 = await connectWs(s3.accessToken);
+
+  const msgId = randomUUID();
+  r = await call('POST', `/conversations/${conv.id}/messages`, {
+    token: s1.accessToken,
+    body: { id: msgId, body: '  ready to lose at Whot?  ' },
+  });
+  assert.equal(r.status, 200, r.text);
+  assert.equal(r.json.body, 'ready to lose at Whot?', 'bodies are trimmed');
+  const sent = r.json;
+  assert.deepEqual((await live3.next(2))[1], { type: 'message', message: sent });
+  assert.deepEqual(
+    (await live1.next(2))[1],
+    { type: 'message', message: sent },
+    'sender other devices',
+  );
+
+  r = await call('POST', `/conversations/${conv.id}/messages`, {
+    token: s1.accessToken,
+    body: { id: msgId, body: 'ready to lose at Whot?' },
+  });
+  assert.deepEqual(r.json, sent, 'retrying a send returns the same message');
+  await sleep(200);
+  assert.equal(live3.frames.length, 2, 'a retry was delivered twice');
+
+  r = await call('POST', `/conversations/${conv.id}/messages`, {
+    token: s1.accessToken,
+    body: { id: 'nope', body: 'x' },
+  });
+  assert.equal(r.status, 422);
+  r = await call('POST', `/conversations/${conv.id}/messages`, {
+    token: s1.accessToken,
+    body: { id: randomUUID(), body: '   ' },
+  });
+  assert.equal(r.status, 422, 'blank messages are refused');
+
+  r = await call('GET', '/conversations', { token: s3.accessToken });
+  assert.equal(r.json.conversations[0].unread, 1);
+  assert.equal(r.json.unreadTotal, 1);
+  assert.equal(r.json.conversations[0].lastMessage.body, 'ready to lose at Whot?');
+
+  live3.ws.send(JSON.stringify({ type: 'typing', conversationId: conv.id, typing: true }));
+  assert.deepEqual((await live1.next(3))[2], {
+    type: 'typing',
+    conversationId: conv.id,
+    userId: s3.userId,
+    typing: true,
+  });
+
+  r = await call('POST', `/conversations/${conv.id}/read`, { token: s3.accessToken });
+  assert.equal(r.status, 200);
+  const readEvent = (await live1.next(4))[3];
+  assert.equal(readEvent.type, 'read');
+  assert.equal(readEvent.userId, s3.userId);
+  r = await call('GET', `/conversations/${conv.id}/messages`, { token: s1.accessToken });
+  assert.equal(r.json.messages.length, 1);
+  assert.equal(r.json.peerReadAt, readEvent.at, 'the sender sees "read"');
+  r = await call('GET', '/conversations', { token: s3.accessToken });
+  assert.equal(r.json.unreadTotal, 0);
+
+  // a stranger writes to ada: it goes to Requests, live, and ada can ignore it without a trace
+  r = await call('POST', '/conversations/direct', {
+    token: s2.accessToken,
+    body: { userId: s1.userId },
+  });
+  const reqConv = r.json;
+  assert.equal(reqConv.state, 'active', 'the sender sees an ordinary chat');
+  r = await call('POST', `/conversations/${reqConv.id}/messages`, {
+    token: s2.accessToken,
+    body: { id: randomUUID(), body: 'hi ada, wanna play?' },
+  });
+  assert.equal(r.status, 200, r.text);
+  assert.equal((await live1.next(5))[4].message.body, 'hi ada, wanna play?');
+  r = await call('GET', '/conversations?filter=all', { token: s1.accessToken });
+  assert.deepEqual(
+    r.json.conversations.map((c) => c.peer.username),
+    ['tunde.c'],
+    'a stranger never lands in Chat',
+  );
+  assert.equal(r.json.requestCount, 1);
+  r = await call('GET', '/conversations?filter=requests', { token: s1.accessToken });
+  assert.equal(r.json.conversations[0].state, 'request');
+  assert.equal(r.json.conversations[0].peer.username, 'bisi.m');
+
+  r = await call('GET', `/conversations/${conv.id}/messages`, { token: s2.accessToken });
+  assert.equal(r.status, 404, "nobody else can read ada and tunde's chat");
+  r = await call('POST', `/conversations/${reqConv.id}/decline`, { token: s1.accessToken });
+  assert.equal(r.status, 204);
+  r = await call('GET', '/conversations?filter=requests', { token: s1.accessToken });
+  assert.deepEqual(r.json.conversations, []);
+  const framesBefore = live1.frames.length;
+  r = await call('POST', `/conversations/${reqConv.id}/messages`, {
+    token: s2.accessToken,
+    body: { id: randomUUID(), body: 'hello?' },
+  });
+  assert.equal(r.status, 200, 'the sender is not told they were ignored');
+  await sleep(200);
+  assert.equal(live1.frames.length, framesBefore, 'an ignored sender reaches nobody live');
+
+  r = await call('GET', '/conversations/not-a-uuid', { token: s1.accessToken });
+  assert.equal(r.status, 422);
+  assert.doesNotMatch(
+    JSON.stringify((await call('GET', '/conversations', { token: s1.accessToken })).json),
+    /\+234|0803/,
+    'conversation data leaked a phone number',
+  );
+
+  // a socket with a bad token is refused
+  const bad = await connectWs('x'.repeat(40), { expectClose: true });
+  assert.equal(bad.closeCode, 4401);
+  live1.ws.close();
+  live3.ws.close();
+
   // ---- age gate + onboarding + welcome bonus -----------------------------------------------------
   step = 'age gate';
   r = await call('POST', '/profile/age-gate', { token: s1.accessToken, body: { birthYear: 1990 } });
@@ -384,8 +549,9 @@ try {
 
   // a user who comes back later resumes exactly where they were
   step = 'resume';
+  // (the second user picked a username in the messaging step and went no further)
   r = await call('GET', '/me', { token: s2.accessToken });
-  assert.equal(r.json.nextStep, 'username');
+  assert.equal(r.json.nextStep, 'contacts');
 
   // ---- refresh rotation, reuse detection, logout ------------------------------------------------
   step = 'refresh';

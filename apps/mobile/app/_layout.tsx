@@ -3,6 +3,7 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useTheme } from '@dyce/ui';
 import { useBootstrapSession } from '@/features/auth/use-session';
+import { RealtimeBridge } from '@/features/chat/RealtimeBridge';
 import { AppProviders } from '@/providers/AppProviders';
 import { hideSplash, useAppFonts } from '@/providers/fonts';
 
@@ -31,6 +32,7 @@ export default function RootLayout() {
   if (!ready) return null; // splash screen is still showing
   return (
     <AppProviders>
+      <RealtimeBridge />
       <ThemedStack />
     </AppProviders>
   );

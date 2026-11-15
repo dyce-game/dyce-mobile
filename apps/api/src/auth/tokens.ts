@@ -50,6 +50,12 @@ export class TokenService {
   }
 
   async verifyAccess(token: string): Promise<AccessClaims> {
+    const { userId, familyId } = await this.verifyAccessWithExpiry(token);
+    return { userId, familyId };
+  }
+
+  /** Same as `verifyAccess`, plus when the token stops being valid (ms since epoch). Long-lived sockets use it. */
+  async verifyAccessWithExpiry(token: string): Promise<AccessClaims & { expiresAt: number }> {
     try {
       const { payload } = await jwtVerify(token, this.key, {
         algorithms: ['HS256'], // never accept "none" or an asymmetric alg
@@ -60,7 +66,8 @@ export class TokenService {
       if (typeof payload.sub !== 'string' || typeof payload.sid !== 'string') {
         throw new Error('missing claims');
       }
-      return { userId: payload.sub, familyId: payload.sid };
+      if (typeof payload.exp !== 'number') throw new Error('missing exp');
+      return { userId: payload.sub, familyId: payload.sid, expiresAt: payload.exp * 1000 };
     } catch {
       throw new AuthError('unauthorized');
     }

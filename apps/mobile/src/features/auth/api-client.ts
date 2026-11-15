@@ -120,6 +120,8 @@ export function createApiClient(deps: ApiClientDeps) {
   }
 
   return {
+    /** Refreshes the token pair now (single-flight). True if a fresh pair is stored. */
+    refresh: refreshOnce,
     get: <T>(path: string, options?: RequestOptions) => request<T>('GET', path, options),
     post: <T>(path: string, body?: unknown, options?: Omit<RequestOptions, 'body'>) =>
       request<T>('POST', path, { ...options, body }),

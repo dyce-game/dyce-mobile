@@ -4,6 +4,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { ScheduleModule } from '@nestjs/schedule';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { AuthModule } from './auth/auth.module.ts';
+import { ChatModule } from './chat/chat.module.ts';
 import { validateEnv } from './config/env.ts';
 import { DbModule } from './db/db.module.ts';
 import { HealthController } from './health/health.controller.ts';
@@ -20,6 +21,7 @@ import { SocialModule } from './social/social.module.ts';
     LedgerModule,
     AuthModule,
     SocialModule,
+    ChatModule,
   ],
   controllers: [HealthController],
   providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }],

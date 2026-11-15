@@ -11,6 +11,7 @@ import { lagosDayStart, readConfigInt } from '../db/config.ts';
 import { withTx } from '../db/tx.ts';
 import {
   FRIENDSHIP_JOIN,
+  lockPair,
   NOT_BLOCKED,
   RELATIONSHIP_EXPR,
   toPublicUser,
@@ -21,14 +22,6 @@ type Status = 'pending' | 'accepted' | 'declined';
 
 /** The single friendships row between $1 and $2 (rows are stored with user_low < user_high). */
 const PAIR = `user_low = LEAST($1::uuid, $2::uuid) AND user_high = GREATEST($1::uuid, $2::uuid)`;
-
-/** One request/answer per pair at a time, so A->B and B->A racing can't both insert or both answer. */
-async function lockPair(c: pg.PoolClient, a: string, b: string): Promise<void> {
-  await c.query(
-    `SELECT pg_advisory_xact_lock(hashtextextended(LEAST($1::text, $2::text) || GREATEST($1::text, $2::text), 0))`,
-    [a, b],
-  );
-}
 
 /**
  * Friends: requests, answers, the list, and exact-username lookup.

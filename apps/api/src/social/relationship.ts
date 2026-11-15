@@ -1,4 +1,13 @@
+import type pg from 'pg';
 import type { PublicUser, Relationship } from '@dyce/shared';
+
+/** One writer at a time per pair of people, so racing requests/messages between them can't both insert. */
+export async function lockPair(c: pg.PoolClient, a: string, b: string): Promise<void> {
+  await c.query(
+    `SELECT pg_advisory_xact_lock(hashtextextended(LEAST($1::text, $2::text) || GREATEST($1::text, $2::text), 0))`,
+    [a, b],
+  );
+}
 
 /**
  * SQL fragments shared by every query that shows "another user" to the signed-in user.

@@ -7,7 +7,13 @@ import { Icon, type IconName } from '../icons/Icon.tsx';
 import { useTheme } from '../theme.tsx';
 import { brand, MIN_TOUCH, tabBar } from '../tokens.ts';
 
-export type TabBarItem = { key: string; label: string; icon: IconName };
+export type TabBarItem = {
+  key: string;
+  label: string;
+  icon: IconName;
+  /** Unread count shown as a small badge on the icon (nothing when 0 or missing). */
+  badge?: number;
+};
 
 export type TabBarProps = {
   items: TabBarItem[];
@@ -54,12 +60,38 @@ export function TabBar({ items, activeKey, onSelect, onSearch, bottomInset = 0 }
                 <Pressable
                   key={it.key}
                   accessibilityRole="tab"
-                  accessibilityLabel={it.label}
+                  accessibilityLabel={
+                    it.badge && it.badge > 0 ? `${it.label}, ${it.badge} unread` : it.label
+                  }
                   accessibilityState={{ selected: active }}
                   onPress={() => onSelect(it.key)}
                   style={[styles.tab, active && { backgroundColor: brand.ember.fill }]}
                 >
-                  <Icon name={it.icon} size={24} color={active ? brand.ember.text : colors.sub} />
+                  <View>
+                    <Icon name={it.icon} size={24} color={active ? brand.ember.text : colors.sub} />
+                    {it.badge && it.badge > 0 ? (
+                      <View
+                        style={[
+                          styles.badge,
+                          {
+                            backgroundColor: active ? brand.ember.text : brand.ember.fill,
+                            borderColor: active ? brand.ember.fill : colors.bg,
+                          },
+                        ]}
+                        aria-hidden
+                      >
+                        <Text
+                          variant="caption"
+                          style={{
+                            color: active ? brand.ember.fill : brand.ember.text,
+                            fontSize: 10,
+                          }}
+                        >
+                          {it.badge > 9 ? '9+' : it.badge}
+                        </Text>
+                      </View>
+                    ) : null}
+                  </View>
                   <Text
                     variant="footnote"
                     style={{ color: active ? brand.ember.text : colors.sub, fontSize: 12 }}
@@ -108,4 +140,16 @@ const styles = StyleSheet.create({
     gap: 2,
   },
   search: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+  badge: {
+    position: 'absolute',
+    top: -6,
+    right: -10,
+    minWidth: 18,
+    height: 18,
+    borderRadius: 9,
+    borderWidth: 2,
+    paddingHorizontal: 3,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });

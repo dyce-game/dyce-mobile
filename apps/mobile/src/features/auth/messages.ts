@@ -56,6 +56,12 @@ export function authErrorMessage(err: unknown): string {
       return "That's you!";
     case 'friend_request_not_found':
       return "That request isn't there any more.";
+    case 'request_pending':
+      return "They haven't replied yet. You can send more once they do.";
+    case 'message_requests_rate_limited':
+      return "You've started a lot of new chats today. Try again tomorrow.";
+    case 'conversation_not_found':
+      return "That chat isn't available.";
     default:
       return 'Something went wrong. Please try again.';
   }

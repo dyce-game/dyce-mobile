@@ -23,7 +23,12 @@ export type AuthErrorCode =
   | 'blocked'
   | 'requests_closed'
   | 'cannot_add_self'
-  | 'friend_request_not_found';
+  | 'friend_request_not_found'
+  // messaging
+  | 'conversation_not_found'
+  | 'message_id_taken'
+  | 'request_pending'
+  | 'message_requests_rate_limited';
 
 const STATUS: Record<AuthErrorCode, number> = {
   validation_failed: 422,
@@ -50,6 +55,10 @@ const STATUS: Record<AuthErrorCode, number> = {
   requests_closed: 403,
   cannot_add_self: 422,
   friend_request_not_found: 404,
+  conversation_not_found: 404,
+  message_id_taken: 409,
+  request_pending: 429,
+  message_requests_rate_limited: 429,
 };
 
 /** An expected, user-facing failure. Mapped to `{ code, message, ...details }` by the HTTP filter. */

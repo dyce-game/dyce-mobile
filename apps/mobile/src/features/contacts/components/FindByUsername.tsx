@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { usernameSchema, type PublicUser } from '@dyce/shared';
 import { Text, TextField, TokenButton } from '@dyce/ui';
+import { PillButton } from '@/components/PillButton';
 import { contactsApi } from '@/lib/api';
 import { ApiError } from '@/features/auth/api-client';
 import { authErrorMessage } from '@/features/auth/messages';
@@ -11,7 +12,15 @@ import { PersonRow } from './PersonRow';
  * Exact username search ("Find by username"). Works with or without contacts permission, so it is also
  * the way in for people who say no to the address book.
  */
-export function FindByUsername() {
+export function FindByUsername({
+  onMessage,
+  messaging = null,
+}: {
+  /** When given, a found person also gets a Message button (used by New chat). */
+  onMessage?: (user: PublicUser) => void;
+  /** Id of the person a chat is being opened with, to show progress. */
+  messaging?: string | null;
+} = {}) {
   const [raw, setRaw] = useState('');
   const [found, setFound] = useState<PublicUser | null>(null);
   const [error, setError] = useState<string | undefined>();
@@ -88,6 +97,15 @@ export function FindByUsername() {
           relationship={found.relationship}
           busy={adding}
           onAdd={() => void add(found)}
+        />
+      ) : null}
+      {found && onMessage ? (
+        <PillButton
+          label="Message"
+          tone="primary"
+          busy={messaging === found.id}
+          accessibilityLabel={`Message @${found.username}`}
+          onPress={() => onMessage(found)}
         />
       ) : null}
     </View>
