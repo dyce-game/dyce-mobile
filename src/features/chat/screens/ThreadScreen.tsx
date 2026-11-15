@@ -24,6 +24,7 @@ import {
   receiptFor,
   type ThreadItem,
 } from '../chat-logic';
+import { reportHref } from '@/features/safety/safety-logic';
 import { Composer } from '../components/Composer';
 import { DaySeparator, MessageBubble } from '../components/MessageBubble';
 import { useOutbox } from '../outbox';
@@ -93,7 +94,12 @@ export function ThreadScreen({ conversationId }: { conversationId: string }) {
       >
         <Icon name="back" color={colors.text} />
       </Pressable>
-      <View style={styles.title} accessibilityRole="header">
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={`${name}, chat info`}
+        onPress={() => router.push(`/chat-info/${conversationId}` as Href)}
+        style={styles.title}
+      >
         <InitialAvatar name={name} size={38} />
         <Text variant="callout" numberOfLines={1}>
           {name}
@@ -106,9 +112,9 @@ export function ThreadScreen({ conversationId }: { conversationId: string }) {
         >
           {typing ? 'typing…' : peer ? `@${peer.username}` : ' '}
         </Text>
-      </View>
+      </Pressable>
       <View style={styles.side}>
-        {peer ? (
+        {peer?.relationship === 'friends' ? (
           <Pressable
             accessibilityRole="button"
             accessibilityLabel="Send Dyce Cash"
@@ -168,6 +174,27 @@ export function ThreadScreen({ conversationId }: { conversationId: string }) {
           busy={decline.isPending}
           accessibilityLabel={`Decline chat from @${peer?.username ?? ''}`}
           onPress={() => decline.mutate(conversationId, { onSuccess: goBack })}
+        />
+      </View>
+      <View style={styles.requestActions}>
+        <PillButton
+          label="Report"
+          accessibilityLabel={`Report @${peer?.username ?? ''}`}
+          onPress={() =>
+            router.push(
+              reportHref({
+                userId: peer?.id ?? '',
+                username: peer?.username,
+                name: peer?.displayName,
+                conversationId,
+              }) as Href,
+            )
+          }
+        />
+        <PillButton
+          label="Block"
+          accessibilityLabel={`Block @${peer?.username ?? ''}`}
+          onPress={() => router.push(`/chat-info/${conversationId}` as Href)}
         />
       </View>
       {accept.isError || decline.isError ? (

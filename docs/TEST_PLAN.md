@@ -15,6 +15,7 @@ Owner: qa-engineer. App-side layers for this repo; the server side (database, AP
 | Friend row/tab logic (labels, relative time, mutual-friend text) | Jest | `src/features/friends/friends.test.ts` | `pnpm test` |
 | Chat logic (runs, day separators, merging, receipts), live-client reconnect/backoff, outbox, typing, cache updates | Jest | `src/features/chat/*.test.ts` | `pnpm test` |
 | Wallet logic (amount parsing, code/link parsing, expiry wording, history titles, grouping) | Jest | `src/features/wallet/wallet-logic.test.ts` | `pnpm test` |
+| Block/report logic (blocked-date wording, reasons match the server, report link) | Jest | `src/features/safety/safety-logic.test.ts` | `pnpm test` |
 | Design tokens, a11y contrast | Jest | `packages/ui/src/tokens.test.ts` | `pnpm test` |
 | Determinism (Hermes) | dev screen | `app/dev/determinism.tsx` | open on a device/simulator, must read PASS |
 | App bundles | Metro | `pnpm export:web` | `pnpm export:web` |

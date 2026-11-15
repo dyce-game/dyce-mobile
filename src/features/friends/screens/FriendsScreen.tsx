@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { useRouter, type Href } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Chip, Text, TokenButton, useTheme } from '@dyce/ui';
@@ -227,6 +227,16 @@ export function FriendsScreen() {
           </Text>
         ) : null}
         {body}
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Blocked people"
+          onPress={() => router.push('/settings/blocked' as Href)}
+          style={styles.blockedLink}
+        >
+          <Text variant="callout" color="sub">
+            Blocked people
+          </Text>
+        </Pressable>
       </ScrollView>
     </SafeAreaView>
   );
@@ -241,4 +251,5 @@ const styles = StyleSheet.create({
   gap: { marginTop: 12 },
   confirm: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: 8, flex: 1 },
   confirmText: { flexBasis: '100%' },
+  blockedLink: { minHeight: 44, justifyContent: 'center', marginTop: 12 },
 });

@@ -2,6 +2,9 @@
 
 One entry per decision, newest first.
 
+## ADR-013 · Block and report · 2026-11-15
+Backend decision: see `../dyce-backend/docs/DECISIONS.md`. App side: Chat info (`/chat-info/<id>`), Report (`/report`), Blocked people (`/settings/blocked`, linked from Friends) in `src/features/safety`; the request banner in a thread also offers Report and Block.
+
 ## ADR-012 · Wallet API, money cards and request codes · 2026-11-15
 Backend decision: see `../dyce-backend/docs/DECISIONS.md`. App side: the Wallet tab, Send, Request (QR), Pay a code, receipts and chat money cards are in `src/features/wallet` and `src/features/chat/components/MoneyCard.tsx`; the QR is drawn with `qrcode-generator` + `react-native-svg` (always dark on white); the Pay sheet and request screens read everything from the server.
 

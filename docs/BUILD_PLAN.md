@@ -70,7 +70,7 @@ Phase 1. Read BUILD_PLAN Phase 1. In parallel: auth-onboarding-engineer (full on
 - [ ] Avatar Phase A: 220 starter looks, <Avatar>, render-service skeleton (AVATAR_GUIDEBOOK §8)
 - [~] Chat tab, Requests, threads, realtime (messaging-engineer, ADR-010) — 1:1 text chat done and verified in a browser, light and dark: chat list with unread badges, Requests with Accept/Decline, thread with optimistic send, Retry, typing, Sent/Read, paging, New chat, live delivery over WebSocket that reconnects by itself. Open: groups, Bots, voice/photos/replies/reactions/deletes, games and money cards, push, real-device run, Redis for more than one instance, Maestro `chat.yaml` and `requests.yaml`.
 - [~] Wallet (wallet-payments-engineer, ADR-012): balance, send with confirm, request by QR code (watches for payment), pay a pasted code or link with the stranger warning, history with filters, receipts, daily top-up pill, money cards in chat (Pay / Show QR), all verified in a browser, light and dark. Open: biometric/PIN confirm, camera scanning, My code, push, disputes, Pool UI, deep-link opening on devices, Maestro `qr-pay.yaml`.
-- [ ] Block/report/spam
+- [~] Block / report (trust-safety-compliance, ADR-013): block (silent, ends the friendship) and unblock, Report with reasons, chat attached and "also block", Blocked people, Chat info, Report/Block on message requests; verified in a browser, light and dark. Open: moderation tooling, outcome notifications, spam filter, Pool hold, Settings screen (Blocked people lives under Friends until it exists).
 - [ ] Phase 1 sign-off
 
 ## Phase 2 — Game platform + vertical slice (week 7–10)

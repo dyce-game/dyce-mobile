@@ -5,6 +5,7 @@ import { jwtExpiresAt } from '@/features/auth/jwt';
 import { createChatApi } from '@/features/chat/chat-api';
 import { createContactsApi } from '@/features/contacts/contacts-api';
 import { createFriendsApi } from '@/features/friends/friends-api';
+import { createSafetyApi } from '@/features/safety/safety-api';
 import { createWalletApi } from '@/features/wallet/wallet-api';
 import { config } from './config';
 import { secureStorage } from './storage';
@@ -23,6 +24,7 @@ export const contactsApi = createContactsApi(api);
 export const friendsApi = createFriendsApi(api);
 export const chatApi = createChatApi(api);
 export const walletApi = createWalletApi(api);
+export const safetyApi = createSafetyApi(api);
 
 /**
  * An access token that is good for at least another minute, refreshing first if it isn't. Used before
