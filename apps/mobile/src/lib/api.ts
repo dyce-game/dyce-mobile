@@ -1,6 +1,7 @@
 import { createApiClient } from '@/features/auth/api-client';
 import { createAuthApi } from '@/features/auth/auth-api';
 import { createSessionStore } from '@/features/auth/session-store';
+import { createContactsApi } from '@/features/contacts/contacts-api';
 import { config } from './config';
 import { secureStorage } from './storage';
 
@@ -14,3 +15,4 @@ export const api = createApiClient({
 });
 
 export const authApi = createAuthApi(api);
+export const contactsApi = createContactsApi(api);

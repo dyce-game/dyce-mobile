@@ -14,6 +14,15 @@ export function normalizePhone(input: string, defaultCountry?: string): string |
   return parsed.number; // E.164
 }
 
+/**
+ * ISO country of an E.164 number ("+2348031234567" -> "NG"). Used to read the *national-format* numbers in
+ * a user's address book ("0803...") with the country they actually live in, which is more reliable than
+ * the device's language/region setting.
+ */
+export function regionOf(e164: string): string | undefined {
+  return parsePhoneNumberFromString(e164)?.country;
+}
+
 /** "+2348031234567" -> "+234•••••••4567". For logs and UI only; never reversible. */
 export function maskPhone(e164: string): string {
   const digits = e164.replace(/\D/g, '');

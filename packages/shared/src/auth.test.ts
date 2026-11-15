@@ -1,4 +1,4 @@
-import { isNigerian, maskPhone, normalizePhone } from './phone.ts';
+import { isNigerian, maskPhone, normalizePhone, regionOf } from './phone.ts';
 import {
   isAdultByBirthYear,
   nextOnboardingStep,
@@ -27,6 +27,20 @@ describe('normalizePhone', () => {
 
   it('a national number without a country is rejected, not guessed', () => {
     expect(normalizePhone('08031234567')).toBeNull();
+  });
+});
+
+describe('regionOf', () => {
+  it('finds the country of an E.164 number', () => {
+    expect(regionOf('+2348031234567')).toBe('NG');
+    expect(regionOf('+447400123456')).toBe('GB'); // +44 7911 is Guernsey, not the UK
+    expect(regionOf('+233201234567')).toBe('GH');
+  });
+
+  it("lets a Nigerian user's national-format contacts be read correctly on a phone set to another region", () => {
+    // the bug this prevents: reading "0803 ..." with the device region (US) drops the contact
+    expect(normalizePhone('0803 555 0777', 'US')).toBeNull();
+    expect(normalizePhone('0803 555 0777', regionOf('+2348035550142'))).toBe('+2348035550777');
   });
 });
 

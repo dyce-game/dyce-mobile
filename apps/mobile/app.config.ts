@@ -23,7 +23,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     associatedDomains: [`applinks:${DOMAIN}`],
     infoPlist: {
       NSContactsUsageDescription:
-        'Dyce finds friends who are already on Dyce. Phone numbers are hashed on your device before matching.',
+        'Dyce finds friends who are already on Dyce. Phone numbers are checked on our server and never stored.',
       NSCameraUsageDescription:
         'Dyce uses the camera to scan Dyce QR codes and to take photos in chats.',
       NSMicrophoneUsageDescription: 'Dyce uses the microphone for voice notes.',
@@ -52,7 +52,19 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     ],
   },
   web: { bundler: 'metro', output: 'single', favicon: undefined },
-  plugins: ['expo-router', 'expo-font', 'expo-splash-screen', 'expo-status-bar'],
+  plugins: [
+    'expo-router',
+    'expo-font',
+    'expo-splash-screen',
+    'expo-status-bar',
+    [
+      'expo-contacts',
+      {
+        contactsPermission:
+          'Dyce finds friends who are already on Dyce. Phone numbers are checked on our server and never stored.',
+      },
+    ],
+  ],
   experiments: { typedRoutes: true },
   extra: {
     apiUrl: process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:3000',

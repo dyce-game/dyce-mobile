@@ -10,7 +10,7 @@ import {
 import { useRouter, type Href } from 'expo-router';
 import { getLocales } from 'expo-localization';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { normalizePhone, OTP_LENGTH } from '@dyce/shared';
+import { normalizePhone, OTP_LENGTH, regionOf } from '@dyce/shared';
 import { OtpInput, Text, TextField, TokenButton, useTheme } from '@dyce/ui';
 import { authApi, sessionStore } from '@/lib/api';
 import { track } from '@/lib/analytics';
@@ -97,7 +97,10 @@ export function PhoneScreen() {
     setError(undefined);
     try {
       const session = await authApi.verifyOtp(phone, value, country.code);
-      await sessionStore.getState().signIn(session);
+      // Remember the phone's country (not the number) so contacts in national format can be read correctly.
+      await sessionStore
+        .getState()
+        .signIn(session, e164 ? (regionOf(e164) ?? country.code) : country.code);
       track({ name: 'signup_completed', step: 'phone' });
       router.replace(hrefForStep(session.nextStep) as Href);
     } catch (err) {

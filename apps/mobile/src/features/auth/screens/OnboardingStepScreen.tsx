@@ -10,15 +10,11 @@ import { track } from '@/lib/analytics';
 import { authErrorMessage } from '../messages';
 import { hrefForStep } from '../routes';
 
+// `contacts` has its own screen (features/contacts); these are the steps still waiting for theirs.
 const COPY: Record<
-  Exclude<NextStep, 'username' | 'done'>,
+  Exclude<NextStep, 'username' | 'contacts' | 'done'>,
   { title: string; body: string; owner: string }
 > = {
-  contacts: {
-    title: 'Find your friends',
-    body: 'Dyce will check your contacts for people already here. Numbers are hashed on our server and never stored.',
-    owner: 'Contacts matching is the next slice of the auth work.',
-  },
   avatar: {
     title: 'Pick your look',
     body: 'Choose a starter look, then customise it.',
@@ -46,11 +42,11 @@ export function OnboardingStepScreen({ step }: { step: string }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | undefined>();
 
-  if (step !== 'contacts' && step !== 'avatar' && step !== 'bonus' && step !== 'notifications') {
+  if (step !== 'avatar' && step !== 'bonus' && step !== 'notifications') {
     router.replace('/chat' as Href);
     return null;
   }
-  const stepKey: 'contacts' | 'avatar' | 'bonus' | 'notifications' = step; // narrowed by the guard above
+  const stepKey: 'avatar' | 'bonus' | 'notifications' = step; // narrowed by the guard above
   const copy = COPY[stepKey];
 
   async function advance(next: NextStep) {

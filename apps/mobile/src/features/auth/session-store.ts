@@ -15,12 +15,17 @@ export type SessionState = {
   tokens: Tokens | null;
   userId: string | null;
   nextStep: NextStep | null;
+  /**
+   * ISO country of the number the user signed in with ("NG"). Used to read national-format numbers in their
+   * address book. It is only the country, never the number.
+   */
+  country: string | null;
 };
 
 export type SessionActions = {
   /** Read the stored session. Always leaves "loading". */
   restore(): Promise<void>;
-  signIn(session: SessionResponse): Promise<void>;
+  signIn(session: SessionResponse, country?: string | null): Promise<void>;
   setTokens(tokens: Tokens | null): Promise<void>;
   setNextStep(step: NextStep): void;
   signOut(): Promise<void>;
@@ -28,16 +33,26 @@ export type SessionActions = {
 
 const KEY = 'dyce.session.v1';
 
-type Persisted = { tokens: Tokens; userId: string; nextStep: NextStep | null };
+type Persisted = {
+  tokens: Tokens;
+  userId: string;
+  nextStep: NextStep | null;
+  country?: string | null;
+};
 
 /**
- * Session state (Zustand) persisted to secure storage. Only tokens, the user id and the last-known
- * onboarding step are stored: no phone number, no profile data.
+ * Session state (Zustand) persisted to secure storage. Only tokens, the user id, the last-known
+ * onboarding step and the phone's country are stored: no phone number, no profile data.
  */
 export function createSessionStore(storage: KeyValueStorage) {
   const persist = async (s: SessionState) => {
     if (s.tokens && s.userId) {
-      const data: Persisted = { tokens: s.tokens, userId: s.userId, nextStep: s.nextStep };
+      const data: Persisted = {
+        tokens: s.tokens,
+        userId: s.userId,
+        nextStep: s.nextStep,
+        country: s.country,
+      };
       await storage.setItem(KEY, JSON.stringify(data));
     } else {
       await storage.removeItem(KEY);
@@ -49,6 +64,7 @@ export function createSessionStore(storage: KeyValueStorage) {
     tokens: null,
     userId: null,
     nextStep: null,
+    country: null,
 
     async restore() {
       try {
@@ -60,21 +76,23 @@ export function createSessionStore(storage: KeyValueStorage) {
             tokens: data.tokens,
             userId: data.userId,
             nextStep: data.nextStep ?? null,
+            country: data.country ?? null,
           });
           return;
         }
       } catch {
         // corrupt or unreadable storage: fall through to signed out
       }
-      set({ status: 'signedOut', tokens: null, userId: null, nextStep: null });
+      set({ status: 'signedOut', tokens: null, userId: null, nextStep: null, country: null });
     },
 
-    async signIn(session) {
+    async signIn(session, country = null) {
       set({
         status: 'signedIn',
         tokens: { accessToken: session.accessToken, refreshToken: session.refreshToken },
         userId: session.userId,
         nextStep: session.nextStep,
+        country,
       });
       await persist(get());
     },
@@ -94,7 +112,7 @@ export function createSessionStore(storage: KeyValueStorage) {
     },
 
     async signOut() {
-      set({ status: 'signedOut', tokens: null, userId: null, nextStep: null });
+      set({ status: 'signedOut', tokens: null, userId: null, nextStep: null, country: null });
       await persist(get());
     },
   }));

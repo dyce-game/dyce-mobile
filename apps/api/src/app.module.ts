@@ -8,6 +8,7 @@ import { validateEnv } from './config/env.ts';
 import { DbModule } from './db/db.module.ts';
 import { HealthController } from './health/health.controller.ts';
 import { LedgerModule } from './ledger/ledger.module.ts';
+import { SocialModule } from './social/social.module.ts';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { LedgerModule } from './ledger/ledger.module.ts';
     DbModule,
     LedgerModule,
     AuthModule,
+    SocialModule,
   ],
   controllers: [HealthController],
   providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }],

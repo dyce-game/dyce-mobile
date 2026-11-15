@@ -15,7 +15,14 @@ export type AuthErrorCode =
   | 'profile_exists'
   | 'username_taken'
   | 'username_reserved'
-  | 'age_already_set';
+  | 'age_already_set'
+  // social: contacts and friend requests
+  | 'contacts_rate_limited'
+  | 'friend_requests_rate_limited'
+  | 'user_not_found'
+  | 'blocked'
+  | 'requests_closed'
+  | 'cannot_add_self';
 
 const STATUS: Record<AuthErrorCode, number> = {
   validation_failed: 422,
@@ -35,6 +42,12 @@ const STATUS: Record<AuthErrorCode, number> = {
   username_taken: 409,
   username_reserved: 422,
   age_already_set: 409,
+  contacts_rate_limited: 429,
+  friend_requests_rate_limited: 429,
+  user_not_found: 404,
+  blocked: 403,
+  requests_closed: 403,
+  cannot_add_self: 422,
 };
 
 /** An expected, user-facing failure. Mapped to `{ code, message, ...details }` by the HTTP filter. */

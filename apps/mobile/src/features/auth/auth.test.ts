@@ -202,15 +202,35 @@ describe('session store', () => {
     expect(partial.getState().status).toBe('signedOut');
   });
 
-  it('stores only tokens, user id and step: never a phone number or profile data', async () => {
+  it('stores only tokens, user id, step and the phone country: never a phone number or profile data', async () => {
     const storage = memoryStorage();
     const store = createSessionStore(storage);
-    await store.getState().signIn(session);
-    expect(Object.keys(JSON.parse(storage.data['dyce.session.v1']!)).sort()).toEqual([
-      'nextStep',
-      'tokens',
-      'userId',
-    ]);
+    await store.getState().signIn(session, 'NG');
+    const saved = JSON.parse(storage.data['dyce.session.v1']!);
+    expect(Object.keys(saved).sort()).toEqual(['country', 'nextStep', 'tokens', 'userId']);
+    expect(saved.country).toBe('NG');
+    expect(storage.data['dyce.session.v1']).not.toMatch(/\+\d{7,}/); // no E.164 anywhere
+  });
+
+  it('remembers the phone country across restarts, and clears it on sign out', async () => {
+    const storage = memoryStorage();
+    await createSessionStore(storage).getState().signIn(session, 'NG');
+    const restarted = createSessionStore(storage);
+    await restarted.getState().restore();
+    expect(restarted.getState().country).toBe('NG');
+    await restarted.getState().signOut();
+    expect(restarted.getState().country).toBeNull();
+  });
+
+  it('a session saved before the country was recorded still restores', async () => {
+    const old = JSON.stringify({
+      tokens: { accessToken: 'a', refreshToken: 'r' },
+      userId: 'u',
+      nextStep: 'contacts',
+    });
+    const store = createSessionStore(memoryStorage({ 'dyce.session.v1': old }));
+    await store.getState().restore();
+    expect(store.getState()).toMatchObject({ status: 'signedIn', country: null });
   });
 
   it('persists rotated tokens and step changes', async () => {

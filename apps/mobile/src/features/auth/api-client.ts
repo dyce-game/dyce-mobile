@@ -123,6 +123,7 @@ export function createApiClient(deps: ApiClientDeps) {
     get: <T>(path: string, options?: RequestOptions) => request<T>('GET', path, options),
     post: <T>(path: string, body?: unknown, options?: Omit<RequestOptions, 'body'>) =>
       request<T>('POST', path, { ...options, body }),
+    delete: <T>(path: string, options?: RequestOptions) => request<T>('DELETE', path, options),
   };
 }
 

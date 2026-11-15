@@ -203,6 +203,93 @@ try {
   assert.equal(r.json.code, 'username_taken');
   assert.ok(Array.isArray(r.json.suggestions) && r.json.suggestions.length > 0);
 
+  // ---- contacts matching + friend requests ----------------------------------------------------
+  step = 'contacts';
+  const PHONE_C = '0803 555 0333';
+  const c = await signIn(PHONE_C);
+  r = await call('POST', '/auth/otp/verify', {
+    body: { phone: PHONE_C, country: 'NG', code: c.code },
+  });
+  const s3 = r.json;
+  r = await call('POST', '/profile', {
+    token: s3.accessToken,
+    body: { username: 'tunde.c', displayName: 'Tunde' },
+  });
+  assert.equal(r.status, 201, r.text);
+
+  r = await call('POST', '/contacts/match', { body: { numbers: ['+2348035550333'] } });
+  assert.equal(r.status, 401, 'matching requires a signed-in user');
+
+  // A's address book: a stranger, C (has a profile) and B (verified but no profile yet)
+  r = await call('POST', '/contacts/match', {
+    token: s1.accessToken,
+    body: { numbers: ['+2348035559999', '+2348035550333', '+2348035550222'] },
+  });
+  assert.equal(r.status, 200, r.text);
+  assert.deepEqual(
+    r.json.matches.map((m) => [m.index, m.user.username, m.user.relationship]),
+    [[1, 'tunde.c', 'none']],
+  );
+  assert.ok(!r.text.includes('5550333'), 'match response must not echo numbers');
+
+  r = await call('POST', '/contacts/match', {
+    token: s1.accessToken,
+    body: { numbers: ['08035559999'] },
+  });
+  assert.equal(r.status, 422);
+  assert.ok(!r.text.includes('8035559999'), 'validation error echoed a phone number');
+  r = await call('POST', '/contacts/match', {
+    token: s1.accessToken,
+    body: { numbers: Array.from({ length: 501 }, (_, i) => `+23480999${String(10000 + i)}`) },
+  });
+  assert.equal(r.status, 422, 'more than 500 numbers per batch is refused');
+
+  r = await call('POST', '/friends/requests', {
+    token: s1.accessToken,
+    body: { userId: s3.userId },
+  });
+  assert.deepEqual(r.json, { relationship: 'pending_out' });
+  r = await call('POST', '/friends/requests', {
+    token: s1.accessToken,
+    body: { userId: s1.userId },
+  });
+  assert.equal(r.json.code, 'cannot_add_self');
+  r = await call('POST', '/friends/requests', {
+    token: s1.accessToken,
+    body: { userId: 'not-a-uuid' },
+  });
+  assert.equal(r.status, 422);
+  r = await call('POST', '/friends/requests', {
+    token: s1.accessToken,
+    body: { userId: '00000000-0000-4000-8000-000000000000' },
+  });
+  assert.equal(r.status, 404);
+
+  r = await call('GET', '/contacts/suggestions', { token: s1.accessToken });
+  assert.deepEqual(
+    r.json.suggestions.map((u) => [u.username, u.relationship]),
+    [['tunde.c', 'pending_out']],
+  );
+
+  r = await call('GET', '/users/by-username/Tunde.C', { token: s1.accessToken });
+  assert.equal(r.status, 200);
+  assert.equal(r.json.username, 'tunde.c');
+  assert.equal(r.json.relationship, 'pending_out');
+  r = await call('GET', '/users/by-username/nobody.here', { token: s1.accessToken });
+  assert.equal(r.status, 404);
+  assert.equal(r.json.code, 'user_not_found');
+
+  r = await call('POST', '/friends/requests', {
+    token: s3.accessToken,
+    body: { userId: s1.userId },
+  }); // C says yes
+  assert.deepEqual(r.json, { relationship: 'friends' });
+  r = await call('GET', '/contacts/suggestions', { token: s1.accessToken });
+  assert.deepEqual(r.json.suggestions, [], 'friends are no longer suggestions');
+
+  r = await call('DELETE', '/contacts', { token: s1.accessToken });
+  assert.equal(r.status, 204);
+
   // ---- age gate + onboarding + welcome bonus -----------------------------------------------------
   step = 'age gate';
   r = await call('POST', '/profile/age-gate', { token: s1.accessToken, body: { birthYear: 1990 } });
@@ -267,7 +354,16 @@ try {
 
   // ---- privacy: the server log never contains a raw number --------------------------------------
   step = 'privacy';
-  for (const raw of ['5550100', '5550222', '2348035550100', '2348035550222', '8035550100']) {
+  for (const raw of [
+    '5550100',
+    '5550222',
+    '5550333',
+    '5559999',
+    '2348035550100',
+    '2348035550222',
+    '2348035550333',
+    '8035550100',
+  ]) {
     assert.ok(!logs.includes(raw), `server log leaked part of a phone number: ${raw}`);
   }
   const all = await admin.query(`SELECT count(*)::int AS n FROM users`);

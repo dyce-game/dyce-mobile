@@ -40,6 +40,20 @@ export function authErrorMessage(err: unknown): string {
       return 'That name is reserved. Try another.';
     case 'validation_failed':
       return 'Please check what you typed.';
+    case 'contacts_rate_limited':
+      return retry
+        ? `You've checked a lot of contacts today. Try again in ${formatWait(retry)}.`
+        : "You've checked a lot of contacts today. Try again tomorrow.";
+    case 'friend_requests_rate_limited':
+      return "You've sent a lot of requests today. Try again tomorrow.";
+    case 'user_not_found':
+      return "We couldn't find that person.";
+    case 'blocked':
+      return "You've blocked this person. Unblock them first.";
+    case 'requests_closed':
+      return "They aren't taking new requests right now.";
+    case 'cannot_add_self':
+      return "That's you!";
     default:
       return 'Something went wrong. Please try again.';
   }
