@@ -16,7 +16,10 @@ Owner: qa-engineer. This is the living plan; the lead updates the "Status" colum
 | Contacts matching + friend requests (privacy, blocks, limits, races) | Jest + real PostgreSQL | `apps/api/db/tests/contacts.test.ts` | `pnpm test:db` |
 | Friends list, accept, ignore, cancel, remove (silent ignore, races, blocks) | Jest + real PostgreSQL | `apps/api/db/tests/friends.test.ts` | `pnpm test:db` |
 | Friend row/tab logic (labels, relative time, mutual-friend text) | Jest | `apps/mobile/src/features/friends/friends.test.ts` | `pnpm test` |
-| Auth + contacts + friends over real HTTP (whole journey, throttling, production-safety) | script | `apps/api/scripts/auth-e2e.mjs` | `pnpm -F @dyce/api e2e` |
+| Messaging: conversations, Requests, limits, read state, paging, blocks, races | Jest + real PostgreSQL | `apps/api/db/tests/messages.test.ts` | `pnpm test:db` |
+| Realtime hub and WebSocket server (auth frame, token expiry, typing, limits) | Jest + real sockets | `apps/api/src/chat/realtime.test.ts` | `pnpm test` |
+| Chat logic (runs, day separators, merging, receipts), live-client reconnect/backoff, outbox, typing, cache updates | Jest | `apps/mobile/src/features/chat/*.test.ts` | `pnpm test` |
+| Auth + contacts + friends + messaging (incl. a live WebSocket) over real HTTP (whole journey, throttling, production-safety) | script | `apps/api/scripts/auth-e2e.mjs` | `pnpm -F @dyce/api e2e` |
 | Contact syncing/batching, add-button states | Jest | `apps/mobile/src/features/contacts/contacts.test.ts` | `pnpm test` |
 | SMS providers, env validation, tokens, hashing | Jest | `apps/api/src/**/*.test.ts` | `pnpm test` |
 | App API client (single-flight refresh), session store, routing | Jest | `apps/mobile/src/features/auth/auth.test.ts` | `pnpm test` |

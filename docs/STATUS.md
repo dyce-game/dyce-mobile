@@ -1,12 +1,12 @@
 # Status
 
-Last updated: 2026-11-15 (Phase 0 done except the items below; Phase 1: auth + OTP, contacts matching, and the friends list with accept/ignore done).
+Last updated: 2026-11-15 (Phase 0 done except the items below; Phase 1: auth + OTP, contacts matching, friends list with accept/ignore, and 1:1 messaging with Requests and live delivery done).
 
 ## Done and verified
 - Repo, monorepo tooling, ADR-004 (NestJS + plain PostgreSQL replaces Supabase). See earlier commits.
 - `@dyce/shared`: money, `formatNaira`, payouts, config, phone normalise/mask/region, username rules, auth, onboarding and contact schemas. 72 tests.
 - `@dyce/games`: engine contract, seeded RNG, `_example` engine, contract harness, determinism check. 18 tests; passes in Node and in the browser's V8.
-- **Database:** 9 migrations. **165 integration tests** on real PostgreSQL as the restricted app role: ledger and Pool money rules (57), OTP/sessions (31), profile/onboarding/age gate (23), contacts and friend requests (27), friends list/accept/ignore/remove (27).
+- **Database:** 10 migrations. **210 integration tests** on real PostgreSQL as the restricted app role: ledger and Pool money rules (57), OTP/sessions (31), profile/onboarding/age gate (23), contacts and friend requests (27), friends list/accept/ignore/remove (27), messaging (45).
 - **Auth + OTP (ADR-007)** — phone OTP, rotating sessions, username, age gate, welcome grant, resumable onboarding. No raw phone number in any table or log (tested). Details in the ADR.
 - **Contacts matching (ADR-008)**
   - API: `POST /contacts/match` (batches of ≤500 E.164), `GET /contacts/suggestions`, `DELETE /contacts`, `POST /friends/requests`, `GET /users/by-username/:username`.
@@ -20,23 +20,32 @@ Last updated: 2026-11-15 (Phase 0 done except the items below; Phase 1: auth + O
   - Not tested: accept racing cancel, and whether the request-policy path is hit when the accepter's own policy is `nobody` (accept never consults policy by design, ADR-009).
   - App: Friends screen (All / Requests tabs, Accept / Ignore / Cancel, Remove with inline Keep / Remove confirm), Add friends screen (contact suggestions, sync, find by username), standalone contacts sync, avatar badge with the count of waiting requests.
   - **Walked through in a real browser (web), light and dark:** sign-in → badge "2" → All (2) → Requests (2 incoming with "1 mutual friend", 1 outgoing) → Accept moved a person to All (3) → Ignore removed a request from the list → Remove showed "Remove @x? They won't be told." and Keep cancelled it → find by username for someone I had ignored showed Add, and tapping it resolved to "Friends" → dark mode checked on Friends. Session survived a reload.
-- ESLint, Prettier, typecheck and builds clean for all five workspaces. **356 automated tests** in total (191 unit across shared 72, games 18, ui 13, mobile 50, api 38; 165 on real PostgreSQL), plus the HTTP e2e, boot smoke and determinism scripts.
+- **Messaging: 1:1 chat, Requests, live delivery (ADR-010)**
+  - API: `GET /conversations?filter=all|friends|requests`, `POST /conversations/direct`, `GET /conversations/:id`, `GET|POST /conversations/:id/messages`, `POST .../read|accept|decline`, and a WebSocket at `/realtime`. Migration 0010 adds `direct_key`, a body-size CHECK, a paging index and the `request_messages_before_accept` config.
+  - Verified (45 DB tests): one conversation per pair even when both open at once; friends chat freely; a stranger's message lands only in the recipient's Requests (never in Chat, never in the badge) and is capped at 3 until they reply; replying or accepting activates it; decline is silent and stops live delivery; becoming friends turns a request, even an ignored one, into a normal chat; `nobody` / `fof` policies and the 20-new-people-per-day limit (resets at Lagos midnight); idempotent sends (same id returns the same message; reused in another conversation is refused); live delivery failure never loses a message; only the two members can read, send, mark read, accept or decline; blocked people vanish and can't send; paging newest-first with no gaps or repeats, including messages with identical timestamps; unread counts (capped at 99), read marker never moves back, sending doesn't mark unseen messages read; no read receipt while a conversation is a request; typing signals only go to people who should get them; no phone numbers in any response.
+  - Verified (14 socket tests): auth by first frame, bad token, auth timeout, junk and oversize frames, close at token expiry, per-user connection cap, typing relay and burst limit, other paths left alone. The HTTP e2e now runs a real chat over a real WebSocket (delivery to both people, no duplicate on retry, typing, read, a stranger's request going to Requests live, decline silence).
+  - App: Chat tab (All / Friends / Requests with a count, unread badges per row and on the tab bar, empty states), thread (bubbles grouped into runs, day separators, optimistic send, Retry / Delete with the reason, "typing…", Sent / Read under your last message, older messages load as you scroll up, request banner with Accept / Decline instead of a composer), New chat (friends, or find by username). 49 new logic tests (merging, grouping, receipts, reconnect and backoff of the live client, outbox, typing, cache updates).
+  - **Walked through in a real browser (web), light and dark:** list with unread badges (13 and 3) and "9+" on the tab → opened a thread → sent with Enter (Sent) → a second "device" (a script) typed, replied and read my message, and I saw "typing…", the reply and "Sent" turn to "Read" **live without a refresh** → Requests tab with the privacy note, REQUEST tags and Accept / Decline → opened a request (banner, no composer) → Accept from the banner and from the list both worked → stopped the API and sent: "Not sent. Can't reach Dyce…" with Retry / Delete → restarted the API, pressed Retry: delivered **once** (checked in the database) and the live connection reconnected by itself → scrolled a 37-message thread to the top and the older page loaded → New chat → "Message" on a friend opened the existing conversation, not a new one. Dark mode checked on the list, a thread and New chat.
+  - Found by testing and fixed: sending marked the whole thread read, hiding unread messages the sender hadn't seen (now it doesn't).
+- ESLint, Prettier, typecheck and builds clean for all five workspaces. **464 automated tests** in total (254 unit: shared 72, games 18, ui 13, mobile 99, api 52; 210 on real PostgreSQL), plus the HTTP e2e, boot smoke and determinism scripts.
 
 ## Written but not verified
 - **SMS delivery.** Termii and Twilio adapters are unit-tested for request shape only; neither has sent a real SMS.
 - **The real contacts permission and address book.** Web has no address book, so the browser run used a clearly-labelled dev-only sample list (`dev.contacts=deny` simulates refusal). `expo-contacts` itself, iOS "limited access", and Android prompts are untested on devices. The iOS/Android permission text is set via the `expo-contacts` config plugin.
-- Anything else on a real device (rendering, haptics, blur, safe areas, Hermes, OTP autofill). Dark mode was checked for the contacts-denied screen and the Friends list only (not Requests or Add friends).
-- Friends screens were run on web only, with test users created through the API. Nobody has used them with real phones or real contacts.
+- Anything else on a real device (rendering, haptics, blur, safe areas, Hermes, OTP autofill). Dark mode was checked for the contacts-denied screen, the Friends list, the Chat list, a thread and New chat (not Requests, the request banner, or Add friends).
+- Friends and messaging screens were run on web only, with test users created through the API, and the "other person" was a script. Nobody has chatted between two real phones. Keyboard handling on phones (`KeyboardAvoidingView`), the inverted list on Hermes, and scrolling a 5,000-message thread are untested.
+- **The realtime hub is single-process.** With more than one API instance, a message sent through one won't reach sockets held by another. Needs Redis pub/sub before scaling out (ADR-010).
+- The browser walkthrough ran the app inside a scaled iframe on web, because the in-app browser's screenshots crop mobile-sized viewports; layout widths were also checked with DOM measurements.
 - GitHub Actions workflow (never run).
 
 ## Not done
 - Push for "a friend joined Dyce" and for new friend requests (needs push registration). Invite-by-SMS for contacts who aren't on Dyce (growth-invites). Profile screen (Friends is reached from the avatar until it exists); viewing another person's profile; block/report UI.
-- The Requests tab shows only people you've added or who added you. Stranger requests that arrive in Chat > Requests belong to messaging.
+- Messaging: groups, Bots, "Live now" and online presence, replies, reactions, delete for me / everyone, voice notes, photos, mute / archive, a read-receipt opt-out, "Add friend" when accepting a request, push for new messages, the Games and ₦ buttons in the composer (BACKLOG). Maestro `chat` and `requests` flows.
 - Avatar step; notification permission and push token registration (still skippable placeholders).
 - A "don't let people find me by phone number" setting (not in SPEC; see ADR-008).
 - Android SMS Retriever module; account deletion; real sign-out in Settings (dev-only `/dev/session`).
 - Physics determinism spike and ADR; Colyseus `apps/game-server`; demo seeds from `assets/avatar-profiles`; Sentry/PostHog; EAS dev builds; Deno and Hermes determinism runs.
-- Remaining Phase 1 lanes: avatar Phase A, messaging, wallet UI (send, QR request, scan-to-pay), block/report.
+- Remaining Phase 1 lanes: avatar Phase A, wallet UI (send, QR request, scan-to-pay, money cards in chat), block/report, and the rest of messaging above.
 
 ## Dev notes
 - No Docker needed: `pnpm -F @dyce/api db:dev` starts an embedded Postgres on :54329 with migrations applied. Then `cp apps/api/.env.example apps/api/.env`, set `DATABASE_URL=postgres://dyce_app:dyce_app@localhost:54329/dyce`, `OTP_TEST_CODE=424242` and `CORS_ORIGINS=http://localhost:8081` (or your web port), and run `pnpm -F @dyce/api dev`.
@@ -50,7 +59,7 @@ Last updated: 2026-11-15 (Phase 0 done except the items below; Phase 1: auth + O
 3. Final name for "Word Tiles"; confirm "Crazy Cards".
 4. Contract the 3D artist.
 5. Lawyer review slot for Pools/terms.
-6. Product calls: (a) ADR-007 treats 19+ by birth year as adult; exact-18 needs a full date of birth. (b) Should users be able to opt out of being found through contact matching? SPEC doesn't say; today everyone with a profile is findable by anyone who has their number, within the daily cap.
+6. Product calls: (a) ADR-007 treats 19+ by birth year as adult; exact-18 needs a full date of birth. (b) Should users be able to opt out of being found through contact matching? SPEC doesn't say; today everyone with a profile is findable by anyone who has their number, within the daily cap. (c) SPEC says read receipts "can be turned off" but defines no setting; today they are always on once a chat is accepted. (d) How many messages may a stranger send before the other person answers? Today 3 (`request_messages_before_accept`).
 
 ## Next
-Pick any of: avatar Phase A, messaging (friends now exist to chat with), wallet UI (send, QR request, scan-to-pay), or block/report.
+Pick any of: avatar Phase A, wallet UI (send, QR request, scan-to-pay: the ₦ button and money cards plug into the chat now), block/report (the chat already honours `blocks`), or the next messaging slice (groups, reactions/replies/deletes, voice and photos, push).

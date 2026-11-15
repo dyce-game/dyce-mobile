@@ -68,7 +68,7 @@ Phase 1. Read BUILD_PLAN Phase 1. In parallel: auth-onboarding-engineer (full on
 - [~] Onboarding + OTP + contacts — done and verified in a browser (ADR-007, ADR-008): phone OTP, sessions, username, age gate, welcome grant, resumable onboarding, contacts matching with "On Dyce" suggestions, one-tap add, denied path with find-by-username. Open: notification permission + push token, real SMS delivery (Termii/Twilio untested live), the real contacts permission on devices, Android SMS autofill module, Maestro `onboarding.yaml`.
 - [~] Friends list + accept/ignore (social-discovery, ADR-009) — done and verified in a browser, light and dark: All / Requests tabs, Accept, silent Ignore, Cancel, Remove with confirm, Add friends, request-count badge on the avatar. Open: Profile screen (Friends is reached from the avatar until then), push for new requests, block/report UI, Maestro `requests.yaml`, real-device run.
 - [ ] Avatar Phase A: 220 starter looks, <Avatar>, render-service skeleton (AVATAR_GUIDEBOOK §8)
-- [ ] Chat tab, Requests, Bots, threads, groups
+- [~] Chat tab, Requests, threads, realtime (messaging-engineer, ADR-010) — 1:1 text chat done and verified in a browser, light and dark: chat list with unread badges, Requests with Accept/Decline, thread with optimistic send, Retry, typing, Sent/Read, paging, New chat, live delivery over WebSocket that reconnects by itself. Open: groups, Bots, voice/photos/replies/reactions/deletes, games and money cards, push, real-device run, Redis for more than one instance, Maestro `chat.yaml` and `requests.yaml`.
 - [ ] Wallet: send, QR request, scan-to-pay, history
 - [ ] Block/report/spam
 - [ ] Phase 1 sign-off

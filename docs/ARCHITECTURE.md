@@ -108,7 +108,7 @@ Cup Pong, 8 Ball, Mini Golf, Basketball, Archery, Darts, Tanks. The client sends
 - Game host screen (`g/[matchId]`) provides the shared shell: top bar (back to chat, mode badge, menu), opponent pill, turn timer, reconnecting/offline banners, forfeit sheet, result screens (Free result, Pool result, Space results).
 
 ## 8. Realtime chat
-Supabase Realtime: postgres_changes on `messages` filtered by conversation for open threads; a per-user broadcast channel `user:<id>` for list updates, typing and presence. Message send = insert through RPC `send_message` (checks membership, blocks, request rules, rate limits) returning the row; optimistic UI with client-generated UUIDs.
+(ADR-010 replaces the original Supabase Realtime design.) Messages are stored and read over HTTP: `POST /conversations/:id/messages` (client-generated UUID, idempotent; checks membership, blocks, request rules and limits), `GET /conversations/:id/messages` (cursor paging), `GET /conversations`, `POST .../read`, `.../accept`, `.../decline`. Live delivery is a WebSocket at `/realtime` on the same server (`ws`): authenticate with the first frame, then receive `message`, `read` and `typing` events and send `typing`. The socket closes when its access token expires and the app reconnects. Everything the socket carries is also available over HTTP, so a missed event costs only latency. The hub is in-process; running several instances needs Redis pub/sub.
 
 ## 9. Security
 - Supabase JWT everywhere; Colyseus verifies JWT with the project's JWKS.
