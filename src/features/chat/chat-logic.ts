@@ -137,14 +137,21 @@ export function upsertMessage(
   message: Message,
 ): MessagesData | undefined {
   if (!data || data.pages.length === 0) return data;
-  // Already have it. A money request card is the one thing that changes later (open -> paid), so take the newer copy.
+  // Already have it. Money requests (open -> paid) and game cards (invited -> your turn -> result) change
+  // later, so take the newer copy. A game card never goes backwards: events can arrive out of order.
   if (data.pages.some((p) => p.messages.some((m) => m.id === message.id))) {
-    if (message.kind !== 'money_request') return data;
+    if (message.kind !== 'money_request' && message.kind !== 'game') return data;
     return {
       ...data,
       pages: data.pages.map((p) => ({
         ...p,
-        messages: p.messages.map((m) => (m.id === message.id ? message : m)),
+        messages: p.messages.map((m) => {
+          if (m.id !== message.id) return m;
+          if (m.kind === 'game' && message.kind === 'game') {
+            return message.payload.stateVersion >= m.payload.stateVersion ? message : m;
+          }
+          return message;
+        }),
       })),
     };
   }

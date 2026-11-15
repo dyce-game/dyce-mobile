@@ -216,6 +216,12 @@ export function ThreadScreen({ conversationId }: { conversationId: string }) {
       <Composer
         onSend={send}
         onTyping={(on) => sendTypingSignal(conversationId, on)}
+        // Games are played between friends (a stranger's chat is only a request)
+        onOpenGames={
+          peer?.relationship === 'friends'
+            ? () => router.push(`/games?conversationId=${conversationId}` as Href)
+            : undefined
+        }
         placeholder={peer ? `Message ${name}` : 'Dyce message'}
       />
     </>

@@ -1,5 +1,5 @@
 import { QueryClient } from '@tanstack/react-query';
-import { queryKeys, type Message } from '@dyce/shared';
+import { queryKeys, type MatchView, type Message } from '@dyce/shared';
 import { jwtExpiresAt } from '../auth/jwt';
 import type { MessagesData } from './chat-logic';
 import { createOutboxStore } from './outbox';
@@ -142,6 +142,35 @@ describe('applyRealtimeEvent', () => {
     expect(invalidated).toContainEqual(queryKeys.conversationsAll);
   });
 
+  it('keeps your own view of a match, never an older one', () => {
+    const { client, typing } = setup();
+    const view = (stateVersion: number, status: MatchView['status']): MatchView => ({
+      id: 'm1',
+      gameSlug: '_example',
+      gameName: 'Pig',
+      mode: 'free',
+      stakeKobo: 0,
+      status,
+      conversationId: CONV,
+      createdBy: ME,
+      players: [],
+      stateVersion,
+      currentTurn: null,
+      view: null,
+      outcome: null,
+      inviteExpiresAt: null,
+      createdAt: '2026-11-14T10:00:00.000Z',
+      finishedAt: null,
+    });
+    const cached = () => client.getQueryData<MatchView>(queryKeys.match('m1'));
+    applyRealtimeEvent(client, { type: 'match', match: view(3, 'active') }, ME, typing);
+    expect(cached()?.stateVersion).toBe(3);
+    applyRealtimeEvent(client, { type: 'match', match: view(2, 'active') }, ME, typing);
+    expect(cached()?.stateVersion).toBe(3);
+    applyRealtimeEvent(client, { type: 'match', match: view(4, 'finished') }, ME, typing);
+    expect(cached()).toMatchObject({ stateVersion: 4, status: 'finished' });
+  });
+
   it('does not add a message twice (the sender gets their own send back live)', () => {
     const { client, typing, seed, cached } = setup();
     const a = msg('a', ME, '2026-11-14T10:00:00.000Z');
@@ -213,6 +242,6 @@ describe('applyRealtimeEvent', () => {
   it('refreshes everything after (re)connecting, to catch up on what was missed', () => {
     const { client, typing, invalidated } = setup();
     applyRealtimeEvent(client, { type: 'ready' }, ME, typing);
-    expect(invalidated).toEqual([queryKeys.conversationsAll, ['messages']]);
+    expect(invalidated).toEqual([queryKeys.conversationsAll, ['messages'], ['match']]);
   });
 });

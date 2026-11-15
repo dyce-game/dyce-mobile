@@ -30,6 +30,12 @@ Owner: qa-engineer. App-side layers for this repo; the server side (database, AP
 Phase 1: `onboarding` (phone, OTP, username, avatar, ₦200k grant), `chat` (send/receive realtime), `requests` (stranger lands in Requests, accept/decline), `qr-pay` (**device A creates a QR request, device B scans and pays, paid card appears in chat**), `send-money`, `block-report`.
 Phase 2: `pool-loop` (stake, play async, payout), `counter-offer`, `space-whot-reconnect`, `invite-web` (SMS invite, play in browser, join).
 
+### Games, slice 1 (async Free matches)
+- **Backend, real PostgreSQL** (`db/tests/matches.test.ts`, 32 tests): catalogue and the dev-only reference game; create (idempotent, friends only, blocks, Pool refused, invite cap); accept / decline / cancel / expiry; moves (illegal, malformed, out of turn, outsider, stale and future versions, idempotent retry, simultaneous moves, block mid-match); hidden information absent from responses and events; the winner decided by the server and the same on both screens; draw; Pig played to a result with the rows checked.
+- **App, unit** (`games-logic.test.ts`, plus cases in `chat-logic.test.ts` and `chat-state.test.ts`): card wording for each state, merging a match or card update (never backwards), drawer chips, Pig view parsing and the "who rolled" wording, results copy.
+- **By hand, two browser sessions** (light and dark, desktop and phone width): send from the Games drawer, accept from the card, play Pig to a result, same winner and score on both screens, card turns to "You won" / "Results". See STATUS for what was walked through.
+- **Maestro** `send-game`, `play-pig` (device A sends, device B accepts, both play to a result): to write with the first real game; `pool-loop` follows Pool.
+
 ## 4. Device matrix and budgets
 - iOS: latest + latest-2, small phone (SE class) and large. Android: Pixel-class, and a **3–4 GB RAM mid-range device** (performance target for Nigeria).
 - Budgets: 3D scenes ≥ 50 fps on the mid-range Android; cold start < 3 s on it; chat list scrolls at 60 fps with 500 conversations; 3G profile (400 kbps / 400 ms RTT): chat usable, game moves resolve < 2 s.

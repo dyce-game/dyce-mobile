@@ -2,6 +2,15 @@
 
 One entry per decision, newest first.
 
+## ADR-016 · Games in the app: drawer, mode sheet, card, host, results · 2026-11-15
+Context: first slice of the game platform (server side in `dyce-backend/docs/DECISIONS.md`, ADR-016). Decisions made on the app side:
+- **One sheet for drawer and mode sheet** (`app/games`, a transparent modal over the thread, like Send money). The games button in the composer (three-by-three dots, as in the design) only shows in a chat with a friend. Tapping a game goes straight to the mode sheet (SPEC §6); Free is selected, Pool is shown dimmed as "Coming soon" and cannot be chosen.
+- **Game card** is a message kind (`game`) rendered by `GameCard`, driven by `cardState()` (pure, tested): invite (Accept / Decline for the invitee, Cancel for the sender), "Your turn" with a YOUR TURN badge, "Waiting for X", "You won" / "X won" / "It's a draw", cancelled and expired. It updates live from the server's card rewrites; a card never goes backwards (`stateVersion`).
+- **Match cache.** `queryKeys.match(id)` holds the player's own `MatchView`; the realtime `match` event and every API response merge into it with `newerMatch` (an older version never replaces a newer one). Moves send the version the player saw; on `stale_version` or any server error the screen reloads the match, on a network error the same button sends the same version again (safe: idempotent).
+- **Host screen** `g/[matchId]` is the shared shell (back, mode badge, opponent) plus a board per game; `PigBoard` only shows the server's view and sends `roll` / `hold`. A finished match moves to `g/[matchId]/result`, which any player can open again from the card.
+- **Results screen** follows FreeResult for what exists today: winner and final score, Rematch free (a new invite in the same chat) and Back to chat.
+Consequences: a new game adds a board component and a branch in the host and result screens. Owner: game-platform-engineer
+
 ## ADR-015 · Profile and Settings · 2026-11-15
 Backend decision and what is deliberately not shown: see `../dyce-backend/docs/DECISIONS.md`. App side: `src/features/profile` (Profile, Edit profile, Settings), routes `/profile`, `/profile/edit`, `/settings`; `Segmented` and the `grouped` colour in `@dyce/ui`.
 

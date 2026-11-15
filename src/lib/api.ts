@@ -5,6 +5,7 @@ import { jwtExpiresAt } from '@/features/auth/jwt';
 import { createChatApi } from '@/features/chat/chat-api';
 import { createContactsApi } from '@/features/contacts/contacts-api';
 import { createFriendsApi } from '@/features/friends/friends-api';
+import { createGamesApi } from '@/features/games/games-api';
 import { createSafetyApi } from '@/features/safety/safety-api';
 import { createWalletApi } from '@/features/wallet/wallet-api';
 import { config } from './config';
@@ -24,6 +25,7 @@ export const contactsApi = createContactsApi(api);
 export const friendsApi = createFriendsApi(api);
 export const chatApi = createChatApi(api);
 export const walletApi = createWalletApi(api);
+export const gamesApi = createGamesApi(api);
 export const safetyApi = createSafetyApi(api);
 
 /**

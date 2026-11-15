@@ -1,4 +1,4 @@
-import type { ConversationSummary, Message, MessagesResponse } from '@dyce/shared';
+import type { ConversationSummary, GameCardPayload, Message, MessagesResponse } from '@dyce/shared';
 import {
   CHAT_TABS,
   buildThreadItems,
@@ -138,6 +138,43 @@ describe('the cached thread', () => {
     const oldest = msg('o', THEM, at(2026, 11, 14, 11, 0));
     expect(flattenPages(upsertMessage(base, oldest)).map((m) => m.id)).toEqual(['a', 'c', 'o']);
     expect(upsertMessage(base, a)).toBe(base);
+  });
+
+  describe('a game card', () => {
+    const card = (stateVersion: number, status: GameCardPayload['status']): Message => ({
+      id: 'g1',
+      conversationId: 'c1',
+      senderId: ME,
+      kind: 'game',
+      body: 'Pig · Free',
+      createdAt: at(2026, 11, 14, 12, 3),
+      payload: {
+        matchId: 'g1',
+        gameSlug: '_example',
+        gameName: 'Pig',
+        mode: 'free',
+        status,
+        currentTurn: null,
+        winnerIds: null,
+        draw: false,
+        stateVersion,
+      },
+    });
+    const statusOf = (d: MessagesData | undefined) => {
+      const m = flattenPages(d)[0];
+      return m?.kind === 'game' ? m.payload.status : null;
+    };
+
+    it('is replaced by a newer copy as the match moves', () => {
+      const base = data(page([card(0, 'invited')]));
+      expect(statusOf(upsertMessage(base, card(0, 'active')))).toBe('active');
+      expect(statusOf(upsertMessage(base, card(4, 'active')))).toBe('active');
+    });
+
+    it('never goes backwards when updates arrive out of order', () => {
+      const base = data(page([card(5, 'finished')]));
+      expect(statusOf(upsertMessage(base, card(2, 'active')))).toBe('finished');
+    });
   });
 
   it('leaves an uncached thread alone', () => {

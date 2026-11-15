@@ -1,5 +1,6 @@
 import type { QueryClient } from '@tanstack/react-query';
-import { queryKeys, type RealtimeEvent } from '@dyce/shared';
+import { queryKeys, type MatchView, type RealtimeEvent } from '@dyce/shared';
+import { newerMatch } from '../games/games-logic';
 import { upsertMessage, withPeerReadAt, type MessagesData } from './chat-logic';
 import type { TypingTracker } from './typing';
 
@@ -18,6 +19,7 @@ export function applyRealtimeEvent(
       // (Re)connected: anything that happened while we were away is on the server, not in our cache.
       void client.invalidateQueries({ queryKey: queryKeys.conversationsAll });
       void client.invalidateQueries({ queryKey: ['messages'] });
+      void client.invalidateQueries({ queryKey: ['match'] });
       return;
 
     case 'message': {
@@ -34,6 +36,13 @@ export function applyRealtimeEvent(
       if (event.userId === myId) return;
       client.setQueryData<MessagesData>(queryKeys.messages(event.conversationId), (d) =>
         withPeerReadAt(d, event.at),
+      );
+      return;
+
+    case 'match':
+      // Each player is sent their own view of the match: it replaces the cached one unless it is older.
+      client.setQueryData<MatchView>(queryKeys.match(event.match.id), (cached) =>
+        newerMatch(cached, event.match),
       );
       return;
 

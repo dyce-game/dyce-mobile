@@ -2,6 +2,7 @@ import { StyleSheet, View } from 'react-native';
 import { Text, brand, useTheme } from '@dyce/ui';
 import { PillButton } from '@/components/PillButton';
 import { clockTime, type ThreadItem, type ThreadMessage } from '../chat-logic';
+import { GameCard } from '@/features/games/components/GameCard';
 import { MoneyCard } from './MoneyCard';
 
 type MessageItem = Extract<ThreadItem, { kind: 'message' }>;
@@ -47,7 +48,9 @@ export function MessageBubble({
 
   return (
     <View style={[styles.row, mine ? styles.mine : styles.theirs, { marginTop: first ? 8 : 2 }]}>
-      {message.kind !== 'text' ? (
+      {message.kind === 'game' ? (
+        <GameCard message={message} />
+      ) : message.kind !== 'text' ? (
         <MoneyCard message={message} mine={mine} who={who} />
       ) : (
         <View

@@ -20,6 +20,11 @@ function ThemedStack() {
           name="wallet/send"
           options={{ presentation: 'transparentModal', animation: 'fade' }}
         />
+        {/* The Games drawer is a bottom sheet over the chat (design: Games, ModeSheet) */}
+        <Stack.Screen
+          name="games/index"
+          options={{ presentation: 'transparentModal', animation: 'fade' }}
+        />
         <Stack.Screen
           name="wallet/request/index"
           options={{ presentation: 'transparentModal', animation: 'fade' }}

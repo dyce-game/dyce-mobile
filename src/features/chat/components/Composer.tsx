@@ -24,10 +24,13 @@ const TYPING_IDLE_MS = 4_000;
 export function Composer({
   onSend,
   onTyping,
+  onOpenGames,
   placeholder = 'Dyce message',
 }: {
   onSend: (text: string) => void;
   onTyping?: (typing: boolean) => void;
+  /** Shows the games button (three-by-three dots, as in the design) that opens the Games drawer. */
+  onOpenGames?: () => void;
   placeholder?: string;
 }) {
   const { colors } = useTheme();
@@ -80,6 +83,20 @@ export function Composer({
 
   return (
     <View style={[styles.bar, { borderColor: colors.line, backgroundColor: colors.bg }]}>
+      {onOpenGames ? (
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Open games"
+          onPress={onOpenGames}
+          style={[styles.games, { backgroundColor: colors.chip }]}
+        >
+          <View aria-hidden style={styles.dots}>
+            {Array.from({ length: 9 }, (_, i) => (
+              <View key={i} style={[styles.dot, { backgroundColor: colors.text }]} />
+            ))}
+          </View>
+        </Pressable>
+      ) : null}
       <View style={[styles.field, { borderColor: colors.line, backgroundColor: colors.card }]}>
         <TextInput
           value={text}
@@ -142,6 +159,15 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     minHeight: 24,
   },
+  games: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  dots: { width: 20, flexDirection: 'row', flexWrap: 'wrap', gap: 3 },
+  dot: { width: 4.67, height: 4.67, borderRadius: 2.33 },
   send: {
     width: 44,
     height: 44,

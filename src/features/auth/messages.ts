@@ -100,6 +100,27 @@ export function authErrorMessage(err: unknown): string {
       return "You've sent a lot of reports today. Try again tomorrow.";
     case 'conversation_not_found':
       return "That chat isn't available.";
+    case 'game_not_found':
+      return "That game isn't available.";
+    case 'match_not_found':
+      return "That game isn't there any more.";
+    case 'match_requires_friends':
+      return 'You can send games to friends. Add them as a friend first.';
+    case 'pool_not_available':
+      return "Pool isn't available yet. Play Free for now.";
+    case 'match_not_open':
+      return 'That game has already moved on.';
+    case 'cannot_accept_own_invite':
+      return 'You sent this one. Wait for them to accept.';
+    case 'open_invites_limit':
+      return 'You have a few games waiting for a reply in this chat. Wait for an answer first.';
+    case 'not_your_turn':
+      return "It isn't your turn yet.";
+    case 'stale_version':
+      return 'The game moved on. Showing the latest.';
+    case 'invalid_action':
+    case 'illegal_move':
+      return "That move isn't allowed.";
     default:
       return 'Something went wrong. Please try again.';
   }
