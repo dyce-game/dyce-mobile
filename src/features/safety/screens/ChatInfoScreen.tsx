@@ -36,7 +36,7 @@ export function ChatInfoScreen({ conversationId }: { conversationId: string }) {
       : [];
 
   return (
-    <SafeAreaView style={[styles.root, { backgroundColor: colors.bg2 }]}>
+    <SafeAreaView style={[styles.root, { backgroundColor: colors.grouped }]}>
       <View style={styles.top}>
         <Pressable
           accessibilityRole="button"

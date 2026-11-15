@@ -16,6 +16,7 @@ Owner: qa-engineer. App-side layers for this repo; the server side (database, AP
 | Chat logic (runs, day separators, merging, receipts), live-client reconnect/backoff, outbox, typing, cache updates | Jest | `src/features/chat/*.test.ts` | `pnpm test` |
 | Wallet logic (amount parsing, code/link parsing, expiry wording, history titles, grouping) | Jest | `src/features/wallet/wallet-logic.test.ts` | `pnpm test` |
 | Chat tab filters (five tabs, Groups/Bots list nothing, per-tab server list) | Jest | `src/features/chat/chat-logic.test.ts` | `pnpm test` |
+| Profile labels (friends, level, name rules, request-policy options match the server) | Jest | `src/features/profile/profile-logic.test.ts` | `pnpm test` |
 | Starter looks: 220 valid and imaged, filters, shuffle, fallbacks | Jest | `src/features/avatar/starter-logic.test.ts` | `pnpm test` |
 | Block/report logic (blocked-date wording, reasons match the server, report link) | Jest | `src/features/safety/safety-logic.test.ts` | `pnpm test` |
 | Design tokens, a11y contrast | Jest | `packages/ui/src/tokens.test.ts` | `pnpm test` |

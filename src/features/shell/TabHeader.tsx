@@ -10,8 +10,8 @@ import { useFriendRequestsQuery } from '@/features/friends/use-friends';
  * Tab title row. Profile avatar top-left (ember ring), optional "+" top-right (Chat and Spaces only).
  * Real avatars arrive with the avatar engine in Phase 1; this shows a placeholder initial.
  *
- * Until the Profile screen exists, the avatar opens Friends (which the design reaches from Profile), and
- * shows how many friend requests are waiting.
+ * The avatar opens your profile (Friends, Edit profile and Settings are reached from there) and shows how many
+ * friend requests are waiting.
  */
 export function TabHeader({
   title,
@@ -36,10 +36,10 @@ export function TabHeader({
           accessibilityRole="button"
           accessibilityLabel={
             waiting > 0
-              ? `Friends, ${waiting} ${waiting === 1 ? 'request' : 'requests'} waiting`
-              : 'Friends'
+              ? `My profile, ${waiting} ${waiting === 1 ? 'friend request' : 'friend requests'} waiting`
+              : 'My profile'
           }
-          onPress={() => router.push('/friends' as Href)}
+          onPress={() => router.push('/profile' as Href)}
           style={[styles.ring, { backgroundColor: brand.ember.fill }]}
         >
           <View style={[styles.gap, { backgroundColor: colors.bg }]}>

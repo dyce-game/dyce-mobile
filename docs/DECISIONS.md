@@ -2,6 +2,9 @@
 
 One entry per decision, newest first.
 
+## ADR-015 · Profile and Settings · 2026-11-15
+Backend decision and what is deliberately not shown: see `../dyce-backend/docs/DECISIONS.md`. App side: `src/features/profile` (Profile, Edit profile, Settings), routes `/profile`, `/profile/edit`, `/settings`; `Segmented` and the `grouped` colour in `@dyce/ui`.
+
 ## ADR-014 · Avatars, phase A: starter looks · 2026-11-15
 Backend decision and the full list of what is and isn't built: see `../dyce-backend/docs/DECISIONS.md`. App side: `src/features/avatar` (picker screen, `UserAvatar`, filters, generated `starter-looks.ts` / `starter-images.ts`), `Avatar` in `packages/ui`, routes `/onboarding/avatar` and `/avatar`.
 

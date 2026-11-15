@@ -1,4 +1,11 @@
-import type { AvatarConfig, ClientStep, NextStep, SessionResponse } from '@dyce/shared';
+import type {
+  AvatarConfig,
+  ClientStep,
+  NextStep,
+  ProfileUpdate,
+  RequestPolicy,
+  SessionResponse,
+} from '@dyce/shared';
 import type { ApiClient } from './api-client';
 
 export type Me = {
@@ -10,6 +17,7 @@ export type Me = {
     level: number;
     xp: number;
     avatar: AvatarConfig | null;
+    requestPolicy: RequestPolicy;
   } | null;
   nextStep: NextStep;
 };
@@ -34,6 +42,7 @@ export function createAuthApi(api: ApiClient) {
       api.get<UsernameCheck>(`/profile/username/check?username=${encodeURIComponent(username)}`),
     createProfile: (username: string, displayName?: string) =>
       api.post<Me>('/profile', { username, displayName: displayName || undefined }),
+    updateProfile: (patch: ProfileUpdate) => api.patch<Me>('/profile', patch),
     setAvatar: (avatar: AvatarConfig) =>
       api.put<{ avatar: AvatarConfig; nextStep: NextStep }>('/profile/avatar', { avatar }),
     completeStep: (step: ClientStep) =>

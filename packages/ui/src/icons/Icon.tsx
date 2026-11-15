@@ -23,6 +23,8 @@ export type IconName =
   | 'bell'
   | 'gear'
   | 'shuffle'
+  | 'edit'
+  | 'friends'
   | 'check';
 
 export const ICON_NAMES: IconName[] = [
@@ -43,6 +45,8 @@ export const ICON_NAMES: IconName[] = [
   'bell',
   'gear',
   'shuffle',
+  'edit',
+  'friends',
   'check',
 ];
 
@@ -133,6 +137,17 @@ export function Icon({ name, size = 24, color, strokeWidth = 2.2 }: IconProps) {
             <Path
               {...p}
               d="M12 3v2.4M12 18.6V21M3 12h2.4M18.6 12H21M5.6 5.6l1.7 1.7M16.7 16.7l1.7 1.7M18.4 5.6l-1.7 1.7M7.3 16.7l-1.7 1.7"
+            />
+          </>
+        )}
+        {name === 'edit' && <Path {...p} d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z" />}
+        {name === 'friends' && (
+          <>
+            <Circle {...p} cx={9} cy={9} r={3} />
+            <Circle {...p} cx={17} cy={10} r={2.4} />
+            <Path
+              {...p}
+              d="M3 19c.6-2.8 2.9-4.5 6-4.5s5.4 1.7 6 4.5M15.5 14.6c2.4.2 4.2 1.7 4.7 4.4"
             />
           </>
         )}

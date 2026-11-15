@@ -14,3 +14,4 @@ export * from './primitives/TextField.tsx';
 export * from './primitives/OtpInput.tsx';
 export * from './primitives/FilterTabs.tsx';
 export * from './primitives/Avatar.tsx';
+export * from './primitives/Segmented.tsx';

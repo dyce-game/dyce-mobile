@@ -17,7 +17,7 @@ export function BlockedScreen() {
   const blocked = useBlockedQuery();
   const unblock = useUnblockUser();
   const list = blocked.data?.blocked ?? [];
-  const back = () => (router.canGoBack() ? router.back() : router.replace('/friends' as Href));
+  const back = () => (router.canGoBack() ? router.back() : router.replace('/settings' as Href));
 
   return (
     <SafeAreaView style={[styles.root, { backgroundColor: colors.bg }]}>

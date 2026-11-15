@@ -8,6 +8,8 @@ export type ThemeColors = {
   bg: string;
   /** A slightly deeper surface for small stat cards and recessed panels. */
   bg2: string;
+  /** Page behind grouped lists of white cards (Settings, Edit profile, Chat info): sand in light, the page black in dark. */
+  grouped: string;
   card: string;
   chip: string;
   chipEdge: string;
@@ -36,6 +38,7 @@ export const colors: Record<ThemeName, ThemeColors> = {
   light: {
     bg: '#FBF8F3',
     bg2: '#F2ECE3',
+    grouped: '#F2ECE3',
     card: '#FFFFFF',
     chip: '#EEE7DC',
     chipEdge: '#D8CEC1',
@@ -58,6 +61,7 @@ export const colors: Record<ThemeName, ThemeColors> = {
   dark: {
     bg: '#0F0D0B',
     bg2: '#1D1916',
+    grouped: '#0F0D0B',
     card: '#1D1916',
     chip: '#2A2420',
     chipEdge: '#15120F',
