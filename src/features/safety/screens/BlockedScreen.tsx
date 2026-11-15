@@ -2,7 +2,7 @@ import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { useRouter, type Href } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Text, TokenButton, useTheme } from '@dyce/ui';
-import { InitialAvatar } from '@/components/InitialAvatar';
+import { UserAvatar } from '@/features/avatar/UserAvatar';
 import { authErrorMessage } from '@/features/auth/messages';
 import { blockedLabel } from '../safety-logic';
 import { useBlockedQuery, useUnblockUser } from '../use-safety';
@@ -61,7 +61,11 @@ export function BlockedScreen() {
                   { borderColor: colors.line, borderBottomWidth: i === list.length - 1 ? 0 : 1 },
                 ]}
               >
-                <InitialAvatar name={b.user.displayName || b.user.username} size={40} />
+                <UserAvatar
+                  avatar={b.user.avatar}
+                  name={b.user.displayName || b.user.username}
+                  size={40}
+                />
                 <View style={styles.body}>
                   <Text style={styles.handle}>@{b.user.username}</Text>
                   <Text style={styles.when} color="sub">

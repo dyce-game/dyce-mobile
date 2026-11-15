@@ -13,6 +13,7 @@ module.exports = {
   },
   // The linked backend packages are ESM with a dist build; in tests we run their TypeScript source.
   moduleNameMapper: {
+    '\.(webp|png|jpe?g)$': '<rootDir>/test/asset-stub.cjs',
     '^@dyce/shared$': `${backend}/shared/src/index.ts`,
     '^@dyce/games$': `${backend}/games/src/index.ts`,
   },

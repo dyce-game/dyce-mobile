@@ -1,91 +1,93 @@
-import type { ReactNode } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import type { ConversationSummary } from '@dyce/shared';
-import { ModeBadge, Text, brand, useTheme } from '@dyce/ui';
-import { InitialAvatar } from '@/components/InitialAvatar';
+import { Text, brand, useTheme } from '@dyce/ui';
+import { UserAvatar } from '@/features/avatar/UserAvatar';
 import { listTime, previewText } from '../chat-logic';
 
 /**
- * One row of the Chat list: avatar, name, last message, time, and an unread count. In Requests it also
- * carries a REQUEST tag and, underneath, the Accept / Decline actions.
+ * One row of the Chat list (design: Chats): 78pt high, a 54pt avatar, name and time on the first line, the
+ * last message on the second (bold and full-strength when unread) with the unread count and a tag. Message
+ * requests are shown by `RequestCard`, not here.
  */
 export function ConversationRow({
   conversation,
   myId,
   onPress,
-  actions,
 }: {
   conversation: ConversationSummary;
   myId: string | null;
   onPress: () => void;
-  /** Buttons shown under the row (Requests). */
-  actions?: ReactNode;
 }) {
   const { colors } = useTheme();
-  const { peer, unread, lastMessage, state } = conversation;
+  const { peer, unread, lastMessage } = conversation;
   const name = peer.displayName || peer.username;
   const preview = previewText(conversation, myId);
   const time = lastMessage ? listTime(lastMessage.createdAt) : '';
 
   return (
-    <View style={[styles.wrap, { borderColor: colors.line }]}>
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel={`${name}${state === 'request' ? ', request' : ''}${
-          unread > 0 ? `, ${unread} unread` : ''
-        }. ${preview}${time ? `, ${time}` : ''}`}
-        onPress={onPress}
-        style={styles.row}
-      >
-        <InitialAvatar name={name} size={52} />
-        <View style={styles.body}>
-          <View style={styles.line}>
-            <Text variant="callout" numberOfLines={1} style={styles.grow}>
-              {name}
-            </Text>
-            {state === 'request' ? <ModeBadge kind="REQUEST" /> : null}
-            <Text variant="footnote" color={unread > 0 ? 'accent' : 'sub'}>
-              {time}
-            </Text>
-          </View>
-          <View style={styles.line}>
-            <Text
-              variant={unread > 0 ? 'callout' : 'body'}
-              color={unread > 0 ? 'text' : 'sub'}
-              numberOfLines={1}
-              style={styles.grow}
-            >
-              {preview}
-            </Text>
-            {unread > 0 ? (
-              <View style={styles.badge} aria-hidden>
-                <Text variant="caption" style={{ color: brand.ember.text }}>
-                  {unread > 99 ? '99+' : unread}
-                </Text>
-              </View>
-            ) : null}
-          </View>
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={`${name}${unread > 0 ? `, ${unread} unread` : ''}. ${preview}${
+        time ? `, ${time}` : ''
+      }`}
+      onPress={onPress}
+      style={styles.row}
+    >
+      <UserAvatar avatar={peer.avatar} name={name} size={54} />
+      <View style={styles.body}>
+        <View style={styles.line}>
+          <Text numberOfLines={1} style={styles.name}>
+            {name}
+          </Text>
+          <Text style={styles.time} color="sub">
+            {time}
+          </Text>
         </View>
-      </Pressable>
-      {actions ? <View style={styles.actions}>{actions}</View> : null}
-    </View>
+        <View style={styles.line}>
+          <Text
+            numberOfLines={1}
+            style={[
+              styles.preview,
+              {
+                color: unread > 0 ? colors.text : colors.sub,
+                fontFamily: unread > 0 ? 'Figtree_700Bold' : 'Figtree_500Medium',
+              },
+            ]}
+          >
+            {preview}
+          </Text>
+          {unread > 0 ? (
+            <View style={styles.badge} aria-hidden>
+              <Text style={styles.badgeText}>{unread > 99 ? '99+' : unread}</Text>
+            </View>
+          ) : null}
+        </View>
+      </View>
+    </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
-  wrap: { borderBottomWidth: 1 },
-  row: { flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 72, paddingVertical: 10 },
-  body: { flex: 1, minWidth: 0, gap: 2 },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 13,
+    minHeight: 78,
+    paddingHorizontal: 18,
+  },
+  body: { flex: 1, minWidth: 0, gap: 4 },
   line: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  grow: { flex: 1, minWidth: 0 },
+  name: { flex: 1, minWidth: 0, fontSize: 16, fontFamily: 'Figtree_700Bold' },
+  time: { fontSize: 12, fontFamily: 'Figtree_600SemiBold' },
+  preview: { flex: 1, minWidth: 0, fontSize: 14 },
   badge: {
-    minWidth: 22,
-    height: 22,
-    borderRadius: 11,
+    minWidth: 20,
+    height: 20,
+    borderRadius: 10,
     paddingHorizontal: 6,
     backgroundColor: brand.ember.fill,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  actions: { flexDirection: 'row', gap: 8, paddingLeft: 64, paddingBottom: 12 },
+  badgeText: { color: brand.ember.text, fontSize: 11, fontFamily: 'Figtree_800ExtraBold' },
 });

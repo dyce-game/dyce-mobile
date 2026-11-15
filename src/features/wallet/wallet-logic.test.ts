@@ -81,7 +81,7 @@ const item = (over: Partial<HistoryItem>): HistoryItem => ({
   kind: 'transfer',
   amountKobo: -100,
   createdAt: new Date(2026, 10, 15, 12).toISOString(),
-  counterparty: { id: 'p', username: 'bayo_spins', displayName: 'Bayo Spins' },
+  counterparty: { id: 'p', username: 'bayo_spins', displayName: 'Bayo Spins', avatar: null },
   note: '',
   requestCode: null,
   ...over,
@@ -107,7 +107,9 @@ describe('historyTitle', () => {
   });
   it('falls back to the username when there is no display name', () => {
     expect(
-      historyTitle(item({ counterparty: { id: 'p', username: 'tunde.o', displayName: '' } })),
+      historyTitle(
+        item({ counterparty: { id: 'p', username: 'tunde.o', displayName: '', avatar: null } }),
+      ),
     ).toBe('Sent to @tunde.o');
   });
 });
@@ -142,7 +144,7 @@ describe('initials and tiles', () => {
     expect(
       historyTile({
         kind: 'transfer',
-        counterparty: { id: 'p', username: 'a', displayName: 'Amaka Obi' },
+        counterparty: { id: 'p', username: 'a', displayName: 'Amaka Obi', avatar: null },
       }),
     ).toEqual({
       mark: 'AO',

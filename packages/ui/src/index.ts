@@ -12,3 +12,5 @@ export * from './primitives/Screen.tsx';
 export * from './primitives/TabBar.tsx';
 export * from './primitives/TextField.tsx';
 export * from './primitives/OtpInput.tsx';
+export * from './primitives/FilterTabs.tsx';
+export * from './primitives/Avatar.tsx';

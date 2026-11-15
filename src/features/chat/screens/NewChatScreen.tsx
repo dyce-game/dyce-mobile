@@ -74,6 +74,7 @@ export function NewChatScreen() {
             key={f.id}
             name={f.displayName}
             username={f.username}
+            avatar={f.avatar}
             right={
               <PillButton
                 label="Message"

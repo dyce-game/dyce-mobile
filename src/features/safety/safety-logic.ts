@@ -28,6 +28,8 @@ export function reportHref(p: {
   userId: string;
   username?: string;
   name?: string;
+  /** Their starter look id (e.g. dyce_av_042), so the report screen can show their face. */
+  avatar?: string;
   conversationId?: string;
 }): string {
   const q = Object.entries(p)

@@ -22,6 +22,7 @@ export type IconName =
   | 'history'
   | 'bell'
   | 'gear'
+  | 'shuffle'
   | 'check';
 
 export const ICON_NAMES: IconName[] = [
@@ -41,6 +42,7 @@ export const ICON_NAMES: IconName[] = [
   'history',
   'bell',
   'gear',
+  'shuffle',
   'check',
 ];
 
@@ -132,6 +134,15 @@ export function Icon({ name, size = 24, color, strokeWidth = 2.2 }: IconProps) {
               {...p}
               d="M12 3v2.4M12 18.6V21M3 12h2.4M18.6 12H21M5.6 5.6l1.7 1.7M16.7 16.7l1.7 1.7M18.4 5.6l-1.7 1.7M7.3 16.7l-1.7 1.7"
             />
+          </>
+        )}
+        {name === 'shuffle' && (
+          <>
+            <Rect {...p} x={4} y={4} width={16} height={16} rx={4} />
+            <Circle cx={9} cy={9} r={1.2} fill={color} />
+            <Circle cx={15} cy={9} r={1.2} fill={color} />
+            <Circle cx={9} cy={15} r={1.2} fill={color} />
+            <Circle cx={15} cy={15} r={1.2} fill={color} />
           </>
         )}
       </Svg>

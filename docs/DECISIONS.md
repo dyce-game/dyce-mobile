@@ -2,6 +2,9 @@
 
 One entry per decision, newest first.
 
+## ADR-014 · Avatars, phase A: starter looks · 2026-11-15
+Backend decision and the full list of what is and isn't built: see `../dyce-backend/docs/DECISIONS.md`. App side: `src/features/avatar` (picker screen, `UserAvatar`, filters, generated `starter-looks.ts` / `starter-images.ts`), `Avatar` in `packages/ui`, routes `/onboarding/avatar` and `/avatar`.
+
 ## ADR-013 · Block and report · 2026-11-15
 Backend decision: see `../dyce-backend/docs/DECISIONS.md`. App side: Chat info (`/chat-info/<id>`), Report (`/report`), Blocked people (`/settings/blocked`, linked from Friends) in `src/features/safety`; the request banner in a thread also offers Report and Block.
 

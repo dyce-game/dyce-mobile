@@ -188,6 +188,7 @@ export function ContactsScreen({ mode = 'onboarding' }: { mode?: 'onboarding' | 
                 key={m.user.id}
                 primary={m.contactName || m.user.displayName}
                 username={m.user.username}
+                avatar={m.user.avatar}
                 relationship={m.user.relationship}
                 busy={addingId === m.user.id}
                 onAdd={() => void add(m)}

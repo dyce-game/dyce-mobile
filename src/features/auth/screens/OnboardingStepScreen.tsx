@@ -10,16 +10,11 @@ import { track } from '@/lib/analytics';
 import { authErrorMessage } from '../messages';
 import { hrefForStep } from '../routes';
 
-// `contacts` has its own screen (features/contacts); these are the steps still waiting for theirs.
+// `contacts` and `avatar` have their own screens (features/contacts, features/avatar); these are the steps still waiting for theirs.
 const COPY: Record<
-  Exclude<NextStep, 'username' | 'contacts' | 'done'>,
+  Exclude<NextStep, 'username' | 'contacts' | 'avatar' | 'done'>,
   { title: string; body: string; owner: string }
 > = {
-  avatar: {
-    title: 'Pick your look',
-    body: 'Choose a starter look, then customise it.',
-    owner: 'The avatar builder is owned by the avatar work.',
-  },
   bonus: {
     title: 'Your first ₦200,000',
     body: 'Every player starts with Dyce Cash to play with. It is virtual: it cannot be bought or withdrawn.',
@@ -42,11 +37,11 @@ export function OnboardingStepScreen({ step }: { step: string }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | undefined>();
 
-  if (step !== 'avatar' && step !== 'bonus' && step !== 'notifications') {
+  if (step !== 'bonus' && step !== 'notifications') {
     router.replace('/chat' as Href);
     return null;
   }
-  const stepKey: 'avatar' | 'bonus' | 'notifications' = step; // narrowed by the guard above
+  const stepKey: 'bonus' | 'notifications' = step; // narrowed by the guard above
   const copy = COPY[stepKey];
 
   async function advance(next: NextStep) {

@@ -27,6 +27,9 @@ export type ThemeColors = {
   glass: string;
   glassEdge: string;
   glassShadow: string;
+  /** The two soft background glows behind the tab screens (amber top-left, ember right). */
+  glowA: string;
+  glowB: string;
 };
 
 export const colors: Record<ThemeName, ThemeColors> = {
@@ -49,6 +52,8 @@ export const colors: Record<ThemeName, ThemeColors> = {
     glass: 'rgba(255,255,255,0.62)',
     glassEdge: 'rgba(255,255,255,0.90)',
     glassShadow: 'rgba(90,40,10,0.12)',
+    glowA: 'rgba(227,169,59,0.22)',
+    glowB: 'rgba(201,62,28,0.14)',
   },
   dark: {
     bg: '#0F0D0B',
@@ -69,6 +74,8 @@ export const colors: Record<ThemeName, ThemeColors> = {
     glass: 'rgba(42,36,32,0.60)',
     glassEdge: 'rgba(255,255,255,0.10)',
     glassShadow: 'rgba(0,0,0,0.45)',
+    glowA: 'rgba(227,169,59,0.12)',
+    glowB: 'rgba(201,62,28,0.16)',
   },
 };
 

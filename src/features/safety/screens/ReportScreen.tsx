@@ -5,7 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import Svg, { Path } from 'react-native-svg';
 import type { ReportReason } from '@dyce/shared';
 import { Text, useTheme } from '@dyce/ui';
-import { InitialAvatar } from '@/components/InitialAvatar';
+import { UserAvatar } from '@/features/avatar/UserAvatar';
 import { authErrorMessage } from '@/features/auth/messages';
 import { REPORT_REASON_LIST } from '../safety-logic';
 import { useReportUser } from '../use-safety';
@@ -22,6 +22,7 @@ export function ReportScreen() {
     userId: string;
     username?: string;
     name?: string;
+    avatar?: string;
     conversationId?: string;
   }>();
   const report = useReportUser();
@@ -110,7 +111,11 @@ export function ReportScreen() {
         ) : (
           <>
             <View style={styles.who}>
-              <InitialAvatar name={display} size={48} />
+              <UserAvatar
+                avatar={params.avatar ? { v: 1, preset: params.avatar } : null}
+                name={display}
+                size={48}
+              />
               <View>
                 <Text style={styles.whoTitle}>Report {handle}</Text>
                 <Text variant="footnote" color="sub">

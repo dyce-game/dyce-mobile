@@ -1,4 +1,9 @@
-import type { ConversationSummary, Message, MessagesResponse } from '@dyce/shared';
+import type {
+  ConversationFilter,
+  ConversationSummary,
+  Message,
+  MessagesResponse,
+} from '@dyce/shared';
 
 /** A message as the thread shows it: the server's copy, or one still on its way (or that failed). */
 export type ThreadMessage = Message & {
@@ -71,6 +76,27 @@ export function previewText(conversation: ConversationSummary, myId: string | nu
   if (!last) return 'No messages yet';
   const text = last.body.replace(/\s+/g, ' ').trim();
   return last.senderId === myId ? `You: ${text}` : text;
+}
+
+/** The five filters on the Chat tab. Groups and Bots arrive with those features and show an honest empty state. */
+export type ChatTab = ConversationFilter | 'groups' | 'bots';
+
+export const CHAT_TABS: { key: ChatTab; label: string }[] = [
+  { key: 'all', label: 'All' },
+  { key: 'friends', label: 'Friends' },
+  { key: 'groups', label: 'Groups' },
+  { key: 'requests', label: 'Requests' },
+  { key: 'bots', label: 'Bots' },
+];
+
+/** Which server list a tab reads. Groups and Bots have none yet, so they read "all" (for the Requests count) and show no rows. */
+export function filterForTab(tab: ChatTab): ConversationFilter {
+  return tab === 'groups' || tab === 'bots' ? 'all' : tab;
+}
+
+/** The conversations to list under a tab (none for Groups and Bots until they exist). */
+export function rowsForTab(tab: ChatTab, rows: ConversationSummary[]): ConversationSummary[] {
+  return tab === 'groups' || tab === 'bots' ? [] : rows;
 }
 
 /** A random UUID v4 for a message id (the server uses it to make retries safe). */

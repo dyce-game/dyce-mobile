@@ -6,6 +6,7 @@ const user = (id: string, relationship: PublicUser['relationship'] = 'none'): Pu
   id,
   username: `user_${id}`,
   displayName: `User ${id}`,
+  avatar: null,
   relationship,
 });
 

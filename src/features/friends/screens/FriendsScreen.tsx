@@ -79,6 +79,7 @@ export function FriendsScreen() {
             key={f.id}
             name={f.displayName}
             username={f.username}
+            avatar={f.avatar}
             right={
               confirmingId === f.id ? null : (
                 <PillButton
@@ -140,6 +141,7 @@ export function FriendsScreen() {
                 key={r.user.id}
                 name={r.user.displayName}
                 username={r.user.username}
+                avatar={r.user.avatar}
                 detail={[mutualLabel(r.mutualFriends), timeAgo(r.requestedAt)]
                   .filter(Boolean)
                   .join(' · ')}
@@ -175,6 +177,7 @@ export function FriendsScreen() {
                 key={r.user.id}
                 name={r.user.displayName}
                 username={r.user.username}
+                avatar={r.user.avatar}
                 detail={`Sent ${timeAgo(r.requestedAt)}`}
                 right={
                   <PillButton

@@ -3,7 +3,7 @@ import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { useRouter, type Href } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Text, TokenButton, useTheme } from '@dyce/ui';
-import { InitialAvatar } from '@/components/InitialAvatar';
+import { UserAvatar } from '@/features/avatar/UserAvatar';
 import { authErrorMessage } from '@/features/auth/messages';
 import { useConversationQuery } from '@/features/chat/use-chat';
 import { reportHref } from '../safety-logic';
@@ -49,7 +49,7 @@ export function ChatInfoScreen({ conversationId }: { conversationId: string }) {
       </View>
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.who}>
-          <InitialAvatar name={name} size={92} />
+          <UserAvatar avatar={peer?.avatar} name={name} size={92} />
           <Text style={styles.name} accessibilityRole="header">
             {name}
           </Text>
@@ -88,6 +88,7 @@ export function ChatInfoScreen({ conversationId }: { conversationId: string }) {
                     userId: peer.id,
                     username: peer.username,
                     name: peer.displayName,
+                    avatar: peer.avatar?.preset,
                     conversationId,
                   }),
                 )

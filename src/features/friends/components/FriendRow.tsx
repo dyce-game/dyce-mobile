@@ -1,18 +1,21 @@
 import type { ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
+import type { AvatarConfig } from '@dyce/shared';
 import { Text, useTheme } from '@dyce/ui';
-import { InitialAvatar } from '@/components/InitialAvatar';
+import { UserAvatar } from '@/features/avatar/UserAvatar';
 
 /** A person with up to two lines of text and an actions area (buttons) underneath or beside them. */
 export function FriendRow({
   name,
   username,
+  avatar,
   detail,
   right,
   below,
 }: {
   name: string;
   username: string;
+  avatar?: AvatarConfig | null;
   /** Extra line under the @username, e.g. "3 mutual friends · 2 days ago". */
   detail?: string | null;
   /** Control on the right of the row (e.g. a Remove button). */
@@ -24,7 +27,7 @@ export function FriendRow({
   return (
     <View style={[styles.wrap, { borderColor: colors.line }]}>
       <View style={styles.top}>
-        <InitialAvatar name={name || username} />
+        <UserAvatar avatar={avatar} name={name || username} />
         <View style={styles.names}>
           <Text variant="callout" numberOfLines={1}>
             {name || username}

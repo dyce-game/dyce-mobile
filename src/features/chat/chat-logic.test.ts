@@ -1,14 +1,17 @@
 import type { ConversationSummary, Message, MessagesResponse } from '@dyce/shared';
 import {
+  CHAT_TABS,
   buildThreadItems,
   clockTime,
   dayLabel,
+  filterForTab,
   flattenPages,
   listTime,
   mergeOutbox,
   newMessageId,
   previewText,
   receiptFor,
+  rowsForTab,
   upsertMessage,
   withPeerReadAt,
   type MessagesData,
@@ -71,7 +74,13 @@ describe('previewText', () => {
   const conv = (last: Message | null): ConversationSummary => ({
     id: 'c1',
     kind: 'direct',
-    peer: { id: THEM, username: 'them', displayName: 'Them', relationship: 'friends' },
+    peer: {
+      id: THEM,
+      username: 'them',
+      displayName: 'Them',
+      avatar: null,
+      relationship: 'friends',
+    },
     state: 'active',
     lastMessage: last,
     unread: 0,
@@ -248,5 +257,25 @@ describe('receiptFor', () => {
     expect(receiptFor([theirs, mine], ME, at(2026, 11, 14, 12, 4))!.label).toBe('Sent');
     expect(receiptFor([{ ...mine, status: 'sending' }], ME, null)!.label).toBe('Sending…');
     expect(receiptFor([{ ...mine, status: 'failed' }], ME, null)!.label).toBe('Not sent');
+  });
+});
+
+describe('the Chat tab filters', () => {
+  it('has the five filters of the design, in order', () => {
+    expect(CHAT_TABS.map((t) => t.key)).toEqual(['all', 'friends', 'groups', 'requests', 'bots']);
+  });
+  it('reads the server list for All, Friends and Requests, and "all" for the rest (to keep the Requests count)', () => {
+    expect(filterForTab('all')).toBe('all');
+    expect(filterForTab('friends')).toBe('friends');
+    expect(filterForTab('requests')).toBe('requests');
+    expect(filterForTab('groups')).toBe('all');
+    expect(filterForTab('bots')).toBe('all');
+  });
+  it('lists nothing under Groups and Bots until they exist, and never hides rows elsewhere', () => {
+    const rows = [{ id: 'c1' }, { id: 'c2' }] as ConversationSummary[];
+    expect(rowsForTab('groups', rows)).toEqual([]);
+    expect(rowsForTab('bots', rows)).toEqual([]);
+    expect(rowsForTab('all', rows)).toBe(rows);
+    expect(rowsForTab('requests', rows)).toBe(rows);
   });
 });

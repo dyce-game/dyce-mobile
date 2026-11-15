@@ -4,7 +4,7 @@ import { useRouter, type Href } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { formatNaira } from '@dyce/shared';
 import { Text, TextField, TokenButton, useTheme } from '@dyce/ui';
-import { InitialAvatar } from '@/components/InitialAvatar';
+import { UserAvatar } from '@/features/avatar/UserAvatar';
 import { ScreenHeader } from '@/components/ScreenHeader';
 import { authErrorMessage } from '@/features/auth/messages';
 import { expiryLabel, newMoneyKey, parseNairaInput } from '../wallet-logic';
@@ -99,7 +99,7 @@ export function PayScreen({ code }: { code: string }) {
             <View
               style={[styles.sheet, { backgroundColor: colors.card, borderColor: colors.line }]}
             >
-              <InitialAvatar name={name} size={56} />
+              <UserAvatar avatar={r.requester.avatar} name={name} size={56} />
               <Text variant="headline" accessibilityRole="header">
                 {name}
               </Text>

@@ -60,6 +60,7 @@ export function AddFriendsScreen() {
               key={p.id}
               primary={p.displayName}
               username={p.username}
+              avatar={p.avatar}
               relationship={p.relationship}
               busy={addingId === p.id}
               onAdd={() => void add(p.id)}

@@ -11,7 +11,7 @@ import {
 import { useRouter, type Href } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Icon, Text, TokenButton, useTheme } from '@dyce/ui';
-import { InitialAvatar } from '@/components/InitialAvatar';
+import { UserAvatar } from '@/features/avatar/UserAvatar';
 import { PillButton } from '@/components/PillButton';
 import { ApiError } from '@/features/auth/api-client';
 import { authErrorMessage } from '@/features/auth/messages';
@@ -100,7 +100,7 @@ export function ThreadScreen({ conversationId }: { conversationId: string }) {
         onPress={() => router.push(`/chat-info/${conversationId}` as Href)}
         style={styles.title}
       >
-        <InitialAvatar name={name} size={38} />
+        <UserAvatar avatar={peer?.avatar} name={name} size={38} />
         <Text variant="callout" numberOfLines={1}>
           {name}
         </Text>

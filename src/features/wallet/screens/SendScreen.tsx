@@ -3,7 +3,7 @@ import { Pressable, StyleSheet, TextInput, View } from 'react-native';
 import { useLocalSearchParams, useRouter, type Href } from 'expo-router';
 import { formatNaira } from '@dyce/shared';
 import { MAX_FONT_SCALE, Text, TokenButton, useTheme } from '@dyce/ui';
-import { InitialAvatar } from '@/components/InitialAvatar';
+import { UserAvatar } from '@/features/avatar/UserAvatar';
 import { PillButton } from '@/components/PillButton';
 import { authErrorMessage } from '@/features/auth/messages';
 import { FriendRow } from '@/features/friends/components/FriendRow';
@@ -93,6 +93,7 @@ export function SendScreen() {
               key={f.id}
               name={f.displayName}
               username={f.username}
+              avatar={f.avatar}
               right={
                 <PillButton
                   label="Choose"
@@ -125,7 +126,7 @@ export function SendScreen() {
         </View>
       ) : step === 'confirm' ? (
         <View style={styles.center}>
-          <InitialAvatar name={name} size={56} />
+          <UserAvatar avatar={recipient?.avatar} name={name} size={56} />
           <Text variant="title" accessibilityRole="header">
             Send {formatNaira(amount)}?
           </Text>
@@ -156,7 +157,7 @@ export function SendScreen() {
       ) : (
         <>
           <View style={styles.who}>
-            <InitialAvatar name={name} size={40} />
+            <UserAvatar avatar={recipient?.avatar} name={name} size={40} />
             <View style={styles.whoText}>
               <Text variant="footnote" color="sub">
                 Send to
