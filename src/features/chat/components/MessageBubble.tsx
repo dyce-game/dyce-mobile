@@ -48,7 +48,7 @@ export function MessageBubble({
   return (
     <View style={[styles.row, mine ? styles.mine : styles.theirs, { marginTop: first ? 8 : 2 }]}>
       {message.kind !== 'text' ? (
-        <MoneyCard message={message} mine={mine} />
+        <MoneyCard message={message} mine={mine} who={who} />
       ) : (
         <View
           accessible

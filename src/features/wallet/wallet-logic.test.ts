@@ -130,3 +130,60 @@ describe('groupByDay', () => {
     expect(groupByDay([], now)).toEqual([]);
   });
 });
+
+describe('initials and tiles', () => {
+  it('takes up to two letters from a name or a handle', async () => {
+    const { initials, historyTile } = await import('./wallet-logic');
+    expect(initials('Amaka Obi')).toBe('AO');
+    expect(initials('tunde.o')).toBe('TO');
+    expect(initials('@bayo_spins')).toBe('BS');
+    expect(initials('Ngozi')).toBe('N');
+    expect(initials('')).toBe('?');
+    expect(
+      historyTile({
+        kind: 'transfer',
+        counterparty: { id: 'p', username: 'a', displayName: 'Amaka Obi' },
+      }),
+    ).toEqual({
+      mark: 'AO',
+      bg: '#C93E1C',
+    });
+    expect(historyTile({ kind: 'grant', counterparty: null })).toEqual({
+      mark: '₦',
+      bg: '#C93E1C',
+    });
+    expect(historyTile({ kind: 'payout', counterparty: null }).mark).toBe('P');
+  });
+});
+
+describe('week bars', () => {
+  it('scales to the biggest day, marks losses, and keeps quiet days as slivers', async () => {
+    const { weekBars, weekdayLetter } = await import('./wallet-logic');
+    const bars = weekBars([
+      { date: '2026-11-09', netKobo: 0 },
+      { date: '2026-11-10', netKobo: -50_000 },
+      { date: '2026-11-11', netKobo: 100_000 },
+      { date: '2026-11-12', netKobo: 1 },
+    ]);
+    expect(bars.map((b) => b.pct)).toEqual([4, 35, 70, 8]);
+    expect(bars.map((b) => b.loss)).toEqual([false, true, false, false]);
+    expect(bars.map((b) => b.letter).join('')).toBe('MTWT');
+    expect(weekdayLetter('2026-11-15')).toBe('S');
+    expect(weekBars([])).toEqual([]);
+  });
+});
+
+describe('keypadPress', () => {
+  it('builds an amount like the design keypad, with delete and a cap', async () => {
+    const { keypadPress } = await import('./wallet-logic');
+    expect(keypadPress('0', '5', 200_000)).toBe('5');
+    expect(keypadPress('5', '00', 200_000)).toBe('500');
+    expect(keypadPress('500', '0', 200_000)).toBe('5000');
+    expect(keypadPress('5000', 'del', 200_000)).toBe('500');
+    expect(keypadPress('5', 'del', 200_000)).toBe('0');
+    expect(keypadPress('0', 'del', 200_000)).toBe('0');
+    expect(keypadPress('0', '00', 200_000)).toBe('0');
+    expect(keypadPress('190000', '0', 200_000)).toBe('200000');
+    expect(keypadPress('0', '7', 200_000)).toBe('7');
+  });
+});

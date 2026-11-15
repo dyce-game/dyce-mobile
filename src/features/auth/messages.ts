@@ -96,6 +96,8 @@ export function authErrorMessage(err: unknown): string {
       return "Top-ups are for when you're running low.";
     case 'transaction_not_found':
       return "We couldn't find that receipt.";
+    case 'reports_rate_limited':
+      return "You've sent a lot of reports today. Try again tomorrow.";
     case 'conversation_not_found':
       return "That chat isn't available.";
     default:

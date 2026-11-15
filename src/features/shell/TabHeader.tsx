@@ -15,10 +15,13 @@ export function TabHeader({
   title,
   onPlus,
   right,
+  compact,
 }: {
   title: string;
   onPlus?: () => void;
   right?: ReactNode;
+  /** The Wallet design uses a slightly smaller, lighter title (34 / 700) than Chat and Spaces (38 / 800). */
+  compact?: boolean;
 }) {
   const { colors } = useTheme();
   const router = useRouter();
@@ -63,7 +66,11 @@ export function TabHeader({
             </Pressable>
           ) : null)}
       </View>
-      <Text variant="display" accessibilityRole="header">
+      <Text
+        variant="display"
+        accessibilityRole="header"
+        style={compact ? styles.compactTitle : undefined}
+      >
         {title}
       </Text>
     </View>
@@ -71,6 +78,7 @@ export function TabHeader({
 }
 
 const styles = StyleSheet.create({
+  compactTitle: { fontSize: 34, letterSpacing: -0.6, fontFamily: 'BricolageGrotesque_700Bold' },
   wrap: { gap: 8 },
   top: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   avatar: {

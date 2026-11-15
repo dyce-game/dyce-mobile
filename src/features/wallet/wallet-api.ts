@@ -9,6 +9,7 @@ import type {
   Receipt,
   SendMoneyRequest,
   WalletSummary,
+  WeeklyActivity,
 } from '@dyce/shared';
 import type { ApiClient } from '../auth/api-client';
 
@@ -28,6 +29,8 @@ export function createWalletApi(api: ApiClient) {
       api.get<HistoryResponse>(
         `/wallet/history?filter=${filter}${before ? `&before=${encodeURIComponent(before)}` : ''}`,
       ),
+    /** The last 7 days of net movement (History bars, Top-up week grid). */
+    weekly: () => api.get<WeeklyActivity>('/wallet/weekly'),
     receipt: (txnId: string) => api.get<Receipt>(`/wallet/transactions/${txnId}`),
     requests: () => api.get<PaymentRequestsResponse>('/wallet/requests'),
     createRequest: (

@@ -89,3 +89,72 @@ export function groupByDay(
   }
   return groups;
 }
+
+// ---- the design's wallet screens ---------------------------------------------------------------------
+
+/** The History chips (design: WalletHistory). */
+export const HISTORY_CHIPS: { key: 'all' | 'pool' | 'transfer' | 'bonus'; label: string }[] = [
+  { key: 'all', label: 'All' },
+  { key: 'pool', label: 'Pools' },
+  { key: 'transfer', label: 'Transfers' },
+  { key: 'bonus', label: 'Bonuses & refunds' },
+];
+
+/** "Amaka Obi" -> "AO", "tunde.o" -> "T". Up to two letters. */
+export function initials(name: string): string {
+  const parts = name
+    .replace(/^@/, '')
+    .split(/[\s._-]+/)
+    .filter(Boolean);
+  return (parts[0]?.[0] ?? '?').toUpperCase() + (parts[1]?.[0] ?? '').toUpperCase();
+}
+
+const EMBER = '#C93E1C';
+const BRASS = '#C98500';
+
+/** The coloured tile on a history row or receipt: initials for people, ₦ for cash events, P for Pools. */
+export function historyTile(item: Pick<HistoryItem, 'kind' | 'counterparty'>): {
+  mark: string;
+  bg: string;
+} {
+  switch (item.kind) {
+    case 'transfer':
+    case 'request_payment':
+      return {
+        mark: initials(item.counterparty?.displayName || item.counterparty?.username || '?'),
+        bg: EMBER,
+      };
+    case 'stake':
+    case 'payout':
+    case 'refund':
+      return { mark: 'P', bg: BRASS };
+    default:
+      return { mark: '₦', bg: EMBER };
+  }
+}
+
+/** The weekday letter for a "2026-11-15" date ("S", "M", ...). Date-only, so no time zone can shift it. */
+export function weekdayLetter(date: string): string {
+  const d = new Date(`${date}T12:00:00Z`).getUTCDay();
+  return 'SMTWTFS'[d] ?? '';
+}
+
+/** Bar heights for the week chart: each day's share of the biggest day, capped at 70% like the design so a bar never reaches the amount above it, never thinner than a sliver. */
+export function weekBars(
+  days: { date: string; netKobo: number }[],
+): { letter: string; pct: number; loss: boolean }[] {
+  const max = Math.max(1, ...days.map((d) => Math.abs(d.netKobo)));
+  return days.map((d) => ({
+    letter: weekdayLetter(d.date),
+    pct: d.netKobo === 0 ? 4 : Math.max(8, Math.round((Math.abs(d.netKobo) / max) * 70)),
+    loss: d.netKobo < 0,
+  }));
+}
+
+/** The calculator keypad on Send: digits, "00" and delete, capped at `maxNaira`. Returns the new digit string. */
+export function keypadPress(current: string, key: string, maxNaira: number): string {
+  const a = current === '0' ? '' : current;
+  if (key === 'del') return a.slice(0, -1) || '0';
+  const next = (a + key).replace(/^0+/, '') || '0';
+  return String(Math.min(maxNaira, parseInt(next, 10)));
+}

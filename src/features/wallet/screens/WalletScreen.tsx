@@ -1,41 +1,42 @@
-import { useState } from 'react';
 import { Pressable, RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
 import { useRouter, type Href } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { formatNaira, type HistoryFilter } from '@dyce/shared';
-import { Chip, Text, TokenButton, useTheme } from '@dyce/ui';
-import { PillButton } from '@/components/PillButton';
+import Svg, { Path, Rect } from 'react-native-svg';
+import { formatNaira } from '@dyce/shared';
+import { Text, TokenButton, useTheme } from '@dyce/ui';
+import { Gradient } from '@/components/Gradient';
 import { authErrorMessage } from '@/features/auth/messages';
-import { clockTime } from '@/features/chat/chat-logic';
+import { clockTime, dayLabel } from '@/features/chat/chat-logic';
 import { TabHeader } from '@/features/shell/TabHeader';
-import { groupByDay, historyTitle } from '../wallet-logic';
-import { useClaimTopup, useHistoryQuery, useWalletQuery } from '../use-wallet';
+import { ActivityRow } from '../components/ActivityRow';
+import { useHistoryQuery, useWalletQuery } from '../use-wallet';
 
-const FILTERS: { key: HistoryFilter; label: string }[] = [
-  { key: 'all', label: 'All' },
-  { key: 'sent', label: 'Sent' },
-  { key: 'received', label: 'Received' },
-  { key: 'requests', label: 'Requests' },
-  { key: 'topups', label: 'Top-ups' },
-  { key: 'games', label: 'Games' },
-];
+const BALANCE_STOPS = [
+  [0, '#F07A4A'],
+  [0.4, '#C93E1C'],
+  [1, '#8A2410'],
+] as const;
+
+/** "today", "yesterday" or "Nov 13": the quiet part of an activity line. */
+function whenLabel(iso: string): string {
+  const d = dayLabel(iso);
+  return d === 'Today' || d === 'Yesterday' ? d.toLowerCase() : d;
+}
 
 /**
- * The Wallet tab (design: Wallet). Dyce Cash is virtual: the card says so, and nothing here buys, withdraws or
- * exchanges it. Send, Request and Pay-a-code start here; history is filterable and each row opens a receipt.
+ * The Wallet tab (design: Wallet). An ember balance card that says the cash is virtual, Send / Request /
+ * History, three small stats, the daily top-up banner when you can claim it, and recent activity. Dyce Cash
+ * can't be bought or withdrawn; nothing here lets you do either.
  */
 export function WalletScreen() {
   const router = useRouter();
   const { colors } = useTheme();
-  const [filter, setFilter] = useState<HistoryFilter>('all');
   const wallet = useWalletQuery();
-  const history = useHistoryQuery(filter);
-  const topup = useClaimTopup();
-
+  const history = useHistoryQuery('all');
   const go = (href: string) => router.push(href as Href);
-  const items = history.data?.pages.flatMap((p) => p.items) ?? [];
-  const groups = groupByDay(items);
+
   const w = wallet.data;
+  const recent = (history.data?.pages[0]?.items ?? []).slice(0, 5);
 
   return (
     <SafeAreaView style={[styles.root, { backgroundColor: colors.bg }]} edges={['top']}>
@@ -53,125 +54,179 @@ export function WalletScreen() {
       >
         <TabHeader
           title="Wallet"
+          compact
           right={
             w?.topup.available ? (
-              <PillButton
-                label={`Daily top-up ${formatNaira(w.topup.amountKobo, { compact: true })}`}
-                tone="primary"
-                busy={topup.isPending}
-                onPress={() => topup.mutate()}
-              />
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel="Daily top-up"
+                onPress={() => go('/wallet/topup')}
+                style={[styles.topup, { backgroundColor: colors.chip }]}
+              >
+                <Text variant="callout" style={styles.topupText}>
+                  Daily top-up
+                </Text>
+              </Pressable>
             ) : undefined
           }
         />
 
-        <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.line }]}>
-          <Text variant="caption" color="sub">
-            Dyce Cash
+        <Gradient
+          stops={BALANCE_STOPS}
+          radial={{ cx: 0.85, cy: 0.1 }}
+          radius={26}
+          style={styles.card}
+        >
+          <View style={styles.cardCorner} aria-hidden />
+          <Text style={styles.cardLabel}>Dyce Cash</Text>
+          <Text
+            style={styles.balance}
+            accessibilityLabel={`Balance ${formatNaira(w?.balanceKobo ?? 0)}`}
+          >
+            {wallet.isLoading ? '…' : formatNaira(w?.balanceKobo ?? 0, { compact: true })}
           </Text>
-          {wallet.isLoading ? (
-            <Text variant="display" color="sub">
-              …
-            </Text>
-          ) : (
-            <Text
-              variant="display"
-              accessibilityLabel={`Balance ${formatNaira(w?.balanceKobo ?? 0)}`}
-            >
-              {formatNaira(w?.balanceKobo ?? 0)}
-            </Text>
-          )}
-          <Text variant="footnote" color="sub">
-            Virtual cash. It can&apos;t be bought or withdrawn.
-          </Text>
-          {topup.isError ? (
-            <Text variant="footnote" color="accent" accessibilityLiveRegion="polite">
-              {authErrorMessage(topup.error)}
-            </Text>
-          ) : null}
-          {wallet.isError ? (
-            <View style={styles.retry}>
-              <Text variant="footnote" color="accent">
-                {authErrorMessage(wallet.error)}
+          <Text style={styles.cardSub}>Virtual cash for play · not withdrawable</Text>
+          {w && w.locked.pools > 0 ? (
+            <View style={styles.locked}>
+              <Svg
+                width={12}
+                height={12}
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#fff"
+                strokeWidth={2.8}
+                strokeLinecap="round"
+              >
+                <Rect x={5} y={11} width={14} height={9} rx={2} />
+                <Path d="M8 11V8a4 4 0 0 1 8 0v3" />
+              </Svg>
+              <Text style={styles.lockedText}>
+                {formatNaira(w.locked.kobo)} locked in {w.locked.pools} open{' '}
+                {w.locked.pools === 1 ? 'pool' : 'pools'}
               </Text>
-              <TokenButton label="Try again" tone="chip" onPress={() => void wallet.refetch()} />
             </View>
           ) : null}
-        </View>
+          <View style={styles.buttons}>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Send"
+              onPress={() => go('/wallet/send')}
+              style={[styles.cardButton, { backgroundColor: '#FFFFFF' }]}
+            >
+              <Text style={[styles.cardButtonText, { color: '#8A2410' }]}>Send</Text>
+            </Pressable>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Request"
+              onPress={() => go('/wallet/request')}
+              style={[styles.cardButton, styles.cardButtonGlass]}
+            >
+              <Text style={styles.cardButtonText}>Request</Text>
+            </Pressable>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="History"
+              onPress={() => go('/wallet/history')}
+              style={[styles.cardButton, styles.cardButtonGlass]}
+            >
+              <Text style={styles.cardButtonText}>History</Text>
+            </Pressable>
+          </View>
+        </Gradient>
 
-        <View style={styles.actions}>
-          <PillButton label="Send" tone="primary" onPress={() => go('/wallet/send')} />
-          <PillButton label="Request" onPress={() => go('/wallet/request')} />
-          <PillButton label="Pay a code" onPress={() => go('/wallet/scan')} />
-        </View>
-
-        <Text variant="headline" accessibilityRole="header">
-          History
-        </Text>
-        <View style={styles.chips}>
-          {FILTERS.map((f) => (
-            <Chip
-              key={f.key}
-              label={f.label}
-              selected={filter === f.key}
-              onPress={() => setFilter(f.key)}
-            />
-          ))}
-        </View>
-
-        {history.isLoading ? <Text color="sub">Loading…</Text> : null}
-        {history.isError ? (
+        {wallet.isError ? (
           <View style={styles.retry}>
-            <Text color="accent">{authErrorMessage(history.error)}</Text>
-            <TokenButton label="Try again" tone="chip" onPress={() => void history.refetch()} />
+            <Text color="accent">{authErrorMessage(wallet.error)}</Text>
+            <TokenButton label="Try again" tone="chip" onPress={() => void wallet.refetch()} />
           </View>
         ) : null}
-        {history.isSuccess && items.length === 0 ? (
+
+        <View style={styles.stats}>
+          <View style={[styles.stat, { backgroundColor: colors.bg2 }]}>
+            <Text style={styles.statLabel} color="sub">
+              Won this week
+            </Text>
+            <Text style={styles.statValue} color="money">
+              {formatNaira(w?.stats.wonThisWeekKobo ?? 0, { compact: true })}
+            </Text>
+          </View>
+          <View style={[styles.stat, { backgroundColor: colors.bg2 }]}>
+            <Text style={styles.statLabel} color="sub">
+              Win rate
+            </Text>
+            <Text style={styles.statValue}>
+              {w?.stats.winRatePct == null ? '—' : `${w.stats.winRatePct}%`}
+            </Text>
+          </View>
+          <View style={[styles.stat, { backgroundColor: colors.bg2 }]}>
+            <Text style={styles.statLabel} color="sub">
+              Streak
+            </Text>
+            <Text style={styles.statValue}>
+              {w?.stats.winStreak ?? 0} {w?.stats.winStreak === 1 ? 'win' : 'wins'}
+            </Text>
+          </View>
+        </View>
+
+        {w?.topup.available ? (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={`Daily top-up is ready, plus ${formatNaira(w.topup.amountKobo)}`}
+            onPress={() => go('/wallet/topup')}
+            style={[styles.banner, { backgroundColor: colors.moneySoft }]}
+          >
+            <View style={styles.bannerBody}>
+              <Text variant="callout">Daily top-up is ready</Text>
+              <Text variant="footnote" color="sub">
+                You&apos;re under {formatNaira(w.topup.thresholdKobo)}, so it&apos;s on us
+              </Text>
+            </View>
+            <Text style={styles.bannerAmount} color="money">
+              +{formatNaira(w.topup.amountKobo)}
+            </Text>
+          </Pressable>
+        ) : null}
+
+        <View style={styles.activityHead}>
+          <Text style={styles.activityTitle} accessibilityRole="header">
+            Activity
+          </Text>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Pay a code"
+            onPress={() => go('/wallet/scan')}
+            style={styles.link}
+          >
+            <Text variant="callout" color="accent">
+              Pay a code
+            </Text>
+          </Pressable>
+        </View>
+        {history.isLoading ? <Text color="sub">Loading…</Text> : null}
+        {history.isSuccess && recent.length === 0 ? (
           <Text color="sub">Nothing here yet. Send some Dyce Cash to a friend to get going.</Text>
         ) : null}
-
-        {groups.map((g) => (
-          <View key={g.label} style={styles.group}>
-            <Text variant="caption" color="sub" accessibilityRole="header">
-              {g.label}
-            </Text>
-            {g.items.map((item) => {
-              const title = historyTitle(item);
-              const amount = formatNaira(Math.abs(item.amountKobo));
-              const incoming = item.amountKobo > 0;
-              return (
-                <Pressable
-                  key={item.id}
-                  accessibilityRole="button"
-                  accessibilityLabel={`${title}, ${incoming ? 'received' : 'sent'} ${amount}, ${clockTime(item.createdAt)}`}
-                  onPress={() => go(`/wallet/receipt/${item.id}`)}
-                  style={[styles.row, { borderColor: colors.line }]}
-                >
-                  <View style={styles.rowBody}>
-                    <Text variant="callout" numberOfLines={1}>
-                      {title}
-                    </Text>
-                    <Text variant="footnote" color="sub" numberOfLines={1}>
-                      {[item.note, clockTime(item.createdAt)].filter(Boolean).join(' · ')}
-                    </Text>
-                  </View>
-                  <Text variant="callout" color={incoming ? 'money' : 'text'}>
-                    {incoming ? '+' : '−'}
-                    {formatNaira(Math.abs(item.amountKobo), { compact: true })}
-                  </Text>
-                </Pressable>
-              );
-            })}
-          </View>
-        ))}
-
-        {history.hasNextPage ? (
-          <TokenButton
-            label={history.isFetchingNextPage ? 'Loading…' : 'Load more'}
-            tone="chip"
-            disabled={history.isFetchingNextPage}
-            onPress={() => void history.fetchNextPage()}
+        {recent.map((item) => (
+          <ActivityRow
+            key={item.id}
+            item={item}
+            meta={[item.note, `${whenLabel(item.createdAt)} ${clockTime(item.createdAt)}`]
+              .filter(Boolean)
+              .join(' · ')}
+            onPress={() => go(`/wallet/receipt/${item.id}`)}
           />
+        ))}
+        {history.data && (history.data.pages[0]?.items.length ?? 0) > 5 ? (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="See all activity"
+            onPress={() => go('/wallet/history')}
+            style={styles.link}
+          >
+            <Text variant="callout" color="accent">
+              See all activity
+            </Text>
+          </Pressable>
         ) : null}
       </ScrollView>
     </SafeAreaView>
@@ -180,12 +235,79 @@ export function WalletScreen() {
 
 const styles = StyleSheet.create({
   root: { flex: 1 },
-  content: { paddingHorizontal: 20, paddingBottom: 140, gap: 14 },
-  card: { borderWidth: 1, borderRadius: 22, padding: 18, gap: 4 },
-  actions: { flexDirection: 'row', gap: 8, flexWrap: 'wrap' },
-  chips: { flexDirection: 'row', gap: 8, flexWrap: 'wrap' },
-  group: { gap: 2 },
-  row: { flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 60, borderBottomWidth: 1 },
-  rowBody: { flex: 1, minWidth: 0 },
-  retry: { gap: 8, marginTop: 8 },
+  content: { paddingHorizontal: 16, paddingBottom: 140, gap: 12 },
+  topup: { height: 36, paddingHorizontal: 14, borderRadius: 18, justifyContent: 'center' },
+  topupText: { fontSize: 14, fontFamily: 'Figtree_800ExtraBold' },
+  card: { padding: 20 },
+  cardCorner: {
+    position: 'absolute',
+    right: -18,
+    top: -18,
+    width: 110,
+    height: 110,
+    borderRadius: 28,
+    backgroundColor: 'rgba(255,255,255,0.12)',
+    transform: [{ rotate: '18deg' }],
+  },
+  cardLabel: { color: '#FFFFFF', fontSize: 14, opacity: 0.9, fontFamily: 'Figtree_600SemiBold' },
+  balance: {
+    color: '#FFFFFF',
+    fontSize: 44,
+    letterSpacing: -1,
+    marginTop: 2,
+    fontFamily: 'BricolageGrotesque_800ExtraBold',
+  },
+  cardSub: {
+    color: '#FFFFFF',
+    fontSize: 13,
+    opacity: 0.9,
+    marginTop: 2,
+    fontFamily: 'Figtree_500Medium',
+  },
+  locked: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    gap: 6,
+    marginTop: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 999,
+    backgroundColor: 'rgba(0,0,0,0.22)',
+  },
+  lockedText: { color: '#FFFFFF', fontSize: 12, fontFamily: 'Figtree_700Bold' },
+  buttons: { flexDirection: 'row', gap: 8, marginTop: 18 },
+  cardButton: {
+    flex: 1,
+    height: 46,
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  cardButtonGlass: { backgroundColor: 'rgba(255,255,255,0.18)' },
+  cardButtonText: { color: '#FFFFFF', fontSize: 15, fontFamily: 'Figtree_700Bold' },
+  retry: { gap: 8 },
+  stats: { flexDirection: 'row', gap: 8, marginTop: 2 },
+  stat: { flex: 1, borderRadius: 16, padding: 12 },
+  statLabel: { fontSize: 12, fontFamily: 'Figtree_600SemiBold' },
+  statValue: { fontSize: 18, marginTop: 4, fontFamily: 'Figtree_800ExtraBold' },
+  banner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    borderRadius: 16,
+    minHeight: 44,
+  },
+  bannerBody: { flex: 1 },
+  bannerAmount: { fontSize: 16, fontFamily: 'Figtree_800ExtraBold' },
+  activityHead: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: 6,
+  },
+  activityTitle: { fontSize: 17, fontFamily: 'Figtree_700Bold' },
+  link: { minHeight: 44, justifyContent: 'center' },
 });

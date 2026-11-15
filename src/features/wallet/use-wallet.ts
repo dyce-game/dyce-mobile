@@ -30,6 +30,15 @@ export function useHistoryQuery(filter: HistoryFilter) {
   });
 }
 
+/** The last 7 days (History bars, Top-up week grid). */
+export function useWeeklyQuery() {
+  return useQuery({
+    queryKey: [...queryKeys.wallet, 'weekly'],
+    queryFn: walletApi.weekly,
+    refetchOnMount: 'always',
+  });
+}
+
 export function useReceiptQuery(txnId: string) {
   return useQuery({ queryKey: queryKeys.receipt(txnId), queryFn: () => walletApi.receipt(txnId) });
 }

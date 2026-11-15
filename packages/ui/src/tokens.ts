@@ -6,6 +6,8 @@ export type ThemeName = 'light' | 'dark';
 
 export type ThemeColors = {
   bg: string;
+  /** A slightly deeper surface for small stat cards and recessed panels. */
+  bg2: string;
   card: string;
   chip: string;
   chipEdge: string;
@@ -15,6 +17,13 @@ export type ThemeColors = {
   accent: string;
   brandSoft: string;
   money: string;
+  /** Tint behind positive money (banners, "Paid" pills). */
+  moneySoft: string;
+  /** Destructive actions: Report, Block, Send report. */
+  danger: string;
+  /** Selected-chip fill and its text (the inverse of the page). */
+  ink: string;
+  inkText: string;
   glass: string;
   glassEdge: string;
   glassShadow: string;
@@ -23,6 +32,7 @@ export type ThemeColors = {
 export const colors: Record<ThemeName, ThemeColors> = {
   light: {
     bg: '#FBF8F3',
+    bg2: '#F2ECE3',
     card: '#FFFFFF',
     chip: '#EEE7DC',
     chipEdge: '#D8CEC1',
@@ -32,12 +42,17 @@ export const colors: Record<ThemeName, ThemeColors> = {
     accent: '#B33416',
     brandSoft: '#FBE7DF',
     money: '#17834F',
+    moneySoft: '#E3F6EA',
+    danger: '#C4314B',
+    ink: '#1B140F',
+    inkText: '#FFFFFF',
     glass: 'rgba(255,255,255,0.62)',
     glassEdge: 'rgba(255,255,255,0.90)',
     glassShadow: 'rgba(90,40,10,0.12)',
   },
   dark: {
     bg: '#0F0D0B',
+    bg2: '#1D1916',
     card: '#1D1916',
     chip: '#2A2420',
     chipEdge: '#15120F',
@@ -47,6 +62,10 @@ export const colors: Record<ThemeName, ThemeColors> = {
     accent: '#FF8F6B',
     brandSoft: '#3A170C',
     money: '#3DDC84',
+    moneySoft: '#11301F',
+    danger: '#E0455E',
+    ink: '#F7F1E8',
+    inkText: '#1B140F',
     glass: 'rgba(42,36,32,0.60)',
     glassEdge: 'rgba(255,255,255,0.10)',
     glassShadow: 'rgba(0,0,0,0.45)',

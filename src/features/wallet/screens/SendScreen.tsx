@@ -1,24 +1,26 @@
 import { useRef, useState } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, TextInput, View } from 'react-native';
 import { useLocalSearchParams, useRouter, type Href } from 'expo-router';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { formatNaira } from '@dyce/shared';
-import { Chip, Text, TextField, TokenButton, useTheme } from '@dyce/ui';
+import { MAX_FONT_SCALE, Text, TokenButton, useTheme } from '@dyce/ui';
 import { InitialAvatar } from '@/components/InitialAvatar';
 import { PillButton } from '@/components/PillButton';
-import { ScreenHeader } from '@/components/ScreenHeader';
 import { authErrorMessage } from '@/features/auth/messages';
 import { FriendRow } from '@/features/friends/components/FriendRow';
 import { useFriendsQuery } from '@/features/friends/use-friends';
-import { AMOUNT_PRESETS, newMoneyKey, parseNairaInput } from '../wallet-logic';
+import { Keypad } from '../components/Keypad';
+import { SheetFrame } from '../components/SheetFrame';
+import { keypadPress, newMoneyKey } from '../wallet-logic';
 import { useSendMoney, useWalletQuery } from '../use-wallet';
 
-type Step = 'form' | 'confirm' | 'done';
+const QUICK = [500, 1_000, 5_000];
+const MAX_NAIRA = 200_000;
 
 /**
- * Send Dyce Cash to a friend (design: SendMoney). Choose who, how much and an optional note, then a confirm
- * step that shows the full amount and says it can't be undone. The idempotency key is made when you reach
- * Confirm and reused on a retry, so a bad connection can't send twice.
+ * Send Dyce Cash (design: SendMoney): a sheet with who it's going to, a big amount, quick amounts, a note and
+ * the keypad. "Send" leads to a short confirm step ("Virtual cash · can't be undone"), then success. The
+ * idempotency key is made at confirm and reused on a retry, so a bad connection can't send twice. Opened from a
+ * chat's ₦ button it already knows the person; from the Wallet it starts with a friend picker.
  */
 export function SendScreen() {
   const router = useRouter();
@@ -29,30 +31,31 @@ export function SendScreen() {
   const send = useSendMoney();
 
   const [toId, setToId] = useState<string | null>(typeof to === 'string' ? to : null);
-  const [amountText, setAmountText] = useState('');
+  const [digits, setDigits] = useState('0');
   const [note, setNote] = useState('');
-  const [step, setStep] = useState<Step>('form');
+  const [step, setStep] = useState<'amount' | 'confirm' | 'done'>('amount');
   const [receiptId, setReceiptId] = useState<string | null>(null);
   const key = useRef<string | null>(null);
 
   const list = friends.data?.friends ?? [];
   const recipient = list.find((f) => f.id === toId) ?? null;
-  const amount = parseNairaInput(amountText);
+  const naira = parseInt(digits, 10);
+  const amount = naira * 100;
   const limits = wallet.data?.limits;
   const balance = wallet.data?.balanceKobo ?? 0;
+  const name = recipient ? recipient.displayName || recipient.username : '';
 
   const amountError =
-    amountText.trim() && amount === null
-      ? 'Enter a whole-naira amount.'
-      : amount !== null && limits && amount > limits.perSendKobo
-        ? `The most you can send at once is ${formatNaira(limits.perSendKobo)}.`
-        : amount !== null && amount > balance
-          ? `You only have ${formatNaira(balance)}.`
-          : undefined;
-  const ready = !!recipient && amount !== null && !amountError;
+    naira > 0 && limits && amount > limits.perSendKobo
+      ? `The most you can send at once is ${formatNaira(limits.perSendKobo)}.`
+      : naira > 0 && amount > balance
+        ? `You only have ${formatNaira(balance)}.`
+        : undefined;
+  const ready = !!recipient && naira > 0 && !amountError;
+  const close = () => (router.canGoBack() ? router.back() : router.replace('/wallet' as Href));
 
   function confirm() {
-    if (!recipient || amount === null) return;
+    if (!recipient || !ready) return;
     key.current ??= newMoneyKey('send');
     send.mutate(
       {
@@ -71,57 +74,68 @@ export function SendScreen() {
     );
   }
 
-  const header = <ScreenHeader title="Send" fallback="/wallet" />;
-
-  if (step === 'done' && recipient && amount !== null) {
-    return (
-      <SafeAreaView style={[styles.root, { backgroundColor: colors.bg }]}>
-        <ScrollView contentContainerStyle={styles.content}>
-          {header}
-          <View style={styles.center} accessibilityLiveRegion="polite">
-            <Text variant="title">Sent {formatNaira(amount)}</Text>
+  return (
+    <SheetFrame label="Send Dyce Cash" onClose={close}>
+      {!recipient ? (
+        <>
+          <Text variant="headline" accessibilityRole="header">
+            Send to
+          </Text>
+          {friends.isLoading ? <Text color="sub">Loading your friends…</Text> : null}
+          {friends.isSuccess && list.length === 0 ? (
             <Text color="sub">
-              to {recipient.displayName || `@${recipient.username}`}
-              {note.trim() ? ` · ${note.trim()}` : ''}
+              You can send Dyce Cash to friends. Add a friend first, or pay someone&apos;s request
+              code.
             </Text>
-            <Text variant="footnote" color="sub">
-              Balance {formatNaira(send.data?.balanceKobo ?? balance)}
-            </Text>
-          </View>
+          ) : null}
+          {list.map((f) => (
+            <FriendRow
+              key={f.id}
+              name={f.displayName}
+              username={f.username}
+              right={
+                <PillButton
+                  label="Choose"
+                  tone="primary"
+                  accessibilityLabel={`Send to @${f.username}`}
+                  onPress={() => setToId(f.id)}
+                />
+              }
+            />
+          ))}
+        </>
+      ) : step === 'done' ? (
+        <View style={styles.center} accessibilityLiveRegion="polite">
+          <Text variant="title">Sent {formatNaira(amount)}</Text>
+          <Text color="sub">
+            to {name}
+            {note.trim() ? ` · ${note.trim()}` : ''}
+          </Text>
+          <Text variant="footnote" color="sub">
+            Balance {formatNaira(send.data?.balanceKobo ?? balance)}
+          </Text>
           {receiptId ? (
             <TokenButton
               label="View receipt"
               tone="chip"
-              onPress={() => router.push(`/wallet/receipt/${receiptId}` as Href)}
+              onPress={() => router.replace(`/wallet/receipt/${receiptId}` as Href)}
             />
           ) : null}
-          <TokenButton
-            label="Done"
-            onPress={() => (router.canGoBack() ? router.back() : router.replace('/wallet' as Href))}
-          />
-        </ScrollView>
-      </SafeAreaView>
-    );
-  }
-
-  if (step === 'confirm' && recipient && amount !== null) {
-    return (
-      <SafeAreaView style={[styles.root, { backgroundColor: colors.bg }]}>
-        <ScrollView contentContainerStyle={styles.content}>
-          {header}
-          <View style={[styles.sheet, { backgroundColor: colors.card, borderColor: colors.line }]}>
-            <InitialAvatar name={recipient.displayName || recipient.username} size={56} />
-            <Text variant="title" accessibilityRole="header">
-              Send {formatNaira(amount)}?
-            </Text>
-            <Text color="sub">
-              to {recipient.displayName || recipient.username} (@{recipient.username})
-            </Text>
-            {note.trim() ? <Text variant="footnote">&ldquo;{note.trim()}&rdquo;</Text> : null}
-            <Text variant="footnote" color="sub">
-              Virtual cash · can&apos;t be undone
-            </Text>
-          </View>
+          <TokenButton label="Done" onPress={close} />
+        </View>
+      ) : step === 'confirm' ? (
+        <View style={styles.center}>
+          <InitialAvatar name={name} size={56} />
+          <Text variant="title" accessibilityRole="header">
+            Send {formatNaira(amount)}?
+          </Text>
+          <Text color="sub">
+            to {name} (@{recipient.username})
+          </Text>
+          {note.trim() ? <Text variant="footnote">&ldquo;{note.trim()}&rdquo;</Text> : null}
+          <Text variant="footnote" color="sub">
+            Virtual cash · can&apos;t be undone
+          </Text>
           {send.isError ? (
             <Text color="accent" accessibilityLiveRegion="polite">
               {authErrorMessage(send.error)}
@@ -136,109 +150,126 @@ export function SendScreen() {
             label="Back"
             tone="chip"
             disabled={send.isPending}
-            onPress={() => setStep('form')}
+            onPress={() => setStep('amount')}
           />
-        </ScrollView>
-      </SafeAreaView>
-    );
-  }
-
-  return (
-    <SafeAreaView style={[styles.root, { backgroundColor: colors.bg }]}>
-      <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-        {header}
-
-        <Text variant="caption" color="sub" accessibilityRole="header">
-          To
-        </Text>
-        {recipient ? (
-          <FriendRow
-            name={recipient.displayName}
-            username={recipient.username}
-            right={<PillButton label="Change" onPress={() => setToId(null)} />}
-          />
-        ) : (
-          <>
-            {friends.isLoading ? <Text color="sub">Loading your friends…</Text> : null}
-            {friends.isSuccess && list.length === 0 ? (
-              <Text color="sub">
-                You can send Dyce Cash to friends. Add a friend first, or pay someone&apos;s request
-                code.
+        </View>
+      ) : (
+        <>
+          <View style={styles.who}>
+            <InitialAvatar name={name} size={40} />
+            <View style={styles.whoText}>
+              <Text variant="footnote" color="sub">
+                Send to
               </Text>
-            ) : null}
-            {list.map((f) => (
-              <FriendRow
-                key={f.id}
-                name={f.displayName}
-                username={f.username}
-                right={
-                  <PillButton
-                    label="Choose"
-                    tone="primary"
-                    accessibilityLabel={`Send to @${f.username}`}
-                    onPress={() => setToId(f.id)}
-                  />
-                }
-              />
-            ))}
-          </>
-        )}
-
-        {recipient ? (
-          <>
-            <TextField
-              label="Amount (₦)"
-              value={amountText}
-              onChangeText={setAmountText}
-              placeholder="0"
-              keyboardType="number-pad"
-              maxLength={9}
-              error={amountError}
-              hint={limits ? `Up to ${formatNaira(limits.perSendKobo)} at a time.` : undefined}
-              leading={
-                <Text color="sub" variant="callout">
-                  ₦
-                </Text>
-              }
-            />
-            <View style={styles.chips}>
-              {AMOUNT_PRESETS.map((n) => (
-                <Chip
-                  key={n}
-                  label={formatNaira(n * 100, { compact: true })}
-                  onPress={() => setAmountText(String(n))}
-                />
-              ))}
+              <Text style={styles.whoName} numberOfLines={1}>
+                {name} · @{recipient.username}
+              </Text>
             </View>
-            <TextField
-              label="Note (optional)"
-              value={note}
-              onChangeText={setNote}
-              placeholder="What's it for?"
-              maxLength={140}
-            />
-            <Text variant="footnote" color="sub">
-              Balance {formatNaira(balance)} · Virtual cash
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Change recipient"
+              onPress={() => setToId(null)}
+              style={styles.change}
+            >
+              <Text variant="footnote" color="sub">
+                Bal {formatNaira(balance, { compact: true })}
+              </Text>
+            </Pressable>
+          </View>
+
+          <Text
+            style={[styles.amount, { color: naira > 0 ? colors.text : colors.sub }]}
+            accessibilityLabel={`Amount ${formatNaira(amount)}`}
+            accessibilityLiveRegion="polite"
+          >
+            {formatNaira(amount)}
+          </Text>
+          <View style={styles.quick}>
+            {QUICK.map((q) => (
+              <Pressable
+                key={q}
+                accessibilityRole="button"
+                accessibilityLabel={`Set amount to ${formatNaira(q * 100)}`}
+                onPress={() => setDigits(String(q))}
+                style={[styles.quickChip, { backgroundColor: colors.chip }]}
+              >
+                <Text style={[styles.quickText, { color: colors.text }]}>
+                  {formatNaira(q * 100)}
+                </Text>
+              </Pressable>
+            ))}
+          </View>
+          {amountError ? (
+            <Text
+              variant="footnote"
+              color="accent"
+              style={styles.errorText}
+              accessibilityLiveRegion="polite"
+            >
+              {amountError}
             </Text>
-            <TokenButton label="Review" disabled={!ready} onPress={() => setStep('confirm')} />
-          </>
-        ) : null}
-      </ScrollView>
-    </SafeAreaView>
+          ) : null}
+
+          <TextInput
+            value={note}
+            onChangeText={setNote}
+            placeholder="What's it for? (optional)"
+            placeholderTextColor={colors.sub}
+            accessibilityLabel="Note"
+            maxLength={140}
+            maxFontSizeMultiplier={MAX_FONT_SCALE}
+            style={[styles.note, { backgroundColor: colors.chip, color: colors.text }]}
+          />
+          <Keypad onPress={(k) => setDigits((d) => keypadPress(d, k, MAX_NAIRA))} />
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={`Send ${formatNaira(amount)}`}
+            accessibilityState={{ disabled: !ready }}
+            disabled={!ready}
+            onPress={() => setStep('confirm')}
+            style={[styles.send, { backgroundColor: ready ? '#C93E1C' : colors.chip }]}
+          >
+            <Text style={[styles.sendText, { color: ready ? '#FFFFFF' : colors.sub }]}>
+              Send {formatNaira(amount)}
+            </Text>
+          </Pressable>
+        </>
+      )}
+    </SheetFrame>
   );
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1 },
-  content: { padding: 20, gap: 12 },
-  chips: { flexDirection: 'row', gap: 8, flexWrap: 'wrap' },
-  center: { alignItems: 'center', gap: 6, paddingVertical: 28 },
-  sheet: {
-    alignItems: 'center',
-    gap: 8,
-    borderWidth: 1,
-    borderRadius: 24,
-    padding: 22,
-    marginTop: 8,
+  center: { alignItems: 'center', gap: 8, paddingVertical: 16 },
+  who: { flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 2 },
+  whoText: { flex: 1, minWidth: 0 },
+  whoName: { fontSize: 16, fontFamily: 'Figtree_700Bold' },
+  change: { minHeight: 44, justifyContent: 'center' },
+  amount: {
+    textAlign: 'center',
+    marginTop: 10,
+    fontSize: 56,
+    letterSpacing: -1.5,
+    fontFamily: 'BricolageGrotesque_800ExtraBold',
   },
+  quick: { flexDirection: 'row', justifyContent: 'center', gap: 8 },
+  quickChip: { height: 44, paddingHorizontal: 14, borderRadius: 22, justifyContent: 'center' },
+  quickText: { fontSize: 14, fontFamily: 'Figtree_600SemiBold' },
+  errorText: { textAlign: 'center' },
+  note: {
+    height: 46,
+    borderRadius: 14,
+    paddingHorizontal: 14,
+    fontSize: 16,
+    fontFamily: 'Figtree_400Regular',
+    marginTop: 6,
+  },
+  send: {
+    height: 54,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 10,
+  },
+  sendText: { fontSize: 17, fontFamily: 'Figtree_700Bold' },
 });

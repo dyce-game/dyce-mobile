@@ -15,6 +15,15 @@ function ThemedStack() {
       <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.bg } }}>
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="search" options={{ presentation: 'modal' }} />
+        {/* Send and Request are bottom sheets over a dimmed screen (design: SendMoney, RequestMoney) */}
+        <Stack.Screen
+          name="wallet/send"
+          options={{ presentation: 'transparentModal', animation: 'fade' }}
+        />
+        <Stack.Screen
+          name="wallet/request/index"
+          options={{ presentation: 'transparentModal', animation: 'fade' }}
+        />
       </Stack>
     </>
   );
