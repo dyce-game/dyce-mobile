@@ -47,6 +47,27 @@ Phase 2: `pool-loop` (stake, play async, payout), `counter-offer`, `space-whot-r
 - **App, unit** (`boards/word-hunt-logic.test.ts`, `games-logic.wordhunt.test.ts`): neighbours, drag path rules (no repeats, slide back un-picks), tap rules, hit-testing (gaps and corners ignored), dictionary and preview, scoring by length, clock and spoken clock, saved round parsing, opponent line, view parsing, stage, who moves.
 - **By hand, two browser sessions** (light and dark, 430x900 and 360x640): drag, tap + Add word, rejected word, leave and return mid-round, time-up auto-send, same result on both screens, rematch. Still to do on devices: touch drag on iOS and Android, VoiceOver and TalkBack, a scrolled page.
 
+### Cup Pong (first 3D game)
+
+- **Backend, real PostgreSQL** (`db/tests/cuppong.test.ts`, 5 tests): the catalogue row (3D, Free only); ten cups each and no RNG in the view; out-of-turn and out-of-range input refused; three balls a turn then the turn passes, the server records the input it simulated; a whole game played to a result with the same outcome and view for both players.
+- **App, unit** (`boards/cup-pong-logic.test.ts`, 19 tests): view parsing, which table is on screen, re-rack rules (from the engine), drag and slider input quantised into the engine's range (never -0 or fractions, always accepted by `validate`), the pre-throw cups reconstructed for a replay (also after a re-rack) and agreeing with the engine, trace sampling, once-per-throw playback bookkeeping, banner and score wording.
+- **By hand, two browser sessions** (light and dark, 390x844): drawer tile, send, accept, flick and slider throws, banners, the other player's throw replayed live, a game played to its last round and a result with the same winner on both screens, rematch. The browser pane was hidden, so animation frames did not run: ball motion and frame rate were not seen live (the watchdog carried the flow).
+- **Still to do on devices:** frame rate on the 3-4 GB mid-range Android (budget 50 fps), real touch flicks, haptics, VoiceOver/TalkBack on the sliders, Reduce Motion, Hermes/expo-gl rendering of the scene.
+
+### Spaces (Whot!)
+
+- `space-whot-pool-3`: three devices; host creates a Pool space (₦500, 50/30/20), two friends join by code, host starts, play to the end; check each wallet (₦750 / ₦450 / ₦300 of ₦1,500), the Wallet history and the result screen
+- `space-whot-reconnect`: turn Wi-Fi off for 20 s mid-game and back on (banner, same cards, still your seat); stay off for 70 s (forfeit, others finish, you are last, Pool: your fee is not returned)
+- `space-leave-lobby`: leave a Pool lobby (fee back at once), the host leaves (host passes on), host closes (everyone refunded)
+- `space-code`: a wrong code, a full space, a started space, a friends-only space from a stranger, a link `dyce://s/DY-XXXX`
+
+### SMS invites and the guest web game
+
+- **Backend, real PostgreSQL** (`db/tests/invites.test.ts`, 34 tests): hash-only storage and the link shape; refusals (bad number, own number, already on Dyce, unknown or dev game); per-sender day, per-number day, one-per-minute and parallel-send limits; a failed SMS leaves nothing; the landing page (opened, expired, no phone number); the guest round (hidden grid, server scoring, late submit, repeat submit, token holder only, re-issue, token and invite expiry, token of another invite); join-up (friends, chat, card, score kept and the inviter wins or loses against it, idempotent, crash retry, fresh match for an unsent round, wrong number, expired, blocked, several invites).
+- **App, unit** (`invites/invite-link.test.ts`, `contacts/contacts.test.ts`): parsing links and the number fragment, dial-code splitting, invitable contacts across 500-number batches.
+- **By hand, browser + API (console SMS driver), dark and light, 390x844:** send from New chat (the cooldown and error copy show), open the texted link, landing, Play now, tap and drag words, Done, end card, Get Dyce, the number prefilled on the phone screen, code, username; afterwards the database held one friendship, one active match with the guest's score and the inviter to move, and one game card in the chat.
+- **Still to do:** real SMS to a Nigerian number through Termii (DND route), universal and app links on devices (need the association files and store builds), Maestro `invite-web`, VoiceOver/TalkBack and 1.3x text on the landing, end and join screens, a cold install from the store keeping the invite (deferred deep link).
+
 ## 4. Device matrix and budgets
 - iOS: latest + latest-2, small phone (SE class) and large. Android: Pixel-class, and a **3–4 GB RAM mid-range device** (performance target for Nigeria).
 - Budgets: 3D scenes ≥ 50 fps on the mid-range Android; cold start < 3 s on it; chat list scrolls at 60 fps with 500 conversations; 3G profile (400 kbps / 400 ms RTT): chat usable, game moves resolve < 2 s.

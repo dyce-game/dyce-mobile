@@ -84,7 +84,7 @@ Phase 2 vertical slice. game-platform-engineer builds the platform against the _
 ```
 - [ ] Platform (drawer, modes, host shell, async, results, XP). **Slice 1 done (2026-11-15, ADR-016):** Free-mode async 1v1 against the `_example` (Pig) engine end to end, backend and app, and `docs/ADDING_A_GAME.md`. **Slice 2 done (2026-11-15, ADR-018):** Pool for async 1v1 (stakes, age gate, counter-offer, refunds on decline / cancel / expiry, payout on finish), backend and app. Left: turn timers and forfeit, XP/streaks, video tiles, push, Pool in Spaces.
 - [ ] Word Hunt · Cup Pong · Whot! engines
-- [ ] Renderers for the three. **Word Hunt done (2026-11-15, app ADR-018, backend ADR-019):** Free async 1v1 from a chat, played to a result in two browser sessions, light and dark. Left for Word Hunt: Pool, turn timer and forfeit, thumbnail video, a Skia renderer, touch testing on devices. Cup Pong and Whot! renderers not started.
+- [ ] Renderers for the three. **Word Hunt done (2026-11-15, app ADR-018, backend ADR-019):** Free async 1v1 from a chat, played to a result in two browser sessions, light and dark. Left for Word Hunt: Pool, turn timer and forfeit, thumbnail video, a Skia renderer, touch testing on devices. **Cup Pong done (2026-11-19, app ADR-020):** async 1v1 Free with a 3D table (React Three Fiber), flick or sliders, prediction with server correction, opponent throw replayed from the stored input, played to a result in two browser sessions, light and dark. Left for Cup Pong: Pool, turn timer and forfeit, thumbnail video, a real-device frame-rate and touch run, a rendered rack preview for re-rack. Whot! renderer not started.
 - [ ] Spaces tab, lobby, CardRoom
 - [ ] SMS invites + web guest
 - [ ] Phase 2 sign-off

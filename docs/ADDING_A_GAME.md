@@ -20,6 +20,7 @@ What it takes to put a new async 1v1 game on the platform (ADR-016). Pig (`_exam
 - `src/features/games/components/GameArt.tsx`: the picture for the drawer tile and the chat card (a video thumbnail later).
 - A board component (like `PigBoard.tsx`): render the server's `view`, send moves with `useSubmitMove` (`{ expectedVersion: match.stateVersion, action }`), enable controls only when `match.currentTurn === myId`. Parse the view with a small `parse<Game>View` function in `games-logic.ts` and test it.
 - 2D boards are plain React Native views behind a small renderer interface unless the game needs real drawing (ADR-018); a Skia renderer can replace the view renderer later. A game with a round clock keeps its own start time on the device so the round survives leaving the screen (`boards/use-word-hunt-round.ts`).
+- 3D boards (Cup Pong, ADR-020) import `Canvas`, `useFrame` and `useThree` from `boards/r3f` (native entry on the phone, DOM entry on web), predict with the engine's own simulation, replay the other player's move from the view, and keep a non-gesture way to play. A game whose animation holds the result screen back must have a watchdog so it can never block it.
 - Add the game to the host screen (`GameHostScreen.tsx`) and the result screen (`GameResultScreen.tsx`) where they branch on `gameSlug`.
 - Both themes, accessibility labels on every control, 44pt targets, text that respects Dynamic Type.
 

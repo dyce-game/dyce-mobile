@@ -1,5 +1,6 @@
 import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 import { brand } from '@dyce/ui';
+import { CupPongArt } from '../boards/CupPongArt';
 import { WordHuntArt } from '../boards/WordHuntArt';
 import { DieFace } from './DieFace';
 
@@ -22,6 +23,7 @@ export function GameArt({
 }) {
   const size = dice ?? (compact ? 38 : 50);
   if (slug === 'word-hunt') return <WordHuntArt size={size} style={style} end={compact} />;
+  if (slug === 'cup-pong') return <CupPongArt style={style} />;
   return (
     <View aria-hidden style={[styles.felt, style]}>
       {slug === '_example' ? (

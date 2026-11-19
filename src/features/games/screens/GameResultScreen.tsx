@@ -9,6 +9,8 @@ import { authErrorMessage } from '@/features/auth/messages';
 import { useSession } from '@/features/auth/use-session';
 import { newMessageId } from '@/features/chat/chat-logic';
 import { useWalletQuery } from '@/features/wallet/use-wallet';
+import { CupPongArt } from '../boards/CupPongArt';
+import { cupPongScoreLine, parseCupPongView } from '../boards/cup-pong-logic';
 import { WordHuntResultWords } from '../boards/WordHuntResultWords';
 import { WordHuntArt } from '../boards/WordHuntArt';
 import { DieFace } from '../components/DieFace';
@@ -68,6 +70,7 @@ export function GameResultScreen({ matchId }: { matchId: string }) {
   };
   const pig = match.gameSlug === '_example' ? parsePigView(match.view) : null;
   const wordHunt = match.gameSlug === 'word-hunt' ? parseWordHuntView(match.view) : null;
+  const cupPong = match.gameSlug === 'cup-pong' ? parseCupPongView(match.view) : null;
   const copy = resultCopy(
     match,
     myId,
@@ -76,7 +79,9 @@ export function GameResultScreen({ matchId }: { matchId: string }) {
       ? scoreLine(pig, myId, nameOf)
       : wordHunt
         ? wordHuntScoreLine(wordHunt, myId, nameOf)
-        : null,
+        : cupPong
+          ? cupPongScoreLine(cupPong, myId, nameOf)
+          : null,
   );
   const finished = match.status === 'finished';
   const pool = finished ? poolResult(match, myId, oppName, wallet.data?.balanceKobo ?? null) : null;
@@ -134,6 +139,8 @@ export function GameResultScreen({ matchId }: { matchId: string }) {
           <UserAvatar avatar={hero.avatar} name={hero.displayName || hero.username} size={96} />
         ) : wordHunt ? (
           <WordHuntArt size={50} style={styles.wordArt} />
+        ) : cupPong ? (
+          <CupPongArt style={styles.wordArt} />
         ) : (
           <View style={styles.dice} aria-hidden>
             <DieFace value={4} size={60} rotate={-10} />

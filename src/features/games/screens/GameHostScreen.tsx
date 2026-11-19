@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { useRouter, type Href } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -7,6 +7,8 @@ import { UserAvatar } from '@/features/avatar/UserAvatar';
 import { ApiError } from '@/features/auth/api-client';
 import { authErrorMessage } from '@/features/auth/messages';
 import { useSession } from '@/features/auth/use-session';
+import { CupPongBoard } from '../boards/CupPongBoard';
+import { holdsForFinalThrow, parseCupPongView } from '../boards/cup-pong-logic';
 import { WordHuntBoard } from '../boards/WordHuntBoard';
 import { MatchInvitePanel } from '../components/MatchInvitePanel';
 import { PigBoard } from '../components/PigBoard';
@@ -16,8 +18,7 @@ import { useMatchQuery, useSubmitMove } from '../use-games';
 /**
  * The game host (route g/[matchId]): the shared shell around a game: back to the chat, the mode badge, the
  * opponent, and then either the invite (accept / decline), the game itself, or what became of it. When the
- * match finishes it moves on to the results screen. Pig is the only game so far; each new game adds its own
- * board here.
+ * match finishes it moves on to the results screen. Each game adds its own board here (Pig, Word Hunt, Cup Pong).
  */
 export function GameHostScreen({ matchId }: { matchId: string }) {
   const router = useRouter();
@@ -32,10 +33,15 @@ export function GameHostScreen({ matchId }: { matchId: string }) {
       ? router.back()
       : router.replace((match?.conversationId ? `/c/${match.conversationId}` : '/chat') as Href);
 
-  // A finished match shows its result.
+  // A finished match shows its result. Cup Pong first lets the final throw play out (the board says when).
+  const [, settle] = useState(0);
+  const cupPong = match?.gameSlug === 'cup-pong' ? parseCupPongView(match.view) : null;
+  const holdForThrow = match?.status === 'finished' && holdsForFinalThrow(matchId, cupPong);
   useEffect(() => {
-    if (match?.status === 'finished') router.replace(`/g/${matchId}/result` as Href);
-  }, [match?.status, matchId, router]);
+    if (match?.status === 'finished' && !holdForThrow) {
+      router.replace(`/g/${matchId}/result` as Href);
+    }
+  }, [match?.status, holdForThrow, matchId, router]);
 
   const opponent = match ? opponentOf(match, myId) : null;
   const oppName = opponent?.displayName || opponent?.username || 'your friend';
@@ -102,7 +108,31 @@ export function GameHostScreen({ matchId }: { matchId: string }) {
   } else {
     const pig = match.gameSlug === '_example' ? parsePigView(match.view) : null;
     const wordHunt = match.gameSlug === 'word-hunt' ? parseWordHuntView(match.view) : null;
-    body = wordHunt ? (
+    body = cupPong ? (
+      <View style={styles.flex}>
+        <CupPongBoard
+          matchId={match.id}
+          view={cupPong}
+          players={match.players}
+          myId={myId}
+          yourTurn={match.status === 'active' && match.currentTurn === myId}
+          busy={move.isPending}
+          moveFailed={move.isError}
+          onMove={(action) => move.mutate({ expectedVersion: match.stateVersion, action })}
+          onSettled={() => settle((n) => n + 1)}
+        />
+        {move.isError ? (
+          <Text
+            variant="footnote"
+            color="accent"
+            accessibilityLiveRegion="polite"
+            style={styles.text}
+          >
+            {authErrorMessage(move.error)}
+          </Text>
+        ) : null}
+      </View>
+    ) : wordHunt ? (
       <View style={styles.flex}>
         <WordHuntBoard
           matchId={match.id}
