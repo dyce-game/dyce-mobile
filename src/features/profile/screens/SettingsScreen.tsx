@@ -6,14 +6,16 @@ import { useQueryClient } from '@tanstack/react-query';
 import { Icon, Segmented, Text, useTheme } from '@dyce/ui';
 import { authErrorMessage } from '@/features/auth/messages';
 import { useMeQuery } from '@/features/avatar/use-avatar';
+import { NotificationSettings } from '@/features/notifications/NotificationSettings';
+import { unregisterDevice } from '@/features/notifications/push';
 import { authApi, sessionStore } from '@/lib/api';
 import { POLICY_NOTES, POLICY_OPTIONS } from '../profile-logic';
 import { useUpdateProfile } from '../use-profile';
 
 /**
- * Settings (design: Settings): who can add and message you (the one privacy control that exists: friend
- * requests and first messages already follow it), your account, blocked people, appearance, and Log out.
- * Notifications, "who can see me online", Pool limits, data export, delete account and Help & legal arrive
+ * Settings (design: Settings): who can add and message you (friend requests and first messages follow it), your
+ * account, blocked people, notification switches with quiet hours, appearance, and Log out.
+ * "Who can see me online", Pool limits, data export, delete account and Help & legal arrive
  * with those features (see BACKLOG); nothing here is a dead switch.
  */
 export function SettingsScreen() {
@@ -31,6 +33,7 @@ export function SettingsScreen() {
     const refresh = sessionStore.getState().tokens?.refreshToken;
     // tell the server so the session can't be reused; signing out here must work even when offline
     if (refresh) await authApi.logout(refresh).catch(() => undefined);
+    await unregisterDevice(); // stop pushing to this phone before the session goes
     client.clear();
     await sessionStore.getState().signOut();
     // pushed screens aren't behind the tab gate, so leave them explicitly
@@ -91,6 +94,8 @@ export function SettingsScreen() {
         <Card>
           <Row title="Blocked people" onPress={() => go('/settings/blocked')} last />
         </Card>
+
+        <NotificationSettings />
 
         <Text style={styles.label} color="sub">
           Appearance

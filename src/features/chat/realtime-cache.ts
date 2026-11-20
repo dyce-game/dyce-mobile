@@ -1,6 +1,7 @@
 import type { QueryClient } from '@tanstack/react-query';
-import { queryKeys, type MatchView, type RealtimeEvent } from '@dyce/shared';
+import { queryKeys, type MatchView, type RealtimeEvent, type SpaceView } from '@dyce/shared';
 import { newerMatch } from '../games/games-logic';
+import { newerSpace } from '../spaces/spaces-logic';
 import { upsertMessage, withPeerReadAt, type MessagesData } from './chat-logic';
 import type { TypingTracker } from './typing';
 
@@ -20,6 +21,8 @@ export function applyRealtimeEvent(
       void client.invalidateQueries({ queryKey: queryKeys.conversationsAll });
       void client.invalidateQueries({ queryKey: ['messages'] });
       void client.invalidateQueries({ queryKey: ['match'] });
+      void client.invalidateQueries({ queryKey: ['space'] });
+      void client.invalidateQueries({ queryKey: ['spaces'] });
       return;
 
     case 'message': {
@@ -49,6 +52,22 @@ export function applyRealtimeEvent(
         void client.invalidateQueries({ queryKey: queryKeys.wallet });
         void client.invalidateQueries({ queryKey: queryKeys.poolInfo });
       }
+      return;
+
+    case 'space':
+      // A space you sit in changed (someone sat down or left, it started, it ended): your own view of it.
+      client.setQueryData<SpaceView>(queryKeys.space(event.space.id), (cached) =>
+        newerSpace(cached, event.space),
+      );
+      void client.invalidateQueries({ queryKey: queryKeys.spaces('mine') });
+      if (event.space.mode === 'pool')
+        void client.invalidateQueries({ queryKey: queryKeys.wallet });
+      return;
+
+    case 'notification':
+      // Something new for the Notifications list: the count on the bell and the list itself refetch.
+      client.setQueryData(queryKeys.notificationUnread, { unread: event.unread });
+      void client.invalidateQueries({ queryKey: ['notifications', 'list'] });
       return;
 
     case 'typing':

@@ -1,0 +1,15 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": ["REPLACE_WITH_APPLE_TEAM_ID.games.dyce.app"],
+        "components": [
+          { "/": "/i/*", "comment": "SMS invite links" },
+          { "/": "/r/*", "comment": "Dyce Cash request QR links" },
+          { "/": "/u/*", "comment": "Profile links" },
+          { "/": "/s/*", "comment": "Space links" }
+        ]
+      }
+    ]
+  }
+}

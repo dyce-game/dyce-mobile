@@ -1,12 +1,11 @@
 import { MAX_DISPLAY_NAME_LENGTH, REQUEST_POLICIES } from '@dyce/shared';
 import {
-  BADGE_PREVIEW,
   POLICY_NOTES,
   POLICY_OPTIONS,
   friendsLabel,
   levelLabel,
   nameProblem,
-  profileStats,
+  statsFor,
   xpForLevel,
   xpLabel,
   xpProgress,
@@ -59,15 +58,20 @@ describe('XP bar', () => {
   });
 });
 
-describe('profile stats and badges', () => {
-  it('shows four stat cards and five locked badges', () => {
-    expect(profileStats().map((s) => s.label)).toEqual([
-      'Games',
-      'Win rate',
-      'Pool net',
-      'Best pot',
+describe('profile stats', () => {
+  it('reads as a fresh start before any game', () => {
+    expect(statsFor(undefined).map((s) => [s.label, s.value])).toEqual([
+      ['Games', '0'],
+      ['Win rate', '—'],
+      ['Pool net', '₦0'],
+      ['Best pot', '₦0'],
     ]);
-    expect(BADGE_PREVIEW).toHaveLength(5);
-    expect(new Set(BADGE_PREVIEW.map((b) => b.key)).size).toBe(5);
+  });
+  it('uses real numbers once there are games', () => {
+    const p = {
+      stats: { games: 8, wins: 5, winRate: 0.625, streak: 2, bestStreak: 3 },
+      money: { poolNetKobo: 250_000, bestPotKobo: 400_000 },
+    } as Parameters<typeof statsFor>[0];
+    expect(statsFor(p).map((s) => s.value)).toEqual(['8', '63%', '₦2,500', '₦4,000']);
   });
 });

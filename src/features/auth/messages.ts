@@ -97,6 +97,8 @@ export function authErrorMessage(err: unknown): string {
       return "Top-ups are for when you're running low.";
     case 'transaction_not_found':
       return "We couldn't find that receipt.";
+    case 'search_rate_limited':
+      return 'You have searched a lot today. Try again tomorrow.';
     case 'reports_rate_limited':
       return "You've sent a lot of reports today. Try again tomorrow.";
     case 'conversation_not_found':
@@ -144,6 +146,54 @@ export function authErrorMessage(err: unknown): string {
     case 'invalid_action':
     case 'illegal_move':
       return "That move isn't allowed.";
+    case 'space_not_found':
+      return "That space isn't there. Check the code and try again.";
+    case 'space_id_taken':
+      return 'Something went wrong opening that space. Please try again.';
+    case 'space_full':
+      return 'That space is full.';
+    case 'space_not_open':
+      return 'That space has already started or closed.';
+    case 'space_live':
+      return "The game has started. Leave from the table, and you'll forfeit.";
+    case 'space_friends_only':
+      return "That space is for the host's friends. Ask them to add you.";
+    case 'space_removed':
+      return 'The host removed you from that space.';
+    case 'not_space_host':
+      return 'Only the host can do that.';
+    case 'not_enough_players':
+      return "There aren't enough players to start yet.";
+    case 'invalid_seats':
+      return "That game doesn't play with that many seats.";
+    case 'invalid_payout':
+      return 'Pick a payout that fits the number of seats.';
+    case 'spaces_limit':
+      return "You're in a lot of spaces already. Leave one first.";
+    case 'room_unavailable':
+      return "The table isn't ready. Try again in a moment.";
+    case 'already_on_dyce':
+      return 'They are already on Dyce. Add them as a friend instead.';
+    case 'invite_rate_limited':
+      return "You've sent a lot of invites today. They reset at midnight.";
+    case 'invite_number_limited':
+      return 'That number has had enough invites for today. Try again tomorrow.';
+    case 'invite_too_soon':
+      return retry
+        ? `You just invited them. You can send another in ${formatWait(retry)}.`
+        : 'You just invited them. Give it a minute.';
+    case 'invite_not_found':
+      return "This invite link isn't valid. Ask for a new one.";
+    case 'invite_expired':
+      return 'This invite has expired. Ask them to send a new one.';
+    case 'invite_used':
+      return 'This invite has already been used.';
+    case 'guest_already_played':
+      return 'This invite was already played on another device or tab.';
+    case 'guest_unauthorized':
+      return 'This round timed out. Start again from the invite link.';
+    case 'guest_game_unavailable':
+      return "This game can't be played in a browser yet. Get Dyce to play it.";
     default:
       return 'Something went wrong. Please try again.';
   }

@@ -1,4 +1,9 @@
-import { MAX_DISPLAY_NAME_LENGTH, type RequestPolicy } from '@dyce/shared';
+import {
+  formatNaira,
+  MAX_DISPLAY_NAME_LENGTH,
+  type RequestPolicy,
+  type UserProfile,
+} from '@dyce/shared';
 
 export const POLICY_OPTIONS: { key: RequestPolicy; label: string }[] = [
   { key: 'everyone', label: 'Everyone' },
@@ -44,24 +49,25 @@ export function xpLabel(level: number, xp: number): string {
 
 export type ProfileStat = { key: string; label: string; value: string; money?: boolean };
 
-/** The four stat cards. Nothing has been played yet, so they read as a fresh start until games record results. */
-export function profileStats(): ProfileStat[] {
+/** The four stat cards, from your real finished games ("—" and ₦0 before the first one). */
+export function statsFor(p: UserProfile | undefined): ProfileStat[] {
+  const rate = p?.stats.winRate;
   return [
-    { key: 'games', label: 'Games', value: '0' },
-    { key: 'winRate', label: 'Win rate', value: '—' },
-    { key: 'poolNet', label: 'Pool net', value: '₦0', money: true },
-    { key: 'bestPot', label: 'Best pot', value: '₦0' },
+    { key: 'games', label: 'Games', value: String(p?.stats.games ?? 0) },
+    { key: 'winRate', label: 'Win rate', value: rate == null ? '—' : `${Math.round(rate * 100)}%` },
+    {
+      key: 'poolNet',
+      label: 'Pool net',
+      value: formatNaira(p?.money?.poolNetKobo ?? 0, { compact: true }),
+      money: true,
+    },
+    {
+      key: 'bestPot',
+      label: 'Best pot',
+      value: formatNaira(p?.money?.bestPotKobo ?? 0, { compact: true }),
+    },
   ];
 }
-
-/** Badges named in the SPEC, shown locked until earned (the badge system arrives with games). */
-export const BADGE_PREVIEW: { key: string; name: string; mark: string; color: string }[] = [
-  { key: 'first-win', name: 'First Win', mark: '1st', color: '#2BB673' },
-  { key: 'streak-10', name: '10 Streak', mark: '10', color: '#C2410C' },
-  { key: 'pool-shark', name: 'Pool Shark', mark: '₦', color: '#C93E1C' },
-  { key: 'space-host', name: 'Space Host', mark: '4+', color: '#B37A00' },
-  { key: 'whot-master', name: 'Whot Master', mark: 'W', color: '#9AA0AE' },
-];
 
 /** Whether a typed name can be saved, and what to tell the person when it can't. */
 export function nameProblem(raw: string): string | null {

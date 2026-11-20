@@ -16,6 +16,7 @@ import { authApi, sessionStore } from '@/lib/api';
 import { track } from '@/lib/analytics';
 import { ApiError } from '../api-client';
 import { AuthHeader } from '../components/AuthHeader';
+import { claimInviteAfterSignup } from '@/features/invites/claim';
 import { authErrorMessage } from '../messages';
 import { hrefForStep } from '../routes';
 import { useDebounced } from '../use-debounced';
@@ -51,6 +52,8 @@ export function UsernameScreen() {
     onSuccess: async (me) => {
       sessionStore.getState().setNextStep(me.nextStep);
       track({ name: 'signup_completed', step: 'username' });
+      // The profile exists now: join any invite that was texted to this number (never blocks sign-up).
+      await claimInviteAfterSignup();
       router.replace(hrefForStep(me.nextStep) as Href);
     },
     onError: (err) => {

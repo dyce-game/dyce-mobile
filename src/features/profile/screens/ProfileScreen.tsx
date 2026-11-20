@@ -5,7 +5,10 @@ import { Icon, Text, brand, useTheme } from '@dyce/ui';
 import { useMeQuery } from '@/features/avatar/use-avatar';
 import { UserAvatar } from '@/features/avatar/UserAvatar';
 import { useFriendsQuery } from '@/features/friends/use-friends';
-import { BADGE_PREVIEW, friendsLabel, profileStats, xpLabel, xpProgress } from '../profile-logic';
+import { resultLabel } from '@/features/discovery/discovery-logic';
+import { useBadgesQuery, useUserProfileQuery } from '@/features/discovery/use-discovery';
+import { useUnreadCount } from '@/features/notifications/use-notifications';
+import { friendsLabel, statsFor, xpLabel, xpProgress } from '../profile-logic';
 
 /**
  * My profile (design: Profile): back, share, notifications and settings; the avatar with its edit button; name
@@ -19,6 +22,9 @@ export function ProfileScreen() {
   const me = useMeQuery();
   const friends = useFriendsQuery();
   const profile = me.data?.profile;
+  const mine = useUserProfileQuery(profile?.username);
+  const allBadges = useBadgesQuery().data?.badges ?? [];
+  const unread = useUnreadCount();
   const name = profile?.displayName || profile?.username || 'You';
   const count = friends.data?.friends.length ?? 0;
   const go = (href: string) => router.push(href as Href);
@@ -40,7 +46,12 @@ export function ProfileScreen() {
         <IconButton label="Back" icon="back" size={24} onPress={back} />
         <View style={styles.right}>
           <IconButton label="Share profile" icon="share" onPress={() => void share()} />
-          <IconButton label="Notifications" icon="bell" onPress={() => go('/notifications')} />
+          <IconButton
+            label={unread > 0 ? `Notifications, ${unread} unread` : 'Notifications'}
+            icon="bell"
+            badge={unread}
+            onPress={() => go('/notifications')}
+          />
           <IconButton label="Settings" icon="gear" onPress={() => go('/settings')} />
         </View>
       </View>
@@ -106,7 +117,9 @@ export function ProfileScreen() {
 
         <Pressable
           accessibilityRole="button"
-          accessibilityLabel="Notifications, nothing new"
+          accessibilityLabel={
+            unread > 0 ? `Notifications, ${unread} unread` : 'Notifications, nothing new'
+          }
           onPress={() => go('/notifications')}
           style={[styles.notif, { backgroundColor: colors.bg2 }]}
         >
@@ -122,13 +135,30 @@ export function ProfileScreen() {
           <View style={styles.notifBody}>
             <Text style={styles.notifTitle}>Notifications</Text>
             <Text style={styles.notifSub} color="sub">
-              Nothing new
+              {unread > 0 ? `${unread} unread` : 'Nothing new'}
+            </Text>
+          </View>
+        </Pressable>
+
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Leaderboard, this week"
+          onPress={() => go('/leaderboard')}
+          style={[styles.notif, { backgroundColor: colors.bg2, marginTop: 10 }]}
+        >
+          <View style={[styles.tile, { backgroundColor: '#B37A00' }]} aria-hidden>
+            <Icon name="friends" size={18} color="#FFFFFF" strokeWidth={2.2} />
+          </View>
+          <View style={styles.notifBody}>
+            <Text style={styles.notifTitle}>Leaderboard</Text>
+            <Text style={styles.notifSub} color="sub">
+              This week, among friends and everyone
             </Text>
           </View>
         </Pressable>
 
         <View style={styles.stats}>
-          {profileStats().map((s) => (
+          {statsFor(mine.data).map((s) => (
             <View
               key={s.key}
               style={[styles.stat, { backgroundColor: colors.bg2 }]}
@@ -149,6 +179,16 @@ export function ProfileScreen() {
           <Text style={styles.section} accessibilityRole="header">
             Badges
           </Text>
+          <Pressable
+            accessibilityRole="link"
+            accessibilityLabel="See all badges"
+            onPress={() => go('/profile/badges')}
+            style={styles.seeAll}
+          >
+            <Text style={{ color: colors.accent, fontSize: 14, fontFamily: 'Figtree_700Bold' }}>
+              See all
+            </Text>
+          </Pressable>
         </View>
         <ScrollView
           horizontal
@@ -156,12 +196,12 @@ export function ProfileScreen() {
           contentContainerStyle={styles.badges}
           style={styles.badgeScroll}
         >
-          {BADGE_PREVIEW.map((b) => (
+          {allBadges.map((b) => (
             <View
-              key={b.key}
-              style={styles.badge}
+              key={b.slug}
+              style={[styles.badge, b.earnedAt ? styles.earned : null]}
               accessible
-              accessibilityLabel={`${b.name}, not earned yet`}
+              accessibilityLabel={`${b.name}, ${b.earnedAt ? 'earned' : 'not earned yet'}`}
             >
               <View style={[styles.badgeTile, { backgroundColor: b.color }]}>
                 <Text style={styles.badgeMark}>{b.mark}</Text>
@@ -170,16 +210,46 @@ export function ProfileScreen() {
             </View>
           ))}
         </ScrollView>
-        <Text color="sub" style={styles.empty}>
-          Win games to earn badges.
-        </Text>
+        {allBadges.some((b) => b.earnedAt) ? null : (
+          <Text color="sub" style={styles.empty}>
+            Win games to earn badges.
+          </Text>
+        )}
 
         <Text style={[styles.section, styles.recent]} accessibilityRole="header">
           Recent games
         </Text>
-        <Text color="sub" style={styles.empty}>
-          No games yet. Your finished games show up here.
-        </Text>
+        {(mine.data?.recentGames ?? []).length === 0 ? (
+          <Text color="sub" style={styles.empty}>
+            No games yet. Your finished games show up here.
+          </Text>
+        ) : (
+          mine.data!.recentGames!.map((g) => (
+            <View
+              key={g.matchId}
+              style={[styles.game, { borderColor: colors.line }]}
+              accessible
+              accessibilityLabel={`${g.gameName}, ${resultLabel(g.result)}, ${g.mode === 'pool' ? 'Pool' : 'Free'}`}
+            >
+              <View style={styles.gameBody}>
+                <Text style={styles.gameName}>{g.gameName}</Text>
+                <Text color="sub" style={styles.statLabel}>
+                  {g.isSpace ? 'Space' : g.against ? `vs @${g.against}` : ''} ·{' '}
+                  {g.mode === 'pool' ? 'Pool' : 'Free'}
+                </Text>
+              </View>
+              <Text
+                style={{
+                  fontSize: 14,
+                  fontFamily: 'Figtree_700Bold',
+                  color: g.result === 'win' ? colors.money : colors.sub,
+                }}
+              >
+                {resultLabel(g.result)}
+              </Text>
+            </View>
+          ))
+        )}
       </ScrollView>
     </SafeAreaView>
   );
@@ -189,11 +259,13 @@ function IconButton({
   label,
   icon,
   size = 22,
+  badge = 0,
   onPress,
 }: {
   label: string;
   icon: 'back' | 'share' | 'bell' | 'gear';
   size?: number;
+  badge?: number;
   onPress: () => void;
 }) {
   const { colors } = useTheme();
@@ -205,6 +277,11 @@ function IconButton({
       style={styles.iconBtn}
     >
       <Icon name={icon} size={size} color={colors.text} strokeWidth={icon === 'back' ? 2.2 : 2} />
+      {badge > 0 ? (
+        <View style={[styles.bellBadge, { borderColor: colors.bg }]} aria-hidden>
+          <Text style={styles.bellBadgeText}>{badge > 9 ? '9+' : badge}</Text>
+        </View>
+      ) : null}
     </Pressable>
   );
 }
@@ -295,5 +372,31 @@ const styles = StyleSheet.create({
     lineHeight: 13,
     fontFamily: 'Figtree_600SemiBold',
   },
+  bellBadge: {
+    position: 'absolute',
+    top: 2,
+    right: 0,
+    minWidth: 18,
+    height: 18,
+    borderRadius: 9,
+    borderWidth: 2,
+    paddingHorizontal: 3,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: brand.ember.fill,
+  },
+  bellBadgeText: { color: '#FFFFFF', fontSize: 9, fontFamily: 'Figtree_800ExtraBold' },
+  seeAll: { minHeight: 44, minWidth: 44, justifyContent: 'center', alignItems: 'flex-end' },
+  earned: { opacity: 1 },
+  game: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginHorizontal: 16,
+    minHeight: 52,
+    borderBottomWidth: 1,
+    gap: 12,
+  },
+  gameBody: { flex: 1 },
+  gameName: { fontSize: 15, fontFamily: 'Figtree_600SemiBold' },
   empty: { fontSize: 13, paddingHorizontal: 16, paddingTop: 8, fontFamily: 'Figtree_500Medium' },
 });

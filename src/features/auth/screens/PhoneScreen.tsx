@@ -15,6 +15,8 @@ import { OtpInput, Text, TextField, TokenButton, useTheme } from '@dyce/ui';
 import { authApi, sessionStore } from '@/lib/api';
 import { track } from '@/lib/analytics';
 import { AuthHeader } from '../components/AuthHeader';
+import { getPendingInvite } from '@/features/invites/pending-invite';
+import { splitDial } from '@/features/invites/invite-link';
 import { authErrorMessage } from '../messages';
 import { hrefForStep } from '../routes';
 
@@ -61,6 +63,24 @@ export function PhoneScreen() {
   const submitting = useRef(false);
 
   const e164 = normalizePhone(phone, country.code);
+
+  // Arrived from an invite link: start with the number the invite was texted to (it never left this device).
+  useEffect(() => {
+    let alive = true;
+    void getPendingInvite().then((invite) => {
+      if (!alive || !invite?.phone) return;
+      const split = splitDial(
+        invite.phone,
+        COUNTRIES.map((c) => c.dial),
+      );
+      if (!split) return;
+      setCountry(COUNTRIES.find((c) => c.dial === split.dial) ?? COUNTRIES[0]!);
+      setPhone((current) => (current === '' ? split.national : current));
+    });
+    return () => {
+      alive = false;
+    };
+  }, []);
 
   // resend countdown
   useEffect(() => {

@@ -4,7 +4,7 @@ import { useRouter, type Href } from 'expo-router';
 import { Icon, Text, brand, useTheme } from '@dyce/ui';
 import { useMeQuery } from '@/features/avatar/use-avatar';
 import { UserAvatar } from '@/features/avatar/UserAvatar';
-import { useFriendRequestsQuery } from '@/features/friends/use-friends';
+import { useUnreadCount } from '@/features/notifications/use-notifications';
 
 /**
  * Tab title row. Profile avatar top-left (ember ring), optional "+" top-right (Chat and Spaces only).
@@ -27,7 +27,7 @@ export function TabHeader({
 }) {
   const { colors } = useTheme();
   const router = useRouter();
-  const waiting = useFriendRequestsQuery().data?.incoming.length ?? 0;
+  const waiting = useUnreadCount();
   const mine = useMeQuery().data?.profile;
   return (
     <View style={styles.wrap}>
@@ -36,7 +36,7 @@ export function TabHeader({
           accessibilityRole="button"
           accessibilityLabel={
             waiting > 0
-              ? `My profile, ${waiting} ${waiting === 1 ? 'friend request' : 'friend requests'} waiting`
+              ? `My profile, ${waiting} unread ${waiting === 1 ? 'notification' : 'notifications'}`
               : 'My profile'
           }
           onPress={() => router.push('/profile' as Href)}

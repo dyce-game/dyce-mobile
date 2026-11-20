@@ -7,6 +7,12 @@ import type { ConfigContext, ExpoConfig } from 'expo/config';
  */
 const BUNDLE_ID = 'games.dyce.app';
 const DOMAIN = 'dyce.games';
+/**
+ * Universal links (iOS) and app links (Android) for https://dyce.games. The app side is configured here; the
+ * domain side needs the two files in public/.well-known (apple-app-site-association, assetlinks.json) served
+ * from dyce.games with the Apple team id and the Play signing fingerprint filled in. Both need store accounts
+ * (docs/BACKLOG.md). Until then invite links open the guest web game, and dyce://i/<token> opens the app.
+ */
 const LINK_PATHS = ['/i', '/r', '/u', '/s']; // invite, QR request, user, space
 
 export default ({ config }: ConfigContext): ExpoConfig => ({
@@ -57,6 +63,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     'expo-font',
     'expo-splash-screen',
     'expo-status-bar',
+    'expo-notifications',
     [
       'expo-contacts',
       {
@@ -69,6 +76,9 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   extra: {
     apiUrl: process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:3000',
     gameServerUrl: process.env.EXPO_PUBLIC_GAME_SERVER_URL ?? 'ws://localhost:2567',
+    // Store pages for the invite landing page's "Get it on iPhone / Android"; unset until the listings exist.
+    iosStoreUrl: process.env.EXPO_PUBLIC_IOS_STORE_URL ?? null,
+    androidStoreUrl: process.env.EXPO_PUBLIC_ANDROID_STORE_URL ?? null,
     sentryDsn: process.env.EXPO_PUBLIC_SENTRY_DSN ?? null,
     posthogKey: process.env.EXPO_PUBLIC_POSTHOG_KEY ?? null,
   },

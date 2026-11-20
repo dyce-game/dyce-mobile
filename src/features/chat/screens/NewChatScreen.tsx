@@ -7,6 +7,9 @@ import { PillButton } from '@/components/PillButton';
 import { ScreenHeader } from '@/components/ScreenHeader';
 import { authErrorMessage } from '@/features/auth/messages';
 import { FindByUsername } from '@/features/contacts/components/FindByUsername';
+import { useInvitableContacts } from '@/features/contacts/use-invitable-contacts';
+import { InviteSection } from '@/features/invites/components/InviteSection';
+import { sessionStore } from '@/lib/api';
 import { FriendRow } from '@/features/friends/components/FriendRow';
 import { useFriendsQuery } from '@/features/friends/use-friends';
 import { useOpenDirect } from '../use-chat';
@@ -20,6 +23,7 @@ export function NewChatScreen() {
   const { colors } = useTheme();
   const friends = useFriendsQuery();
   const open = useOpenDirect();
+  const invitable = useInvitableContacts();
   const [error, setError] = useState<string | undefined>();
   const [pending, setPending] = useState<string | null>(null);
 
@@ -89,6 +93,25 @@ export function NewChatScreen() {
 
         <View style={styles.find}>
           <FindByUsername onMessage={(user) => start(user.id)} messaging={pending} />
+        </View>
+
+        <View style={styles.find}>
+          <InviteSection
+            contacts={invitable.data?.contacts ?? []}
+            country={sessionStore.getState().country ?? undefined}
+          />
+          {invitable.data?.permission === 'needed' ? (
+            <View style={styles.block}>
+              <Text variant="footnote" color="sub">
+                Allow contacts to see who you can invite from your address book.
+              </Text>
+              <TokenButton
+                label="Find contacts to invite"
+                tone="chip"
+                onPress={() => router.push('/friends/contacts' as Href)}
+              />
+            </View>
+          ) : null}
         </View>
       </ScrollView>
     </SafeAreaView>

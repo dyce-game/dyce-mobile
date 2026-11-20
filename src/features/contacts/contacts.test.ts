@@ -1,6 +1,6 @@
 import type { ContactsMatchResponse, PublicUser } from '@dyce/shared';
 import { prepareContacts } from '@dyce/shared';
-import { addAction, syncContacts, withRelationship } from './sync';
+import { addAction, syncContacts, syncContactsWithInvitable, withRelationship } from './sync';
 
 const user = (id: string, relationship: PublicUser['relationship'] = 'none'): PublicUser => ({
   id,
@@ -115,5 +115,30 @@ describe('withRelationship', () => {
     const next = withRelationship(list, 'b', 'pending_out');
     expect(next.map((i) => i.user.relationship)).toEqual(['none', 'pending_out']);
     expect(list[1]!.user.relationship).toBe('none'); // original untouched
+  });
+});
+
+describe('syncContactsWithInvitable', () => {
+  it('returns named contacts nobody on Dyce owns, A-Z, and skips matched or unnamed ones', async () => {
+    const prepared = {
+      numbers: ['+2348031111111', '+2348032222222', '+2348033333333', '+2348034444444'],
+      labels: ['Mum', 'Zainab', 'Bode', ''],
+    };
+    const { matchBatch } = fakeServer({ '+2348031111111': user('m') });
+    const res = await syncContactsWithInvitable(prepared, matchBatch);
+    expect(res.matches.map((m) => m.user.id)).toEqual(['m']);
+    expect(res.invitable).toEqual([
+      { key: '+2348033333333', name: 'Bode', e164: '+2348033333333' },
+      { key: '+2348032222222', name: 'Zainab', e164: '+2348032222222' },
+    ]);
+  });
+
+  it('translates positions across batches', async () => {
+    const numbers = Array.from({ length: 700 }, (_, i) => `+23480${String(30000000 + i)}`);
+    const prepared = { numbers, labels: numbers.map((_, i) => `C${i}`) };
+    const { matchBatch } = fakeServer({ [numbers[600]!]: user('x') });
+    const res = await syncContactsWithInvitable(prepared, matchBatch);
+    expect(res.invitable).toHaveLength(699);
+    expect(res.invitable.some((c) => c.e164 === numbers[600])).toBe(false);
   });
 });

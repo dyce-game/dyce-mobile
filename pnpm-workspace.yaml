@@ -9,3 +9,4 @@ verifyDepsBeforeRun: false
 
 allowBuilds:
   '@swc/core': true
+  msgpackr-extract: set this to true or false

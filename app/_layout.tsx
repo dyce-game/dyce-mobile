@@ -4,6 +4,8 @@ import { StatusBar } from 'expo-status-bar';
 import { useTheme } from '@dyce/ui';
 import { useBootstrapSession } from '@/features/auth/use-session';
 import { RealtimeBridge } from '@/features/chat/RealtimeBridge';
+import { PushBridge } from '@/features/notifications/PushBridge';
+import { PendingInviteRedirect } from '@/features/invites/PendingInviteRedirect';
 import { AppProviders } from '@/providers/AppProviders';
 import { hideSplash, useAppFonts } from '@/providers/fonts';
 
@@ -47,6 +49,8 @@ export default function RootLayout() {
   return (
     <AppProviders>
       <RealtimeBridge />
+      <PushBridge />
+      <PendingInviteRedirect />
       <ThemedStack />
     </AppProviders>
   );

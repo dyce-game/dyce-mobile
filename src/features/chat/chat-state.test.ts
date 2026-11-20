@@ -245,6 +245,12 @@ describe('applyRealtimeEvent', () => {
   it('refreshes everything after (re)connecting, to catch up on what was missed', () => {
     const { client, typing, invalidated } = setup();
     applyRealtimeEvent(client, { type: 'ready' }, ME, typing);
-    expect(invalidated).toEqual([queryKeys.conversationsAll, ['messages'], ['match']]);
+    expect(invalidated).toEqual([
+      queryKeys.conversationsAll,
+      ['messages'],
+      ['match'],
+      ['space'],
+      ['spaces'],
+    ]);
   });
 });

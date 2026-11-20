@@ -20,7 +20,13 @@ import {
   requestContactsPermission,
   type PermissionInfo,
 } from '../device-contacts';
-import { syncContacts, withRelationship, type SyncedMatch } from '../sync';
+import { InviteSection } from '@/features/invites/components/InviteSection';
+import {
+  syncContactsWithInvitable,
+  withRelationship,
+  type InvitableContact,
+  type SyncedMatch,
+} from '../sync';
 
 type Stage = 'checking' | 'intro' | 'syncing' | 'results' | 'denied';
 
@@ -39,6 +45,7 @@ export function ContactsScreen({ mode = 'onboarding' }: { mode?: 'onboarding' | 
   const [stage, setStage] = useState<Stage>('checking');
   const [permission, setPermission] = useState<PermissionInfo | null>(null);
   const [matches, setMatches] = useState<SyncedMatch[]>([]);
+  const [invitable, setInvitable] = useState<InvitableContact[]>([]);
   const [progress, setProgress] = useState<{ done: number; total: number } | null>(null);
   const [error, setError] = useState<string | undefined>();
   const [addingId, setAddingId] = useState<string | null>(null);
@@ -65,12 +72,13 @@ export function ContactsScreen({ mode = 'onboarding' }: { mode?: 'onboarding' | 
       // device region as a fallback. The device region alone is wrong for e.g. a Nigerian on a US-region phone.
       const region = sessionStore.getState().country ?? getLocales()[0]?.regionCode ?? undefined;
       const prepared = prepareContacts(contacts, region);
-      const found = await syncContacts(
+      const found = await syncContactsWithInvitable(
         prepared,
         (numbers) => contactsApi.match(numbers),
         (done, total) => setProgress({ done, total }),
       );
-      setMatches(found);
+      setMatches(found.matches);
+      setInvitable(found.invitable);
     } catch (err) {
       setError(authErrorMessage(err));
     } finally {
@@ -228,6 +236,15 @@ export function ContactsScreen({ mode = 'onboarding' }: { mode?: 'onboarding' | 
         {stage === 'results' || stage === 'denied' ? (
           <View style={styles.find}>
             <FindByUsername />
+          </View>
+        ) : null}
+
+        {stage === 'results' || stage === 'denied' ? (
+          <View style={styles.find}>
+            <InviteSection
+              contacts={stage === 'results' ? invitable : []}
+              country={sessionStore.getState().country ?? undefined}
+            />
           </View>
         ) : null}
       </ScrollView>

@@ -5,8 +5,12 @@ import { jwtExpiresAt } from '@/features/auth/jwt';
 import { createChatApi } from '@/features/chat/chat-api';
 import { createContactsApi } from '@/features/contacts/contacts-api';
 import { createFriendsApi } from '@/features/friends/friends-api';
+import { createDiscoveryApi } from '@/features/discovery/discovery-api';
 import { createGamesApi } from '@/features/games/games-api';
+import { createInvitesApi } from '@/features/invites/invites-api';
+import { createNotificationsApi } from '@/features/notifications/notifications-api';
 import { createSafetyApi } from '@/features/safety/safety-api';
+import { createSpacesApi } from '@/features/spaces/spaces-api';
 import { createWalletApi } from '@/features/wallet/wallet-api';
 import { config } from './config';
 import { secureStorage } from './storage';
@@ -27,6 +31,10 @@ export const chatApi = createChatApi(api);
 export const walletApi = createWalletApi(api);
 export const gamesApi = createGamesApi(api);
 export const safetyApi = createSafetyApi(api);
+export const spacesApi = createSpacesApi(api);
+export const discoveryApi = createDiscoveryApi(api);
+export const notificationsApi = createNotificationsApi(api);
+export const invitesApi = createInvitesApi(api, config.apiUrl);
 
 /**
  * An access token that is good for at least another minute, refreshing first if it isn't. Used before
