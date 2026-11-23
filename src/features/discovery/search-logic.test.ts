@@ -17,6 +17,7 @@ const game = (name: string, categories: string[] = []): GameInfo => ({
   maxPlayers: 2,
   categories,
   supportsPool: true,
+  poolMinKobo: null,
 });
 
 describe('recent searches', () => {

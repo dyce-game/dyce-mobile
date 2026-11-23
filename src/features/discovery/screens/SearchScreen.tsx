@@ -7,6 +7,7 @@ import { Icon, Text, TextField, useTheme } from '@dyce/ui';
 import { authErrorMessage } from '@/features/auth/messages';
 import { useDebounced } from '@/features/auth/use-debounced';
 import { UserAvatar } from '@/features/avatar/UserAvatar';
+import { conversationTitle } from '@/features/chat/chat-logic';
 import { useConversationsQuery } from '@/features/chat/use-chat';
 import { useGamesQuery } from '@/features/games/use-games';
 import { useSpaceLookup, useSpacesQuery } from '@/features/spaces/use-spaces';
@@ -22,6 +23,7 @@ import {
   placeholderFor,
   scopeFrom,
 } from '../search-logic';
+import { SpaceResultRow } from '../components/SpaceResultRow';
 import { usePeopleSearch } from '../use-discovery';
 
 const RECENTS_KEY = 'dyce.recent-searches';
@@ -40,6 +42,8 @@ export function SearchScreen() {
   const [text, setText] = useState('');
   const q = useDebounced(text.trim().replace(/^@/, '').toLowerCase(), 250);
   const [recents, setRecents] = useState<string[]>([]);
+  // Spaces scope: narrow the results to people or spaces (design: SpaceSearch).
+  const [only, setOnly] = useState<'all' | 'people' | 'spaces'>('all');
 
   useEffect(() => {
     void secureStorage.getItem(RECENTS_KEY).then((raw) => setRecents(parseRecents(raw)));
@@ -151,26 +155,49 @@ export function SearchScreen() {
           )
         ) : null}
 
-        {foundSpace ? (
-          <Section title="Space found">
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel={`Open space ${foundSpace.name}, code ${foundSpace.code}`}
-              onPress={() => go(`/s/${foundSpace.code}`, foundSpace.code)}
-              style={[styles.row, { borderColor: colors.line }]}
-            >
-              <Icon name="planet" size={22} color={colors.accent} />
-              <View style={styles.body}>
-                <Text style={styles.rowTitle}>{foundSpace.name}</Text>
-                <Text color="sub" style={styles.rowSub}>
-                  {foundSpace.gameName} · {foundSpace.code}
+        {searching && scope === 'spaces' ? (
+          <View style={styles.chips} accessibilityRole="tablist">
+            {(
+              [
+                ['all', 'All'],
+                ['people', `People ${peopleList.length}`],
+                ['spaces', `Spaces ${spaceHits.length + (foundSpace ? 1 : 0)}`],
+              ] as const
+            ).map(([id, label]) => (
+              <Pressable
+                key={id}
+                accessibilityRole="tab"
+                accessibilityLabel={label}
+                accessibilityState={{ selected: only === id }}
+                onPress={() => setOnly(id)}
+                style={[styles.chip, { backgroundColor: only === id ? colors.ink : colors.chip }]}
+              >
+                <Text
+                  style={{
+                    fontFamily: 'Figtree_600SemiBold',
+                    fontSize: 14,
+                    color: only === id ? colors.inkText : colors.text,
+                  }}
+                >
+                  {label}
                 </Text>
-              </View>
-            </Pressable>
+              </Pressable>
+            ))}
+          </View>
+        ) : null}
+
+        {foundSpace && only !== 'people' ? (
+          <Section title="Space found">
+            <SpaceResultRow
+              space={foundSpace}
+              onPress={() => go(`/s/${foundSpace.code}`, foundSpace.code)}
+            />
           </Section>
         ) : null}
 
-        {searching && (people.isFetching || peopleList.length > 0 || people.isError) ? (
+        {searching &&
+        only !== 'spaces' &&
+        (people.isFetching || peopleList.length > 0 || people.isError) ? (
           <Section title="People">
             {people.isError ? (
               <Text color="accent" style={styles.hint} accessibilityLiveRegion="polite">
@@ -194,17 +221,13 @@ export function SearchScreen() {
               <Pressable
                 key={c.id}
                 accessibilityRole="button"
-                accessibilityLabel={`Open chat with ${c.peer.displayName || c.peer.username}`}
+                accessibilityLabel={`Open chat with ${conversationTitle(c)}`}
                 onPress={() => go(`/c/${c.id}`, q)}
                 style={[styles.row, { borderColor: colors.line }]}
               >
-                <UserAvatar
-                  avatar={c.peer.avatar}
-                  name={c.peer.displayName || c.peer.username}
-                  size={40}
-                />
+                <UserAvatar avatar={c.peer?.avatar} name={conversationTitle(c)} size={40} />
                 <View style={styles.body}>
-                  <Text style={styles.rowTitle}>{c.peer.displayName || c.peer.username}</Text>
+                  <Text style={styles.rowTitle}>{conversationTitle(c)}</Text>
                   {c.lastMessage?.body ? (
                     <Text color="sub" style={styles.rowSub} numberOfLines={1}>
                       {c.lastMessage.body}
@@ -238,24 +261,10 @@ export function SearchScreen() {
           </Section>
         ) : null}
 
-        {spaceHits.length > 0 ? (
+        {spaceHits.length > 0 && only !== 'people' ? (
           <Section title="Your spaces">
-            {spaceHits.map((s) => (
-              <Pressable
-                key={s.id}
-                accessibilityRole="button"
-                accessibilityLabel={`Open space ${s.name}`}
-                onPress={() => go(`/space/${s.id}`, q)}
-                style={[styles.row, { borderColor: colors.line }]}
-              >
-                <Icon name="planet" size={20} color={colors.accent} />
-                <View style={styles.body}>
-                  <Text style={styles.rowTitle}>{s.name}</Text>
-                  <Text color="sub" style={styles.rowSub}>
-                    {s.gameName} · {s.code}
-                  </Text>
-                </View>
-              </Pressable>
+            {spaceHits.map((sp) => (
+              <SpaceResultRow key={sp.id} space={sp} onPress={() => go(`/space/${sp.id}`, q)} />
             ))}
           </Section>
         ) : null}
@@ -389,6 +398,8 @@ const styles = StyleSheet.create({
   rowTitle: { fontSize: 16, fontFamily: 'Figtree_600SemiBold' },
   rowSub: { fontSize: 13 },
   tag: { fontSize: 12, fontFamily: 'Figtree_600SemiBold' },
+  chips: { flexDirection: 'row', gap: 8, paddingTop: 8 },
+  chip: { minHeight: 44, paddingHorizontal: 16, borderRadius: 22, justifyContent: 'center' },
   empty: { paddingTop: 40, alignItems: 'center', gap: 6 },
   emptyTitle: { fontSize: 20, fontFamily: 'BricolageGrotesque_700Bold', textAlign: 'center' },
 });

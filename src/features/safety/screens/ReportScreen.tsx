@@ -24,6 +24,7 @@ export function ReportScreen() {
     name?: string;
     avatar?: string;
     conversationId?: string;
+    messageId?: string;
   }>();
   const report = useReportUser();
   const [reason, setReason] = useState<ReportReason | null>(null);
@@ -42,6 +43,7 @@ export function ReportScreen() {
       userId: params.userId,
       reason,
       conversationId: hasChat ? params.conversationId : undefined,
+      messageId: hasChat && params.messageId ? params.messageId : undefined,
       alsoBlock,
     });
   }

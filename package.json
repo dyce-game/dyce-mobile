@@ -20,7 +20,9 @@
     "e2e": "maestro test e2e/",
     "format": "prettier --write \"**/*.{ts,tsx,js,cjs,mjs,json,md,yml}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,cjs,mjs,json,md,yml}\"",
-    "prepare": "husky"
+    "prepare": "husky",
+    "eas-build-pre-install": "node tools/release/fetch-backend.mjs",
+    "release:check": "node tools/release/check-release-config.mjs"
   },
   "dependencies": {
     "@dyce/games": "link:../dyce-backend/packages/games",
@@ -30,6 +32,7 @@
     "@expo-google-fonts/figtree": "^0.4.1",
     "@expo/metro-runtime": "~58.0.17",
     "@react-three/fiber": "^9.8.2",
+    "@sentry/react-native": "~8.28.0",
     "@tanstack/react-query": "^5.107.1",
     "colyseus.js": "^0.16.22",
     "expo": "^58.0.25",
@@ -44,8 +47,10 @@
     "expo-notifications": "~58.1.9",
     "expo-router": "^58.0.31",
     "expo-secure-store": "~58.0.3",
+    "expo-sensors": "~58.0.5",
     "expo-splash-screen": "~58.0.14",
     "expo-status-bar": "~58.0.5",
+    "expo-updates": "~58.0.22",
     "libphonenumber-js": "^1.13.16",
     "qrcode-generator": "^2.0.4",
     "react": "^19.3.1",

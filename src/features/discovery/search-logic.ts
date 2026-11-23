@@ -46,8 +46,10 @@ export function filterChats(chats: ConversationSummary[], q: string): Conversati
     .filter(
       (c) =>
         c.state === 'active' &&
-        (has(c.peer.username, n) ||
-          has(c.peer.displayName, n) ||
+        (has(c.peer?.username ?? '', n) ||
+          has(c.peer?.displayName ?? '', n) ||
+          has(c.group?.title ?? '', n) ||
+          has(c.bot?.name ?? '', n) ||
           (c.lastMessage && has(c.lastMessage.body, n))),
     )
     .slice(0, 5);

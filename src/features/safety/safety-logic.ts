@@ -31,6 +31,8 @@ export function reportHref(p: {
   /** Their starter look id (e.g. dyce_av_042), so the report screen can show their face. */
   avatar?: string;
   conversationId?: string;
+  /** The one message being reported (it must be in `conversationId`). */
+  messageId?: string;
 }): string {
   const q = Object.entries(p)
     .filter(([, v]) => typeof v === 'string' && v.length > 0)

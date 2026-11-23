@@ -99,10 +99,38 @@ export function authErrorMessage(err: unknown): string {
       return "We couldn't find that receipt.";
     case 'search_rate_limited':
       return 'You have searched a lot today. Try again tomorrow.';
+    case 'account_muted':
+      return 'Your messages are paused for now. You can still play games.';
+    case 'account_suspended':
+      return 'This account is suspended. Contact support if you think this is a mistake.';
+    case 'integrity_check_failed':
+      return "We couldn't check that this device is safe for Pool. Update the app from the store and try again, or play for free.";
     case 'reports_rate_limited':
       return "You've sent a lot of reports today. Try again tomorrow.";
     case 'conversation_not_found':
       return "That chat isn't available.";
+    case 'not_group_admin':
+      return 'Only group admins can do that.';
+    case 'group_full':
+      return 'This group is full (50 people).';
+    case 'group_id_taken':
+      return 'Something went wrong making the group. Try again.';
+    case 'group_member_not_friend':
+      return 'You can only add your friends to a group.';
+    case 'groups_rate_limited':
+      return "You've made a lot of groups today. Try again tomorrow.";
+    case 'message_not_found':
+      return 'That message is gone.';
+    case 'cannot_delete_message':
+      return 'You can only delete your own messages for everyone, and not cards.';
+    case 'delete_window_closed':
+      return 'It has been more than 15 minutes, so you can only delete it for yourself.';
+    case 'invalid_vote':
+      return "That option isn't in the poll.";
+    case 'not_a_group':
+      return 'That only works in a group.';
+    case 'last_admin':
+      return 'Make someone else an admin before you step down.';
     case 'game_not_found':
       return "That game isn't available.";
     case 'match_not_found':
@@ -170,6 +198,32 @@ export function authErrorMessage(err: unknown): string {
       return 'Pick a payout that fits the number of seats.';
     case 'spaces_limit':
       return "You're in a lot of spaces already. Leave one first.";
+    case 'invalid_options':
+      return "That game doesn't have that option.";
+    case 'resign_not_supported':
+      return "You can't resign this game. Leave it from the table instead.";
+    case 'dispute_not_allowed':
+      return 'Only a finished Pool result that you played can be disputed.';
+    case 'dispute_window_closed':
+      return 'The 24 hour window for disputing this result has closed.';
+    case 'dispute_exists':
+      return 'You already disputed this result.';
+    case 'disputes_rate_limited':
+      return "You've opened a few disputes today. Wait for those to be reviewed.";
+    case 'username_mismatch':
+      return "That isn't your username. Type it exactly as it appears.";
+    case 'quick_match_unavailable':
+      return "That game can't be quick matched yet. Open a space for it instead.";
+    case 'quick_match_active':
+      return "You're already looking for a match. Stop that search first.";
+    case 'quick_match_not_found':
+      return "That search isn't there any more.";
+    case 'quick_match_expired':
+      return 'That match ran out of time.';
+    case 'quick_match_rate_limited':
+      return "You've searched a lot this hour. Take a short break and try again.";
+    case 'quick_match_cooldown':
+      return 'You skipped a few matches. Wait a few minutes before searching again.';
     case 'room_unavailable':
       return "The table isn't ready. Try again in a moment.";
     case 'already_on_dyce':

@@ -1,9 +1,11 @@
-import type { ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { useRouter, type Href } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useQueryClient } from '@tanstack/react-query';
 import { Icon, Segmented, Text, useTheme } from '@dyce/ui';
+import { saveExport } from '@/features/account/download-data';
+import { useExportData } from '@/features/account/use-account';
 import { authErrorMessage } from '@/features/auth/messages';
 import { useMeQuery } from '@/features/avatar/use-avatar';
 import { NotificationSettings } from '@/features/notifications/NotificationSettings';
@@ -14,8 +16,9 @@ import { useUpdateProfile } from '../use-profile';
 
 /**
  * Settings (design: Settings): who can add and message you (friend requests and first messages follow it), your
- * account, blocked people, notification switches with quiet hours, appearance, and Log out.
- * "Who can see me online", Pool limits, data export, delete account and Help & legal arrive
+ * account, blocked people, notification switches with quiet hours, your data (download it, delete the account),
+ * Help and legal, appearance, and Log out.
+ * "Who can see me online" and Pool limits arrive
  * with those features (see BACKLOG); nothing here is a dead switch.
  */
 export function SettingsScreen() {
@@ -28,6 +31,20 @@ export function SettingsScreen() {
   const policy = profile?.requestPolicy ?? 'everyone';
   const go = (href: string) => router.push(href as Href);
   const back = () => (router.canGoBack() ? router.back() : router.replace('/profile' as Href));
+
+  // Download my data: asks the server for the file (a few times an hour) and hands it to the share sheet / browser.
+  const exporting = useExportData();
+  const [exportNote, setExportNote] = useState<string | null>(null);
+  async function downloadData() {
+    setExportNote(null);
+    try {
+      const data = await exporting.mutateAsync();
+      const saved = await saveExport(data);
+      setExportNote(saved ? 'Your data is ready.' : null);
+    } catch (e) {
+      setExportNote(authErrorMessage(e));
+    }
+  }
 
   async function logOut() {
     const refresh = sessionStore.getState().tokens?.refreshToken;
@@ -98,6 +115,40 @@ export function SettingsScreen() {
         <NotificationSettings />
 
         <Text style={styles.label} color="sub">
+          Your data
+        </Text>
+        <Card>
+          <Row
+            title="Download my data"
+            sub="Everything Dyce holds about you, as one file"
+            value={exporting.isPending ? 'Preparing…' : undefined}
+            onPress={() => void downloadData()}
+          />
+          <Row title="Delete account" danger onPress={() => go('/settings/delete')} last />
+        </Card>
+        {exportNote ? (
+          <Text
+            color={exporting.isError ? 'accent' : 'sub'}
+            style={styles.note}
+            accessibilityLiveRegion="polite"
+          >
+            {exportNote}
+          </Text>
+        ) : null}
+
+        <Text style={styles.label} color="sub">
+          Help
+        </Text>
+        <Card>
+          <Row
+            title="Help and legal"
+            sub="Answers, Pool rules, terms and privacy"
+            onPress={() => go('/settings/help')}
+            last
+          />
+        </Card>
+
+        <Text style={styles.label} color="sub">
           Appearance
         </Text>
         <Card>
@@ -131,18 +182,20 @@ function Row({
   value,
   onPress,
   last,
+  danger,
 }: {
   title: string;
   sub?: string;
   value?: string;
   onPress?: () => void;
   last?: boolean;
+  danger?: boolean;
 }) {
   const { colors } = useTheme();
   const body = (
     <>
       <View style={styles.rowBody}>
-        <Text style={styles.rowTitle}>{title}</Text>
+        <Text style={[styles.rowTitle, danger ? { color: colors.danger } : null]}>{title}</Text>
         {sub ? (
           <Text style={styles.rowSub} color="sub">
             {sub}

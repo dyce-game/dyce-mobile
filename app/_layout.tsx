@@ -1,3 +1,5 @@
+// Error reporting starts first, so a crash during startup is captured. A no-op without a Sentry DSN.
+import '@/lib/monitoring';
 import { useEffect } from 'react';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
