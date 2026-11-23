@@ -8,8 +8,8 @@ import {
   type TextInputKeyPressEvent,
   type TextStyle,
 } from 'react-native';
-import { MAX_MESSAGE_LENGTH } from '@dyce/shared';
-import { Icon, MAX_FONT_SCALE, brand, useTheme } from '@dyce/ui';
+import { MAX_MESSAGE_LENGTH, type ReplyPreview } from '@dyce/shared';
+import { Icon, MAX_FONT_SCALE, Text, brand, useTheme } from '@dyce/ui';
 
 /** Tell the other person we're typing at most this often. */
 const TYPING_EVERY_MS = 2_500;
@@ -25,12 +25,20 @@ export function Composer({
   onSend,
   onTyping,
   onOpenGames,
+  onPlus,
+  replyTo,
+  onCancelReply,
   placeholder = 'Dyce message',
 }: {
   onSend: (text: string) => void;
   onTyping?: (typing: boolean) => void;
   /** Shows the games button (three-by-three dots, as in the design) that opens the Games drawer. */
   onOpenGames?: () => void;
+  /** Shows a + button (a group's poll and Space actions). */
+  onPlus?: () => void;
+  /** The message being answered: shown above the field with a Cancel. */
+  replyTo?: ReplyPreview | null;
+  onCancelReply?: () => void;
   placeholder?: string;
 }) {
   const { colors } = useTheme();
@@ -82,59 +90,98 @@ export function Composer({
   };
 
   return (
-    <View style={[styles.bar, { borderColor: colors.line, backgroundColor: colors.bg }]}>
-      {onOpenGames ? (
+    <View style={[styles.wrap, { borderColor: colors.line, backgroundColor: colors.bg }]}>
+      {replyTo ? (
+        <View
+          accessibilityLiveRegion="polite"
+          style={[styles.reply, { backgroundColor: colors.bg2, borderLeftColor: colors.accent }]}
+        >
+          <View style={styles.replyBody}>
+            <Text numberOfLines={1} style={[styles.replyName, { color: colors.accent }]}>
+              Replying to {replyTo.senderName}
+            </Text>
+            <Text numberOfLines={1} color="sub" style={styles.replyText}>
+              {replyTo.snippet}
+            </Text>
+          </View>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Cancel reply"
+            onPress={onCancelReply}
+            hitSlop={8}
+            style={[styles.cancel, { backgroundColor: colors.line }]}
+          >
+            <View style={styles.x}>
+              <Icon name="plus" size={16} color={colors.text} />
+            </View>
+          </Pressable>
+        </View>
+      ) : null}
+      <View style={styles.bar}>
+        {onPlus ? (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="More: poll or start a Space"
+            onPress={onPlus}
+            style={[styles.games, { backgroundColor: colors.chip }]}
+          >
+            <Icon name="plus" size={22} color={colors.text} />
+          </Pressable>
+        ) : null}
+        {onOpenGames ? (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Open games"
+            onPress={onOpenGames}
+            style={[styles.games, { backgroundColor: colors.chip }]}
+          >
+            <View aria-hidden style={styles.dots}>
+              {Array.from({ length: 9 }, (_, i) => (
+                <View key={i} style={[styles.dot, { backgroundColor: colors.text }]} />
+              ))}
+            </View>
+          </Pressable>
+        ) : null}
+        <View style={[styles.field, { borderColor: colors.line, backgroundColor: colors.card }]}>
+          <TextInput
+            value={text}
+            onChangeText={(t) => {
+              setText(t);
+              setTyping(t.length > 0);
+            }}
+            onKeyPress={onKeyPress}
+            onBlur={() => setTyping(false)}
+            placeholder={placeholder}
+            placeholderTextColor={colors.sub}
+            accessibilityLabel="Message"
+            multiline
+            maxLength={MAX_MESSAGE_LENGTH}
+            maxFontSizeMultiplier={MAX_FONT_SCALE}
+            style={[styles.input, webNoOutline, { color: colors.text }]}
+          />
+        </View>
         <Pressable
           accessibilityRole="button"
-          accessibilityLabel="Open games"
-          onPress={onOpenGames}
-          style={[styles.games, { backgroundColor: colors.chip }]}
+          accessibilityLabel="Send message"
+          accessibilityState={{ disabled: !canSend }}
+          disabled={!canSend}
+          onPress={submit}
+          style={[
+            styles.send,
+            canSend
+              ? { backgroundColor: brand.ember.fill, borderBottomColor: brand.ember.edge }
+              : { backgroundColor: colors.chip, borderBottomColor: colors.chip },
+          ]}
         >
-          <View aria-hidden style={styles.dots}>
-            {Array.from({ length: 9 }, (_, i) => (
-              <View key={i} style={[styles.dot, { backgroundColor: colors.text }]} />
-            ))}
-          </View>
+          <Icon name="send" size={20} color={canSend ? brand.ember.text : colors.sub} />
         </Pressable>
-      ) : null}
-      <View style={[styles.field, { borderColor: colors.line, backgroundColor: colors.card }]}>
-        <TextInput
-          value={text}
-          onChangeText={(t) => {
-            setText(t);
-            setTyping(t.length > 0);
-          }}
-          onKeyPress={onKeyPress}
-          onBlur={() => setTyping(false)}
-          placeholder={placeholder}
-          placeholderTextColor={colors.sub}
-          accessibilityLabel="Message"
-          multiline
-          maxLength={MAX_MESSAGE_LENGTH}
-          maxFontSizeMultiplier={MAX_FONT_SCALE}
-          style={[styles.input, webNoOutline, { color: colors.text }]}
-        />
       </View>
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel="Send message"
-        accessibilityState={{ disabled: !canSend }}
-        disabled={!canSend}
-        onPress={submit}
-        style={[
-          styles.send,
-          canSend
-            ? { backgroundColor: brand.ember.fill, borderBottomColor: brand.ember.edge }
-            : { backgroundColor: colors.chip, borderBottomColor: colors.chip },
-        ]}
-      >
-        <Icon name="send" size={20} color={canSend ? brand.ember.text : colors.sub} />
-      </Pressable>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  wrap: { borderTopWidth: 1 },
   bar: {
     flexDirection: 'row',
     alignItems: 'flex-end',
@@ -142,8 +189,29 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingTop: 8,
     paddingBottom: 10,
-    borderTopWidth: 1,
   },
+  reply: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    marginHorizontal: 12,
+    marginTop: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    borderRadius: 12,
+    borderLeftWidth: 3,
+  },
+  replyBody: { flex: 1, minWidth: 0 },
+  replyName: { fontSize: 12, fontFamily: 'Figtree_700Bold' },
+  replyText: { fontSize: 13 },
+  cancel: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  x: { transform: [{ rotate: '45deg' }] },
   field: {
     flex: 1,
     minHeight: 44,

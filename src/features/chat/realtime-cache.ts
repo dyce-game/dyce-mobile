@@ -1,8 +1,22 @@
 import type { QueryClient } from '@tanstack/react-query';
-import { queryKeys, type MatchView, type RealtimeEvent, type SpaceView } from '@dyce/shared';
+import {
+  queryKeys,
+  type MatchView,
+  type QuickMatchState,
+  type RealtimeEvent,
+  type SpaceView,
+} from '@dyce/shared';
 import { newerMatch } from '../games/games-logic';
 import { newerSpace } from '../spaces/spaces-logic';
-import { upsertMessage, withPeerReadAt, type MessagesData } from './chat-logic';
+import {
+  applyPollEvent,
+  applyReactionEvent,
+  removeMessage,
+  tombstone,
+  upsertMessage,
+  withPeerReadAt,
+  type MessagesData,
+} from './chat-logic';
 import type { TypingTracker } from './typing';
 
 /**
@@ -35,6 +49,34 @@ export function applyRealtimeEvent(
       return;
     }
 
+    case 'reaction':
+      client.setQueryData<MessagesData>(queryKeys.messages(event.conversationId), (d) =>
+        applyReactionEvent(d, event, myId),
+      );
+      return;
+
+    case 'poll':
+      client.setQueryData<MessagesData>(queryKeys.messages(event.conversationId), (d) =>
+        applyPollEvent(d, event, myId),
+      );
+      return;
+
+    case 'message_deleted':
+      client.setQueryData<MessagesData>(queryKeys.messages(event.conversationId), (d) =>
+        event.scope === 'me' ? removeMessage(d, event.messageId) : tombstone(d, event.messageId),
+      );
+      void client.invalidateQueries({ queryKey: queryKeys.conversationsAll }); // the preview line may change
+      return;
+
+    case 'conversation':
+      // A group changed (name, members, roles), or you are no longer in it.
+      void client.invalidateQueries({ queryKey: queryKeys.conversation(event.conversationId) });
+      void client.invalidateQueries({ queryKey: queryKeys.conversationsAll });
+      if (event.change === 'removed') {
+        client.removeQueries({ queryKey: queryKeys.messages(event.conversationId) });
+      }
+      return;
+
     case 'read':
       if (event.userId === myId) return;
       client.setQueryData<MessagesData>(queryKeys.messages(event.conversationId), (d) =>
@@ -61,6 +103,16 @@ export function applyRealtimeEvent(
       );
       void client.invalidateQueries({ queryKey: queryKeys.spaces('mine') });
       if (event.space.mode === 'pool')
+        void client.invalidateQueries({ queryKey: queryKeys.wallet });
+      return;
+
+    case 'quick_match':
+      // Your quick-match ticket changed (a match was found, the other person skipped, it started).
+      client.setQueryData<QuickMatchState>(queryKeys.quickMatch, (cached) => ({
+        games: cached?.games ?? [],
+        ticket: event.ticket,
+      }));
+      if (event.ticket.mode === 'pool')
         void client.invalidateQueries({ queryKey: queryKeys.wallet });
       return;
 

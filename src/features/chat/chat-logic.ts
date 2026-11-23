@@ -1,8 +1,18 @@
-import type {
-  ConversationFilter,
-  ConversationSummary,
-  Message,
-  MessagesResponse,
+import {
+  DELETE_FOR_EVERYONE_MINUTES,
+  REACTION_KEYS,
+  isBotSender,
+  type AvatarConfig,
+  type ConversationFilter,
+  type ConversationSummary,
+  type GroupMember,
+  type Message,
+  type MessagesResponse,
+  type PollPayload,
+  type ReactionCount,
+  type ReactionKey,
+  type RealtimeEvent,
+  type ReplyPreview,
 } from '@dyce/shared';
 
 /** A message as the thread shows it: the server's copy, or one still on its way (or that failed). */
@@ -70,16 +80,29 @@ export function listTime(iso: string, now: Date = new Date()): string {
   return d.getFullYear() === now.getFullYear() ? base : `${base}, ${d.getFullYear()}`;
 }
 
+/** What a conversation is called: a person's name, the group's name, or the bot's. */
+export function conversationTitle(c: ConversationSummary): string {
+  if (c.kind === 'group') return c.group.title;
+  if (c.kind === 'bot') return c.bot.name;
+  return c.peer.displayName || c.peer.username;
+}
+
 /** The preview line under a name in the chat list. */
 export function previewText(conversation: ConversationSummary, myId: string | null): string {
   const last = conversation.lastMessage;
   if (!last) return 'No messages yet';
+  const mine = last.senderId === myId;
+  if (last.deleted) return mine ? 'You deleted a message' : 'This message was deleted';
   const text = last.body.replace(/\s+/g, ' ').trim();
-  return last.senderId === myId ? `You: ${text}` : text;
+  if (last.kind === 'system') return text;
+  if (mine) return `You: ${text}`;
+  // in a group, say who: "Ifeoma: who's next?"
+  if (conversation.kind === 'group' && last.senderName) return `${last.senderName}: ${text}`;
+  return text;
 }
 
-/** The five filters on the Chat tab. Groups and Bots arrive with those features and show an honest empty state. */
-export type ChatTab = ConversationFilter | 'groups' | 'bots';
+/** The five filters on the Chat tab; each reads the server list of the same name. */
+export type ChatTab = Exclude<ConversationFilter, 'filtered'>;
 
 export const CHAT_TABS: { key: ChatTab; label: string }[] = [
   { key: 'all', label: 'All' },
@@ -88,16 +111,6 @@ export const CHAT_TABS: { key: ChatTab; label: string }[] = [
   { key: 'requests', label: 'Requests' },
   { key: 'bots', label: 'Bots' },
 ];
-
-/** Which server list a tab reads. Groups and Bots have none yet, so they read "all" (for the Requests count) and show no rows. */
-export function filterForTab(tab: ChatTab): ConversationFilter {
-  return tab === 'groups' || tab === 'bots' ? 'all' : tab;
-}
-
-/** The conversations to list under a tab (none for Groups and Bots until they exist). */
-export function rowsForTab(tab: ChatTab, rows: ConversationSummary[]): ConversationSummary[] {
-  return tab === 'groups' || tab === 'bots' ? [] : rows;
-}
 
 /** A random UUID v4 for a message id (the server uses it to make retries safe). */
 export function newMessageId(random: () => number = Math.random): string {
@@ -147,10 +160,14 @@ export function upsertMessage(
         ...p,
         messages: p.messages.map((m) => {
           if (m.id !== message.id) return m;
+          // a card update (paid, your turn, result) carries no reactions or quote: keep what we had
+          const keep = { reactions: m.reactions, replyTo: m.replyTo };
           if (m.kind === 'game' && message.kind === 'game') {
-            return message.payload.stateVersion >= m.payload.stateVersion ? message : m;
+            return message.payload.stateVersion >= m.payload.stateVersion
+              ? { ...message, ...keep }
+              : m;
           }
-          return message;
+          return { ...message, ...keep } as Message;
         }),
       })),
     };
@@ -198,6 +215,8 @@ export function buildThreadItems(
     const older = messages[i + 1]; // above it on screen
     const sameRun = (other: ThreadMessage | undefined) =>
       !!other &&
+      other.kind !== 'system' &&
+      m.kind !== 'system' &&
       other.senderId === m.senderId &&
       Math.abs(Date.parse(other.createdAt) - Date.parse(m.createdAt)) < GROUP_GAP_MS &&
       daysBetween(new Date(other.createdAt), new Date(m.createdAt)) === 0;
@@ -238,4 +257,274 @@ export function receiptFor(
     id: mine.id,
     label: peerReadAt && mine.createdAt <= peerReadAt ? 'Read' : 'Sent',
   };
+}
+
+// ---- changes to messages already in the cache (reactions, polls, deletes) -----------------------
+
+/** Applies `fn` to one message of the cached thread (and leaves everything else, including identity, alone). */
+export function mapMessage(
+  data: MessagesData | undefined,
+  messageId: string,
+  fn: (m: Message) => Message,
+): MessagesData | undefined {
+  if (!data) return data;
+  let changed = false;
+  const pages = data.pages.map((p) => {
+    if (!p.messages.some((m) => m.id === messageId)) return p;
+    changed = true;
+    return { ...p, messages: p.messages.map((m) => (m.id === messageId ? fn(m) : m)) };
+  });
+  return changed ? { ...data, pages } : data;
+}
+
+/** The reaction you gave a message, if any. */
+export const myReaction = (m: Pick<Message, 'reactions'>): ReactionKey | null =>
+  m.reactions?.find((r) => r.mine)?.key ?? null;
+
+/** Moves your reaction from `from` to `to` in a tally (null = none), keeping the fixed order and dropping zeros. */
+export function withMyReaction(
+  reactions: ReactionCount[] | undefined,
+  from: ReactionKey | null,
+  to: ReactionKey | null,
+): ReactionCount[] {
+  const next = new Map<ReactionKey, ReactionCount>();
+  for (const r of reactions ?? []) next.set(r.key, { ...r, mine: false });
+  if (from) {
+    const r = next.get(from);
+    if (r) next.set(from, { ...r, count: r.count - 1 });
+  }
+  if (to) {
+    const r = next.get(to);
+    next.set(to, { key: to, count: (r?.count ?? 0) + 1, mine: true });
+  }
+  return [...next.values()]
+    .filter((r) => r.count > 0)
+    .sort((a, b) => REACTION_KEYS.indexOf(a.key) - REACTION_KEYS.indexOf(b.key));
+}
+
+/** Your own tap on a reaction, shown at once: tapping the one you already gave takes it back. */
+export function reactOptimistically(
+  data: MessagesData | undefined,
+  messageId: string,
+  key: ReactionKey,
+): { data: MessagesData | undefined; reaction: ReactionKey | null } {
+  let reaction: ReactionKey | null = key;
+  const next = mapMessage(data, messageId, (m) => {
+    const mine = myReaction(m);
+    reaction = mine === key ? null : key;
+    return { ...m, reactions: withMyReaction(m.reactions, mine, reaction) } as Message;
+  });
+  return { data: next, reaction };
+}
+
+/** Puts the server's tally on a message (the reply to our own reaction). */
+export function setReactions(
+  data: MessagesData | undefined,
+  messageId: string,
+  reactions: ReactionCount[],
+): MessagesData | undefined {
+  return mapMessage(data, messageId, (m) => ({ ...m, reactions }) as Message);
+}
+
+/** A live `reaction` event: the new totals, with your own reaction kept (or set, when it was you on another device). */
+export function applyReactionEvent(
+  data: MessagesData | undefined,
+  event: Extract<RealtimeEvent, { type: 'reaction' }>,
+  myId: string | null,
+): MessagesData | undefined {
+  return mapMessage(data, event.messageId, (m) => {
+    const mine = event.userId === myId ? event.reaction : myReaction(m);
+    const reactions = event.counts
+      .filter((c) => c.count > 0)
+      .map((c) => ({ key: c.key, count: c.count, mine: c.key === mine }));
+    return { ...m, reactions } as Message;
+  });
+}
+
+/** The poll payload after you vote for `optionId` (null takes it back), before the server confirms. */
+export function votedPoll(poll: PollPayload, optionId: number | null): PollPayload {
+  const options = poll.options.map((o) => {
+    let votes = o.votes;
+    if (o.id === poll.myVote) votes -= 1;
+    if (o.id === optionId) votes += 1;
+    return { ...o, votes };
+  });
+  return {
+    ...poll,
+    options,
+    myVote: optionId,
+    total: options.reduce((n, o) => n + o.votes, 0),
+  };
+}
+
+export function setPoll(
+  data: MessagesData | undefined,
+  messageId: string,
+  payload: PollPayload,
+): MessagesData | undefined {
+  return mapMessage(data, messageId, (m) => (m.kind === 'poll' ? { ...m, payload } : m));
+}
+
+/** A live `poll` event: new totals, and your own vote kept (or set, when it was you on another device). */
+export function applyPollEvent(
+  data: MessagesData | undefined,
+  event: Extract<RealtimeEvent, { type: 'poll' }>,
+  myId: string | null,
+): MessagesData | undefined {
+  return mapMessage(data, event.messageId, (m) => {
+    if (m.kind !== 'poll') return m;
+    const tally = new Map(event.votes.map((v) => [v.id, v.votes]));
+    return {
+      ...m,
+      payload: {
+        ...m.payload,
+        options: m.payload.options.map((o) => ({ ...o, votes: tally.get(o.id) ?? 0 })),
+        total: event.total,
+        myVote: event.voterId === myId ? event.optionId : m.payload.myVote,
+      },
+    };
+  });
+}
+
+/** Deleted for everyone: what stays is a tombstone. */
+export function tombstone(
+  data: MessagesData | undefined,
+  messageId: string,
+): MessagesData | undefined {
+  const next = mapMessage(data, messageId, (m) => {
+    const { reactions: _r, payload: _p, ...rest } = m as Message & { payload?: unknown };
+    return { ...rest, kind: 'text', body: '', deleted: true } as Message;
+  });
+  // anything that quoted it now quotes a deleted message
+  return mapQuotes(next, messageId, (q) => ({ ...q, snippet: '', deleted: true }));
+}
+
+function mapQuotes(
+  data: MessagesData | undefined,
+  quotedId: string,
+  fn: (q: ReplyPreview) => ReplyPreview,
+): MessagesData | undefined {
+  if (!data) return data;
+  return {
+    ...data,
+    pages: data.pages.map((p) => ({
+      ...p,
+      messages: p.messages.map((m) =>
+        m.replyTo?.id === quotedId ? ({ ...m, replyTo: fn(m.replyTo) } as Message) : m,
+      ),
+    })),
+  };
+}
+
+/** Deleted for me: gone from this person's thread. */
+export function removeMessage(
+  data: MessagesData | undefined,
+  messageId: string,
+): MessagesData | undefined {
+  if (!data) return data;
+  if (!data.pages.some((p) => p.messages.some((m) => m.id === messageId))) return data;
+  return {
+    ...data,
+    pages: data.pages.map((p) => ({
+      ...p,
+      messages: p.messages.filter((m) => m.id !== messageId),
+    })),
+  };
+}
+
+// ---- the long-press menu -------------------------------------------------------------------------
+
+export type MessageAction = 'react' | 'reply' | 'copy' | 'delete_me' | 'delete_everyone' | 'report';
+
+/** Matches the server's `delete_for_everyone_minutes` (default 15, SPEC §6). */
+export const DELETE_WINDOW_MS = DELETE_FOR_EVERYONE_MINUTES * MINUTE;
+
+/** Your own text or poll, still inside the window. Cards (money, game) are records and can only be hidden. */
+export function canDeleteForEveryone(
+  m: ThreadMessage,
+  myId: string | null,
+  now: Date = new Date(),
+): boolean {
+  return (
+    m.senderId === myId &&
+    !m.deleted &&
+    !m.status &&
+    (m.kind === 'text' || m.kind === 'poll') &&
+    now.getTime() - Date.parse(m.createdAt) <= DELETE_WINDOW_MS
+  );
+}
+
+/**
+ * What the long-press menu offers for a message. Nothing for a message still being sent, a deleted one or a
+ * centred system line. React and Reply need a conversation you can answer in; Copy is for text; Report is
+ * for what someone else wrote (never a bot, never a card); Forward and "Turn into a challenge" from the
+ * design are left out until they exist.
+ */
+export function availableActions(
+  m: ThreadMessage,
+  o: {
+    myId: string | null;
+    conversationKind: ConversationSummary['kind'];
+    /** False for a request you haven't accepted. */
+    canAnswer: boolean;
+    now?: Date;
+  },
+): MessageAction[] {
+  if (m.status || m.deleted || m.kind === 'system') return [];
+  const mine = m.senderId === o.myId;
+  const actions: MessageAction[] = [];
+  if (o.canAnswer) actions.push('react', 'reply');
+  if (m.kind === 'text') actions.push('copy');
+  actions.push('delete_me');
+  if (canDeleteForEveryone(m, o.myId, o.now)) actions.push('delete_everyone');
+  if (
+    !mine &&
+    !isBotSender(m.senderId) &&
+    o.conversationKind !== 'bot' &&
+    (m.kind === 'text' || m.kind === 'poll')
+  ) {
+    actions.push('report');
+  }
+  return actions;
+}
+
+/** What a reply quotes, built from the message being answered. */
+export function replyPreviewOf(m: Message, senderName: string): ReplyPreview {
+  const snippet =
+    m.kind === 'poll' ? `Poll: ${m.payload.question}` : m.kind === 'game' ? 'Game' : m.body;
+  return {
+    id: m.id,
+    senderId: m.senderId,
+    senderName,
+    snippet: snippet.replace(/\s+/g, ' ').trim().slice(0, 80),
+    deleted: false,
+  };
+}
+
+// ---- who said it (groups) ------------------------------------------------------------------------
+
+export type Sender = { name: string; avatar: AvatarConfig | null; left: boolean };
+
+/** Looks up names and avatars for a group's messages. Someone who has left keeps their name; a stranger is "Someone". */
+export function senderLookup(members: GroupMember[] | undefined): (id: string) => Sender {
+  const by = new Map(members?.map((m) => [m.user.id, m]));
+  return (id) => {
+    const m = by.get(id);
+    if (!m) return { name: 'Someone', avatar: null, left: true };
+    return {
+      name: m.user.displayName || m.user.username,
+      avatar: m.user.avatar,
+      left: m.state === 'left',
+    };
+  };
+}
+
+/** "Amaka", "Amaka and Dayo", "Amaka, Dayo and 2 more": the line under a group's name in the thread header. */
+export function memberCountLabel(count: number): string {
+  return count === 1 ? '1 person' : `${count} people`;
+}
+
+/** The "Poll" bar width, as a whole percent of the votes cast (0 when nobody has voted). */
+export function pollPercent(votes: number, total: number): number {
+  return total === 0 ? 0 : Math.round((votes / total) * 100);
 }

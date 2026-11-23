@@ -6,12 +6,33 @@ import {
   useQueryClient,
   type QueryClient,
 } from '@tanstack/react-query';
-import { queryKeys, type ConversationFilter, type ConversationSummary } from '@dyce/shared';
+import {
+  queryKeys,
+  type BotSlug,
+  type ConversationFilter,
+  type ConversationSummary,
+  type GroupRole,
+  type Message,
+  type ReactionKey,
+  type ReplyPreview,
+} from '@dyce/shared';
 import { ApiError } from '@/features/auth/api-client';
 import { authErrorMessage } from '@/features/auth/messages';
 import { useSession } from '@/features/auth/use-session';
 import { chatApi } from '@/lib/api';
-import { newMessageId, upsertMessage, type MessagesData, type ThreadMessage } from './chat-logic';
+import {
+  flattenPages,
+  newMessageId,
+  reactOptimistically,
+  removeMessage,
+  setPoll,
+  setReactions,
+  tombstone,
+  upsertMessage,
+  votedPoll,
+  type MessagesData,
+  type ThreadMessage,
+} from './chat-logic';
 import { outboxStore } from './outbox';
 
 /** Your conversations. `unreadTotal` and `requestCount` ride along on every response, for the badges. */
@@ -99,7 +120,11 @@ export function useSendMessage(conversationId: string) {
       inFlight.current.add(message.id);
       outboxStore.getState().markSending(conversationId, message.id);
       try {
-        const saved = await chatApi.send(conversationId, { id: message.id, body: message.body });
+        const saved = await chatApi.send(conversationId, {
+          id: message.id,
+          body: message.body,
+          replyTo: message.replyTo?.id,
+        });
         const cached = client.getQueryData<MessagesData>(queryKeys.messages(conversationId));
         if (cached) {
           client.setQueryData<MessagesData>(queryKeys.messages(conversationId), (d) =>
@@ -122,7 +147,7 @@ export function useSendMessage(conversationId: string) {
   );
 
   const send = useCallback(
-    (body: string) => {
+    (body: string, replyTo?: ReplyPreview | null) => {
       const text = body.trim();
       if (!text || !myId) return;
       const message: ThreadMessage = {
@@ -133,6 +158,7 @@ export function useSendMessage(conversationId: string) {
         body: text,
         createdAt: new Date().toISOString(),
         status: 'sending',
+        replyTo: replyTo ?? null,
       };
       outboxStore.getState().add(message);
       void deliver(message);
@@ -153,4 +179,161 @@ export function useSendMessage(conversationId: string) {
   );
 
   return { send, retry, discard };
+}
+
+// ---- bots ----------------------------------------------------------------------------------------
+
+/** Open (or create) your chat with a practice bot; resolves to the conversation. */
+export function useOpenBot() {
+  return useMutation({ mutationFn: (slug: BotSlug) => chatApi.openBot(slug) });
+}
+
+// ---- reactions and deletes (optimistic) ----------------------------------------------------------
+
+/**
+ * React to a message: the chip shows at once; the server's tally replaces it, and a failure puts the old
+ * one back. Tapping the reaction you already gave takes it back. Resolves to an error message, or null.
+ */
+export function useReact(conversationId: string) {
+  const client = useQueryClient();
+  return useCallback(
+    async (messageId: string, key: ReactionKey): Promise<string | null> => {
+      const k = queryKeys.messages(conversationId);
+      const before = client.getQueryData<MessagesData>(k);
+      const { data, reaction } = reactOptimistically(before, messageId, key);
+      if (data === before) return null;
+      client.setQueryData<MessagesData>(k, data);
+      try {
+        const r = await chatApi.react(conversationId, messageId, reaction);
+        client.setQueryData<MessagesData>(k, (d) => setReactions(d, messageId, r.reactions));
+        return null;
+      } catch (err) {
+        const old = flattenPages(before).find((m) => m.id === messageId)?.reactions ?? [];
+        client.setQueryData<MessagesData>(k, (d) => setReactions(d, messageId, old));
+        return authErrorMessage(err);
+      }
+    },
+    [client, conversationId],
+  );
+}
+
+/** Delete for me (gone at once) or for everyone (a tombstone at once); a failure reloads the thread. */
+export function useDeleteMessage(conversationId: string) {
+  const client = useQueryClient();
+  return useCallback(
+    async (messageId: string, scope: 'me' | 'everyone'): Promise<string | null> => {
+      const k = queryKeys.messages(conversationId);
+      client.setQueryData<MessagesData>(k, (d) =>
+        scope === 'me' ? removeMessage(d, messageId) : tombstone(d, messageId),
+      );
+      try {
+        await chatApi.deleteMessage(conversationId, messageId, scope);
+        refreshLists(client);
+        return null;
+      } catch (err) {
+        void client.invalidateQueries({ queryKey: k });
+        return authErrorMessage(err);
+      }
+    },
+    [client, conversationId],
+  );
+}
+
+// ---- polls ---------------------------------------------------------------------------------------
+
+/** Vote in a poll (null takes your vote back). Shown at once, confirmed by the server's tally. */
+export function useVote(conversationId: string) {
+  const client = useQueryClient();
+  return useCallback(
+    async (message: Message, optionId: number | null): Promise<string | null> => {
+      if (message.kind !== 'poll') return null;
+      const k = queryKeys.messages(conversationId);
+      const before = message.payload;
+      client.setQueryData<MessagesData>(k, (d) =>
+        setPoll(d, message.id, votedPoll(before, optionId)),
+      );
+      try {
+        const payload = await chatApi.vote(conversationId, message.id, optionId);
+        client.setQueryData<MessagesData>(k, (d) => setPoll(d, message.id, payload));
+        return null;
+      } catch (err) {
+        client.setQueryData<MessagesData>(k, (d) => setPoll(d, message.id, before));
+        return authErrorMessage(err);
+      }
+    },
+    [client, conversationId],
+  );
+}
+
+export function useCreatePoll(conversationId: string) {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (input: { id: string; question: string; options: string[] }) =>
+      chatApi.createPoll(conversationId, input),
+    onSuccess: (saved) => {
+      client.setQueryData<MessagesData>(queryKeys.messages(conversationId), (d) =>
+        upsertMessage(d, saved),
+      );
+      refreshLists(client);
+    },
+  });
+}
+
+// ---- groups --------------------------------------------------------------------------------------
+
+/** Everyone who is or was in a group (names and avatars for the thread, and the member list). */
+export function useGroupMembersQuery(conversationId: string, enabled = true) {
+  return useQuery({
+    queryKey: queryKeys.groupMembers(conversationId),
+    queryFn: () => chatApi.members(conversationId),
+    enabled,
+  });
+}
+
+/** `id` is picked once per form, so a retried Create can't make two groups. */
+export function useCreateGroup() {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (input: { id: string; title: string; memberIds: string[] }) =>
+      chatApi.createGroup(input),
+    onSuccess: (summary) => {
+      client.setQueryData(queryKeys.conversation(summary.id), summary);
+      refreshLists(client);
+    },
+  });
+}
+
+function useGroupMutation<V>(conversationId: string, fn: (v: V) => Promise<unknown>) {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: fn,
+    onSuccess: () => {
+      void client.invalidateQueries({ queryKey: queryKeys.conversation(conversationId) });
+      void client.invalidateQueries({ queryKey: queryKeys.messages(conversationId) });
+      refreshLists(client);
+    },
+  });
+}
+
+export const useAddMembers = (id: string) =>
+  useGroupMutation(id, (userIds: string[]) => chatApi.addMembers(id, userIds));
+export const useRemoveMember = (id: string) =>
+  useGroupMutation(id, (userId: string) => chatApi.removeMember(id, userId));
+export const useSetMemberRole = (id: string) =>
+  useGroupMutation(id, (v: { userId: string; role: GroupRole }) =>
+    chatApi.setRole(id, v.userId, v.role),
+  );
+export const useRenameGroup = (id: string) =>
+  useGroupMutation(id, (title: string) => chatApi.rename(id, title));
+
+export function useLeaveGroup(conversationId: string) {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: () => chatApi.leave(conversationId),
+    onSuccess: () => {
+      client.removeQueries({ queryKey: queryKeys.messages(conversationId) });
+      client.removeQueries({ queryKey: queryKeys.conversation(conversationId) });
+      refreshLists(client);
+    },
+  });
 }

@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { useRouter, type Href } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Text, TokenButton, useTheme } from '@dyce/ui';
+import { Icon, Text, TokenButton, useTheme } from '@dyce/ui';
 import { PillButton } from '@/components/PillButton';
 import { ScreenHeader } from '@/components/ScreenHeader';
 import { authErrorMessage } from '@/features/auth/messages';
@@ -49,6 +49,18 @@ export function NewChatScreen() {
             {error}
           </Text>
         ) : null}
+
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="New group"
+          onPress={() => router.push('/new-group' as Href)}
+          style={[styles.groupRow, { borderColor: colors.line }]}
+        >
+          <View style={[styles.groupIcon, { backgroundColor: colors.brandSoft }]} aria-hidden>
+            <Icon name="friends" size={20} color={colors.accent} />
+          </View>
+          <Text style={styles.groupLabel}>New group</Text>
+        </Pressable>
 
         <Text variant="caption" color="sub" accessibilityRole="header">
           Friends
@@ -123,4 +135,19 @@ const styles = StyleSheet.create({
   content: { padding: 20, gap: 8 },
   block: { gap: 12 },
   find: { marginTop: 24 },
+  groupRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    minHeight: 54,
+    borderBottomWidth: 1,
+  },
+  groupIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  groupLabel: { fontSize: 16, fontFamily: 'Figtree_600SemiBold' },
 });

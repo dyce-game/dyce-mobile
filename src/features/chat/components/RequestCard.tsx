@@ -1,5 +1,5 @@
 import { Pressable, StyleSheet, View } from 'react-native';
-import type { ConversationSummary } from '@dyce/shared';
+import type { DirectConversation } from '@dyce/shared';
 import { Icon, Text, brand, useTheme } from '@dyce/ui';
 import { UserAvatar } from '@/features/avatar/UserAvatar';
 import { listTime } from '../chat-logic';
@@ -18,7 +18,7 @@ export function RequestCard({
   accepting,
   declining,
 }: {
-  conversation: ConversationSummary;
+  conversation: DirectConversation;
   onOpen: () => void;
   onAccept: () => void;
   onDecline: () => void;

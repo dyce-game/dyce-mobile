@@ -1,34 +1,42 @@
 import { useState, type ReactNode } from 'react';
 import { FlatList, Pressable, RefreshControl, StyleSheet, View } from 'react-native';
 import { useRouter, type Href } from 'expo-router';
+import type { ConversationFilter } from '@dyce/shared';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { FilterTabs, Icon, Text, brand, useTheme } from '@dyce/ui';
 import { Glow } from '@/components/Glow';
 import { authErrorMessage } from '@/features/auth/messages';
 import { useSession } from '@/features/auth/use-session';
 import { TabHeader } from '@/features/shell/TabHeader';
-import { CHAT_TABS, filterForTab, rowsForTab, type ChatTab } from '../chat-logic';
+import { CHAT_TABS, type ChatTab } from '../chat-logic';
 import { ConversationRow } from '../components/ConversationRow';
 import { RequestCard } from '../components/RequestCard';
 import { useAcceptConversation, useConversationsQuery, useDeclineConversation } from '../use-chat';
 
 /**
  * The Chat tab (design: Chats, Requests, EmptyChats). Five filters. All and Friends list your conversations,
- * newest first; Requests holds messages from people you don't know yet (nothing from a stranger is ever in
- * All); Groups and Bots arrive with those features. "N playing", "Live now" and the online dots need presence,
- * which doesn't exist yet, so they are left out rather than invented.
+ * newest first (groups and the bots you have talked to are in All too); Friends is people only; Groups and
+ * Bots are their own lists; Requests holds messages from people you don't know yet (nothing from a stranger
+ * is ever in All). Requests the spam filter put aside sit behind "N filtered as spam · view" at the bottom of
+ * Requests: nothing is deleted, they are one tap away and can be accepted or declined like any other.
+ * "N playing", "Live now" and the online dots need presence, which doesn't exist yet, so they are left out
+ * rather than invented.
  */
 export function ChatListScreen() {
   const router = useRouter();
   const { colors } = useTheme();
   const myId = useSession((s) => s.userId);
   const [tab, setTab] = useState<ChatTab>('all');
-  const query = useConversationsQuery(filterForTab(tab));
+  const [showFiltered, setShowFiltered] = useState(false);
+  const inFiltered = tab === 'requests' && showFiltered;
+  const filter: ConversationFilter = inFiltered ? 'filtered' : tab;
+  const query = useConversationsQuery(filter);
   const accept = useAcceptConversation();
   const decline = useDeclineConversation();
 
-  const rows = rowsForTab(tab, query.data?.conversations ?? []);
+  const rows = query.data?.conversations ?? [];
   const requestCount = query.data?.requestCount ?? 0;
+  const filteredCount = query.data?.filteredCount ?? 0;
   const tabs = CHAT_TABS.map((t) => ({
     ...t,
     count: t.key === 'requests' ? requestCount : 0,
@@ -36,30 +44,55 @@ export function ChatListScreen() {
 
   const open = (id: string) => router.push(`/c/${id}` as Href);
   const newChat = () => router.push('/c/new' as Href);
+  const newGroup = () => router.push('/new-group' as Href);
 
-  const intro =
-    tab === 'requests' ? (
-      <View>
-        <View style={[styles.privacy, { backgroundColor: colors.card, borderColor: colors.line }]}>
-          <View style={[styles.shield, { backgroundColor: colors.brandSoft }]} aria-hidden>
-            <Icon name="shield" size={18} color={colors.accent} />
-          </View>
-          <Text style={styles.privacyText}>
-            From people outside your contacts. They can&apos;t see your number or whether
-            you&apos;ve opened these.
-          </Text>
+  const selectTab = (next: ChatTab) => {
+    setShowFiltered(false);
+    setTab(next);
+  };
+
+  const intro = inFiltered ? (
+    <View>
+      <View style={[styles.privacy, { backgroundColor: colors.card, borderColor: colors.line }]}>
+        <View style={[styles.shield, { backgroundColor: colors.brandSoft }]} aria-hidden>
+          <Icon name="shield" size={18} color={colors.accent} />
         </View>
-        {requestCount > 0 ? (
-          <View style={styles.labels}>
-            <View style={[styles.label, { backgroundColor: colors.ink }]}>
-              <Text style={[styles.labelText, { color: colors.inkText }]}>
-                Messages · {requestCount}
-              </Text>
-            </View>
-          </View>
-        ) : null}
+        <Text style={styles.privacyText}>
+          These look like spam, so we set them aside. Nothing is deleted: accept one if it is a real
+          person, or decline it. They can&apos;t see that you&apos;ve opened these.
+        </Text>
       </View>
-    ) : null;
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel="Back to requests"
+        onPress={() => setShowFiltered(false)}
+        style={styles.footerLink}
+      >
+        <Text style={styles.footerLinkText}>Back to requests</Text>
+      </Pressable>
+    </View>
+  ) : tab === 'requests' ? (
+    <View>
+      <View style={[styles.privacy, { backgroundColor: colors.card, borderColor: colors.line }]}>
+        <View style={[styles.shield, { backgroundColor: colors.brandSoft }]} aria-hidden>
+          <Icon name="shield" size={18} color={colors.accent} />
+        </View>
+        <Text style={styles.privacyText}>
+          From people outside your contacts. They can&apos;t see your number or whether you&apos;ve
+          opened these.
+        </Text>
+      </View>
+      {requestCount > 0 ? (
+        <View style={styles.labels}>
+          <View style={[styles.label, { backgroundColor: colors.ink }]}>
+            <Text style={[styles.labelText, { color: colors.inkText }]}>
+              Messages · {requestCount}
+            </Text>
+          </View>
+        </View>
+      ) : null}
+    </View>
+  ) : null;
 
   const empty = query.isLoading ? (
     <Text color="sub" style={styles.loading}>
@@ -78,7 +111,16 @@ export function ChatListScreen() {
     <EmptyState
       tab={tab}
       actions={
-        tab === 'all' || tab === 'friends' ? (
+        tab === 'groups' ? (
+          <>
+            <Action
+              primary
+              label="New group"
+              detail="Pick friends and give it a name"
+              onPress={newGroup}
+            />
+          </>
+        ) : tab === 'all' || tab === 'friends' ? (
           <>
             <Action primary label="New chat" detail="Message a friend" onPress={newChat} />
             <Action
@@ -99,12 +141,26 @@ export function ChatListScreen() {
         <View style={styles.top}>
           <TabHeader title="Chat" onPlus={newChat} />
         </View>
-        <FilterTabs tabs={tabs} selected={tab} onSelect={setTab} label="Chat filter" />
+        <FilterTabs tabs={tabs} selected={tab} onSelect={selectTab} label="Chat filter" />
         <FlatList
           data={rows}
           keyExtractor={(c) => c.id}
           ListHeaderComponent={intro ?? undefined}
           ListEmptyComponent={empty}
+          ListFooterComponent={
+            tab === 'requests' && !inFiltered && filteredCount > 0 ? (
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={`${filteredCount} filtered as spam. View`}
+                onPress={() => setShowFiltered(true)}
+                style={styles.footerLink}
+              >
+                <Text style={styles.footerLinkText}>
+                  {filteredCount} filtered as spam · <Text style={styles.footerView}>view</Text>
+                </Text>
+              </Pressable>
+            ) : undefined
+          }
           contentContainerStyle={styles.content}
           refreshControl={
             <RefreshControl
@@ -113,7 +169,7 @@ export function ChatListScreen() {
             />
           }
           renderItem={({ item }) =>
-            item.state === 'request' ? (
+            item.kind === 'direct' && item.state === 'request' ? (
               <RequestCard
                 conversation={item}
                 onOpen={() => open(item.id)}
@@ -144,15 +200,15 @@ const COPY: Record<ChatTab, { title: string; body: string }> = {
   },
   groups: {
     title: 'No group chats yet',
-    body: 'Group chats are coming. Your friends and games will be here in one place.',
+    body: 'Make a group with your friends to chat, vote on what to play and keep your games in one place.',
   },
   requests: {
     title: 'No requests',
     body: 'When someone outside your contacts messages you, it lands here first so it never crowds your chats.',
   },
   bots: {
-    title: 'No bots yet',
-    body: 'Practice bots are coming. You will be able to play them any time.',
+    title: 'No bots right now',
+    body: 'Practice bots will show up here.',
   },
 };
 
@@ -235,6 +291,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   privacyText: { flex: 1, fontSize: 13, lineHeight: 19, fontFamily: 'Figtree_500Medium' },
+  footerLink: {
+    minHeight: 44,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+  },
+  footerLinkText: { fontSize: 13, textAlign: 'center', fontFamily: 'Figtree_600SemiBold' },
+  footerView: { fontSize: 13, fontFamily: 'Figtree_800ExtraBold', textDecorationLine: 'underline' },
   labels: { flexDirection: 'row', gap: 8, paddingHorizontal: 16, paddingTop: 14, paddingBottom: 6 },
   label: { height: 32, paddingHorizontal: 12, borderRadius: 16, justifyContent: 'center' },
   labelText: { fontSize: 13, fontFamily: 'Figtree_800ExtraBold' },

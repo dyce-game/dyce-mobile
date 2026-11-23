@@ -3,11 +3,30 @@ import type { ConversationSummary } from '@dyce/shared';
 import { Text, brand, useTheme } from '@dyce/ui';
 import { UserAvatar } from '@/features/avatar/UserAvatar';
 import { listTime, previewText } from '../chat-logic';
+import { BotTile, GroupAvatar, RowTag } from './ChatAvatars';
+
+/** Who a row is about: its name, the picture, and (for bots) the tag. */
+function identity(conversation: ConversationSummary) {
+  switch (conversation.kind) {
+    case 'group':
+      return {
+        name: conversation.group.title,
+        kind: `Group, ${conversation.group.memberCount} people`,
+      };
+    case 'bot':
+      return { name: conversation.bot.name, kind: 'Practice bot' };
+    default:
+      return {
+        name: conversation.peer.displayName || conversation.peer.username,
+        kind: '',
+      };
+  }
+}
 
 /**
- * One row of the Chat list (design: Chats): 78pt high, a 54pt avatar, name and time on the first line, the
- * last message on the second (bold and full-strength when unread) with the unread count and a tag. Message
- * requests are shown by `RequestCard`, not here.
+ * One row of the Chat list (design: Chats): 78pt high, a 54pt avatar (a cluster for a group, a tile for a
+ * bot), name and time on the first line, the last message on the second (bold and full-strength when unread)
+ * with the unread count and a tag. Message requests are shown by `RequestCard`, not here.
  */
 export function ConversationRow({
   conversation,
@@ -19,21 +38,27 @@ export function ConversationRow({
   onPress: () => void;
 }) {
   const { colors } = useTheme();
-  const { peer, unread, lastMessage } = conversation;
-  const name = peer.displayName || peer.username;
+  const { unread, lastMessage } = conversation;
+  const { name, kind } = identity(conversation);
   const preview = previewText(conversation, myId);
   const time = lastMessage ? listTime(lastMessage.createdAt) : '';
 
   return (
     <Pressable
       accessibilityRole="button"
-      accessibilityLabel={`${name}${unread > 0 ? `, ${unread} unread` : ''}. ${preview}${
+      accessibilityLabel={`${name}${kind ? `, ${kind}` : ''}${unread > 0 ? `, ${unread} unread` : ''}. ${preview}${
         time ? `, ${time}` : ''
       }`}
       onPress={onPress}
       style={styles.row}
     >
-      <UserAvatar avatar={peer.avatar} name={name} size={54} />
+      {conversation.kind === 'group' ? (
+        <GroupAvatar members={conversation.group.members} title={name} />
+      ) : conversation.kind === 'bot' ? (
+        <BotTile color={conversation.bot.color} />
+      ) : (
+        <UserAvatar avatar={conversation.peer.avatar} name={name} size={54} />
+      )}
       <View style={styles.body}>
         <View style={styles.line}>
           <Text numberOfLines={1} style={styles.name}>
@@ -56,6 +81,9 @@ export function ConversationRow({
           >
             {preview}
           </Text>
+          {conversation.kind === 'bot' ? (
+            <RowTag label="BOT" background="#5A4FCF" edge="#3A30A0" />
+          ) : null}
           {unread > 0 ? (
             <View style={styles.badge} aria-hidden>
               <Text style={styles.badgeText}>{unread > 99 ? '99+' : unread}</Text>
