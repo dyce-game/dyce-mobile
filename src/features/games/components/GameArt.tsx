@@ -1,12 +1,11 @@
 import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 import { brand } from '@dyce/ui';
-import { CupPongArt } from '../boards/CupPongArt';
-import { WordHuntArt } from '../boards/WordHuntArt';
-import { DieFace } from './DieFace';
+import { gameEntry } from '../registry';
 
 /**
- * The picture for a game: the tile in the drawer, the top of a card in a chat. Pig is two dice on felt.
- * Games without art of their own yet get a plain felt panel. (Video thumbnails come with the catalogue.)
+ * The picture for a game: the tile in the drawer, the top of a card in a chat. The picture itself comes from
+ * the game's registry entry (`Art`); a game without one yet gets a plain felt panel. (Video thumbnails come
+ * with the catalogue.) Nothing here changes when a game is added.
  */
 export function GameArt({
   slug,
@@ -18,24 +17,12 @@ export function GameArt({
   style?: StyleProp<ViewStyle>;
   /** The smaller layout used on chat cards. */
   compact?: boolean;
-  /** Die size in points, to fit a very small frame. */
+  /** A size hint in points for the main shape, to fit a very small frame. */
   dice?: number;
 }) {
-  const size = dice ?? (compact ? 38 : 50);
-  if (slug === 'word-hunt') return <WordHuntArt size={size} style={style} end={compact} />;
-  if (slug === 'cup-pong') return <CupPongArt style={style} />;
-  return (
-    <View aria-hidden style={[styles.felt, style]}>
-      {slug === '_example' ? (
-        <>
-          <DieFace value={5} size={size} rotate={-12} />
-          <View style={{ marginTop: size * 0.5 }}>
-            <DieFace value={3} size={size} rotate={14} />
-          </View>
-        </>
-      ) : null}
-    </View>
-  );
+  const Art = gameEntry(slug)?.Art;
+  if (Art) return <Art style={style} compact={compact} dice={dice} />;
+  return <View aria-hidden style={[styles.felt, style]} />;
 }
 
 const styles = StyleSheet.create({

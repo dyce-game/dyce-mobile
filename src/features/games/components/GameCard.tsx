@@ -8,7 +8,7 @@ import { ApiError } from '@/features/auth/api-client';
 import { authErrorMessage } from '@/features/auth/messages';
 import { useSession } from '@/features/auth/use-session';
 import { useConversationQuery } from '@/features/chat/use-chat';
-import { cardLabel, cardState, parseWordHuntView, wordHuntMover } from '../games-logic';
+import { cardLabel, cardState } from '../games-logic';
 import { counterChoices, counterLabel, poolIssueOf, potLine } from '../pool-logic';
 import {
   useAcceptMatch,
@@ -17,6 +17,7 @@ import {
   useDeclineMatch,
   useMatchQuery,
 } from '../use-games';
+import { gameEntry, rulesFor } from '../registry';
 import { GameArt } from './GameArt';
 
 type GameMessage = Extract<Message, { kind: 'game' }>;
@@ -33,11 +34,14 @@ export function GameCard({ message }: { message: GameMessage }) {
   const peer = useConversationQuery(message.conversationId).data?.peer;
   const who = peer?.displayName || peer?.username || 'them';
   const { payload: sent } = message;
-  // Word Hunt has no turns (both play at once): whose move it is depends on whether YOU have finished.
-  const simultaneous = sent.gameSlug === 'word-hunt' && sent.status === 'active';
+  // A game where both play at once (Word Hunt) has no turns: whose move it is depends on your own view, which
+  // its registry entry reads (`mover`).
+  const entry = gameEntry(sent.gameSlug);
+  const simultaneous = !!entry?.mover && sent.status === 'active';
   const live = useMatchQuery(sent.matchId, simultaneous).data;
-  const wordHunt = simultaneous ? parseWordHuntView(live?.view) : null;
-  const payload = wordHunt ? { ...sent, currentTurn: wordHuntMover(wordHunt, myId) } : sent;
+  const parsed = simultaneous && entry?.parseView ? entry.parseView(live?.view) : null;
+  const payload =
+    parsed !== null && entry?.mover ? { ...sent, currentTurn: entry.mover(parsed, myId) } : sent;
   const state = cardState(payload, message.senderId, myId, who);
   const accept = useAcceptMatch();
   const decline = useDeclineMatch();
@@ -144,7 +148,10 @@ export function GameCard({ message }: { message: GameMessage }) {
                 Suggest a stake each. {who} gets your offer on the card.
               </Text>
             </View>
-            {counterChoices(payload.stakeKobo ?? 0).map((c) => (
+            {counterChoices(
+              payload.stakeKobo ?? 0,
+              rulesFor(payload.gameSlug)?.poolMinKobo ?? undefined,
+            ).map((c) => (
               <PillButton
                 key={c}
                 label={counterLabel(c)}

@@ -77,6 +77,9 @@ describe('stakes', () => {
       stakeChoices(info({ minStakeKobo: 500 * N, maxStakeKobo: 2_000 * N })).map((s) => s / N),
     ).toEqual([500, 1_000, 2_000]);
     expect(stakeChoices(undefined)).toHaveLength(5);
+    // A game can ask for more than the platform minimum (Chess: ₦500).
+    expect(stakeChoices(info(), 500 * N).map((s) => s / N)).toEqual([500, 1_000, 2_000, 5_000]);
+    expect(stakeChoices(info(), null)).toHaveLength(5);
   });
 
   it('labels chips the way the design does', () => {

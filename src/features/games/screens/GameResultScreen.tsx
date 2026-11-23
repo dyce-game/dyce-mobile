@@ -8,22 +8,12 @@ import { UserAvatar } from '@/features/avatar/UserAvatar';
 import { authErrorMessage } from '@/features/auth/messages';
 import { useSession } from '@/features/auth/use-session';
 import { newMessageId } from '@/features/chat/chat-logic';
+import { useDisputeQuery } from '@/features/account/use-account';
 import { useWalletQuery } from '@/features/wallet/use-wallet';
-import { CupPongArt } from '../boards/CupPongArt';
-import { cupPongScoreLine, parseCupPongView } from '../boards/cup-pong-logic';
-import { WordHuntResultWords } from '../boards/WordHuntResultWords';
-import { WordHuntArt } from '../boards/WordHuntArt';
-import { DieFace } from '../components/DieFace';
 import { PoolResultPanel } from '../components/PoolResultPanel';
-import {
-  opponentOf,
-  parsePigView,
-  parseWordHuntView,
-  resultCopy,
-  scoreLine,
-  wordHuntScoreLine,
-} from '../games-logic';
+import { opponentOf, resultCopy } from '../games-logic';
 import { poolResult } from '../pool-logic';
+import { gameEntry } from '../registry';
 import { useCreateMatch, useMatchQuery } from '../use-games';
 
 /**
@@ -40,6 +30,10 @@ export function GameResultScreen({ matchId }: { matchId: string }) {
   const wallet = useWalletQuery();
   const rematchId = useRef<string | null>(null);
   const match = query.data;
+  const disputeInfo = useDisputeQuery(
+    matchId,
+    match?.status === 'finished' && match.mode === 'pool',
+  ).data;
 
   const chat = () =>
     router.replace((match?.conversationId ? `/c/${match.conversationId}` : '/chat') as Href);
@@ -68,23 +62,25 @@ export function GameResultScreen({ matchId }: { matchId: string }) {
     const p = match.players.find((x) => x.userId === id);
     return p?.displayName || p?.username || 'Them';
   };
-  const pig = match.gameSlug === '_example' ? parsePigView(match.view) : null;
-  const wordHunt = match.gameSlug === 'word-hunt' ? parseWordHuntView(match.view) : null;
-  const cupPong = match.gameSlug === 'cup-pong' ? parseCupPongView(match.view) : null;
+  // What is specific to the game (its score line, its picture, extra detail) comes from its registry entry.
+  const entry = gameEntry(match.gameSlug);
+  const view = entry?.parseView ? entry.parseView(match.view) : null;
+  const Art = entry?.Art;
+  const Extras = entry?.ResultExtras;
   const copy = resultCopy(
     match,
     myId,
     oppName,
-    pig
-      ? scoreLine(pig, myId, nameOf)
-      : wordHunt
-        ? wordHuntScoreLine(wordHunt, myId, nameOf)
-        : cupPong
-          ? cupPongScoreLine(cupPong, myId, nameOf)
-          : null,
+    view !== null && entry?.scoreLine ? entry.scoreLine(view, myId, nameOf) : null,
   );
   const finished = match.status === 'finished';
   const pool = finished ? poolResult(match, myId, oppName, wallet.data?.balanceKobo ?? null) : null;
+  // A Pool result can be disputed for a day (SPEC section 9); once you have, the link shows its status instead.
+  const disputeLink = disputeInfo?.dispute
+    ? 'See your dispute'
+    : disputeInfo?.canDispute
+      ? 'Dispute this result'
+      : null;
   const poolTitle = pool
     ? pool.outcome === 'won'
       ? 'You won the pool'
@@ -137,15 +133,10 @@ export function GameResultScreen({ matchId }: { matchId: string }) {
       <View style={styles.hero} accessibilityLiveRegion="polite">
         {hero ? (
           <UserAvatar avatar={hero.avatar} name={hero.displayName || hero.username} size={96} />
-        ) : wordHunt ? (
-          <WordHuntArt size={50} style={styles.wordArt} />
-        ) : cupPong ? (
-          <CupPongArt style={styles.wordArt} />
+        ) : Art ? (
+          <Art hero />
         ) : (
-          <View style={styles.dice} aria-hidden>
-            <DieFace value={4} size={60} rotate={-10} />
-            <DieFace value={4} size={60} rotate={10} />
-          </View>
+          <View style={styles.fallbackArt} aria-hidden />
         )}
         <Text variant="title" accessibilityRole="header" style={styles.center}>
           {finished ? (poolTitle ?? copy.title) : 'Still playing'}
@@ -160,8 +151,8 @@ export function GameResultScreen({ matchId }: { matchId: string }) {
           </Text>
         ) : null}
         {pool ? <PoolResultPanel result={pool} /> : null}
-        {finished && wordHunt ? (
-          <WordHuntResultWords view={wordHunt} myId={myId} nameOf={nameOf} />
+        {finished && Extras && view !== null ? (
+          <Extras view={view} myId={myId} nameOf={nameOf} />
         ) : null}
       </View>
 
@@ -204,6 +195,18 @@ export function GameResultScreen({ matchId }: { matchId: string }) {
             {authErrorMessage(rematch.error)}
           </Text>
         ) : null}
+        {pool && disputeLink ? (
+          <Pressable
+            accessibilityRole="link"
+            accessibilityLabel={disputeLink}
+            onPress={() => router.push(`/dispute/${matchId}` as Href)}
+            style={styles.disputeLink}
+          >
+            <Text variant="callout" color="accent">
+              {disputeLink}
+            </Text>
+          </Pressable>
+        ) : null}
         <Text variant="footnote" color="sub" style={styles.center}>
           {match.mode === 'pool'
             ? 'Dyce Cash is virtual: it can’t be withdrawn or bought.'
@@ -218,16 +221,10 @@ const styles = StyleSheet.create({
   root: { flex: 1 },
   top: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 8 },
   close: { width: 56, minHeight: 44, justifyContent: 'center', alignItems: 'center' },
+  disputeLink: { minHeight: 44, alignItems: 'center', justifyContent: 'center' },
   kicker: { alignItems: 'center', gap: 4 },
   hero: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 14, padding: 24 },
-  dice: {
-    flexDirection: 'row',
-    gap: 12,
-    backgroundColor: brand.felt.fill,
-    padding: 18,
-    borderRadius: 22,
-  },
-  wordArt: { width: 150, height: 120, borderRadius: 22 },
+  fallbackArt: { width: 150, height: 120, borderRadius: 22, backgroundColor: brand.felt.fill },
   center: { textAlign: 'center' },
   loading: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 14, padding: 24 },
   actions: { gap: 12, padding: 20, maxWidth: 520, width: '100%', alignSelf: 'center' },

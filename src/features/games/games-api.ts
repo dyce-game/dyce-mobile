@@ -27,6 +27,8 @@ export function createGamesApi(api: ApiClient) {
       api.post<MatchView>(`/matches/${id}/counter`, input),
     decline: (id: string) => api.post<MatchView>(`/matches/${id}/decline`),
     cancel: (id: string) => api.post<MatchView>(`/matches/${id}/cancel`),
+    /** Gives up a running 1v1 game: the other player wins (and takes a Pool pot). */
+    resign: (id: string) => api.post<MatchView>(`/matches/${id}/resign`),
     /** Retrying the same move with the same `expectedVersion` is safe. */
     move: (id: string, input: SubmitMoveRequest) =>
       api.post<MatchView>(`/matches/${id}/moves`, input),

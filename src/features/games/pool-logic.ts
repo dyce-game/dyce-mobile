@@ -11,9 +11,15 @@ const NAIRA = 100;
 /** The stake chips in the mode sheet (design: ₦200, ₦500, ₦1k, ₦2k, ₦5k). */
 export const STAKE_PRESETS_KOBO = [200, 500, 1_000, 2_000, 5_000].map((n) => n * NAIRA);
 
-/** The presets that are inside the server's limits (the limits come from config, not the app). */
-export function stakeChoices(info: Pick<PoolInfo, 'minStakeKobo' | 'maxStakeKobo'> | undefined) {
-  const min = info?.minStakeKobo ?? 100 * NAIRA;
+/**
+ * The presets that are inside the server's limits (the limits come from config, not the app) and above the
+ * game's own Pool minimum, if it has one (docs/GAMES.md; the server enforces it).
+ */
+export function stakeChoices(
+  info: Pick<PoolInfo, 'minStakeKobo' | 'maxStakeKobo'> | undefined,
+  gameMinKobo?: number | null,
+) {
+  const min = Math.max(info?.minStakeKobo ?? 100 * NAIRA, gameMinKobo ?? 0);
   const max = info?.maxStakeKobo ?? 20_000 * NAIRA;
   return STAKE_PRESETS_KOBO.filter((s) => s >= min && s <= max);
 }

@@ -169,6 +169,7 @@ describe('the drawer', () => {
     maxPlayers: 2,
     categories: ['arcade'],
     supportsPool: false,
+    poolMinKobo: null,
     ...over,
   });
 

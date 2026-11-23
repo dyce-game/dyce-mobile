@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
 import { Pressable, StyleSheet, Switch, View } from 'react-native';
+import { useRouter, type Href } from 'expo-router';
 import { formatNaira, type GameInfo } from '@dyce/shared';
 import { ModeBadge, Text, TokenButton, useTheme } from '@dyce/ui';
 import { UserAvatar } from '@/features/avatar/UserAvatar';
@@ -21,6 +22,7 @@ import { useCreateMatch, usePoolInfoQuery } from '../use-games';
 import { AgeGatePanel } from './AgeGatePanel';
 import { GameArt } from './GameArt';
 import { PoolIssuePanel } from './PoolIssuePanel';
+import { RulesSheet } from './RulesSheet';
 
 type Peer = {
   displayName?: string;
@@ -43,6 +45,7 @@ export function ModeSheetBody({
   name,
   onSent,
   onBack,
+  initialMode = 'free',
 }: {
   game: GameInfo;
   conversationId: string | undefined;
@@ -50,15 +53,21 @@ export function ModeSheetBody({
   name: string;
   onSent: () => void;
   onBack: () => void;
+  /** Which mode is selected when the sheet opens (the game detail's "Start a pool" button). */
+  initialMode?: 'free' | 'pool';
 }) {
   const { colors } = useTheme();
+  const router = useRouter();
   const info = usePoolInfoQuery(game.supportsPool);
   const wallet = useWalletQuery();
   const topup = useClaimTopup();
   const create = useCreateMatch();
-  const [mode, setMode] = useState<'free' | 'pool'>('free');
+  const [mode, setMode] = useState<'free' | 'pool'>(
+    initialMode === 'pool' && game.supportsPool ? 'pool' : 'free',
+  );
   const [step, setStep] = useState<Step>('choose');
-  const choices = stakeChoices(info.data);
+  const choices = stakeChoices(info.data, game.poolMinKobo);
+  const [showRules, setShowRules] = useState(false);
   const [stake, setStake] = useState(() => defaultStake(choices));
   const [allowCounter, setAllowCounter] = useState(true);
   // One id per attempt: tapping Send again after a network failure sends the same game, not a second one.
@@ -224,6 +233,33 @@ export function ModeSheetBody({
     <>
       {header}
 
+      <Pressable
+        accessibilityRole="button"
+        accessibilityState={{ expanded: showRules }}
+        accessibilityLabel={showRules ? 'Hide how to play' : 'Show how to play'}
+        onPress={() => setShowRules((v) => !v)}
+        style={styles.rulesToggle}
+      >
+        <Text variant="footnote" color="accent">
+          {showRules ? 'Hide how to play' : 'How to play'}
+        </Text>
+      </Pressable>
+      {showRules ? (
+        <RulesSheet slug={game.slug} poolMinKobo={game.poolMinKobo} showPool={game.supportsPool} />
+      ) : null}
+      {game.supportsPool ? (
+        <Pressable
+          accessibilityRole="link"
+          accessibilityLabel="How Pool works"
+          onPress={() => router.push('/pool-rules' as Href)}
+          style={styles.rulesToggle}
+        >
+          <Text variant="footnote" color="accent">
+            How Pool works
+          </Text>
+        </Pressable>
+      ) : null}
+
       <View style={styles.modes} accessibilityRole="radiogroup" accessibilityLabel="Game mode">
         <Pressable
           accessibilityRole="radio"
@@ -384,6 +420,7 @@ const styles = StyleSheet.create({
   flex: { flex: 1 },
   pickedHead: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingBottom: 6 },
   pickedArt: { width: 52, height: 52, borderRadius: 14 },
+  rulesToggle: { minHeight: 44, justifyContent: 'center', alignSelf: 'flex-start' },
   modes: { flexDirection: 'row', gap: 10, paddingVertical: 8 },
   mode: {
     flex: 1,

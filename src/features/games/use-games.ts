@@ -113,6 +113,8 @@ export function useCounterMatch() {
 
 export const useDeclineMatch = () => useAnswer((id) => gamesApi.decline(id));
 export const useCancelMatch = () => useAnswer((id) => gamesApi.cancel(id));
+/** Resigns a running 1v1 game (the game menu). The result screen takes over once the match is finished. */
+export const useResignMatch = () => useAnswer((id) => gamesApi.resign(id));
 
 /**
  * Plays one move. The server validates it; if the match has moved on (`stale_version`) we reload the
