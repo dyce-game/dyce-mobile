@@ -17,7 +17,8 @@ const CARD_BG: Record<SpaceView['status'], string> = {
 /**
  * The Spaces tab (design: Space): join with a code, and your spaces: the ones waiting for players, the ones
  * live right now and the ones that just finished. "+" opens Create a space. Public spaces ("Open now"),
- * the People switch and quick match come later (docs/BACKLOG.md).
+ * and the People switch come later (docs/BACKLOG.md). Quick match with a stranger opens from the card
+ * below the code row.
  */
 export function SpacesTabScreen() {
   const router = useRouter();
@@ -47,6 +48,21 @@ export function SpacesTabScreen() {
 
       <Pressable
         accessibilityRole="button"
+        accessibilityLabel="Quick match, play someone new at your level"
+        onPress={() => router.push('/quick-match' as Href)}
+        style={[styles.quick, { backgroundColor: colors.card, borderColor: colors.line }]}
+      >
+        <View style={styles.flex}>
+          <Text variant="callout">Quick match</Text>
+          <Text variant="footnote" color="sub">
+            Play someone new at your level
+          </Text>
+        </View>
+        <ModeBadge kind="SPACE" />
+      </Pressable>
+
+      <Pressable
+        accessibilityRole="button"
         accessibilityLabel="Join a space with a code"
         onPress={() => router.push('/space/join' as Href)}
         style={[styles.join, { borderColor: colors.line }]}
@@ -67,7 +83,8 @@ export function SpacesTabScreen() {
         <View style={styles.empty}>
           <Text variant="headline">No spaces yet</Text>
           <Text color="sub">
-            Open a Whot! space for up to four friends, free or for Dyce Cash, and share the code.
+            Open a space for your friends, free or for Dyce Cash: Whot!, Crazy Cards, Imposter,
+            Werewolf, Charades or Doodle Guess. Then share the code.
           </Text>
           <TokenButton label="Create a space" onPress={() => router.push('/space/new' as Href)} />
         </View>
@@ -133,6 +150,15 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   codeHint: { letterSpacing: 1 },
+  quick: {
+    minHeight: 64,
+    borderRadius: 16,
+    borderWidth: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 14,
+    gap: 10,
+  },
   section: { marginTop: 6 },
   empty: { gap: 8, paddingTop: 4 },
   list: { gap: 12 },

@@ -7,6 +7,8 @@ import { Text, TokenButton, useTheme } from '@dyce/ui';
 import { ApiError } from '@/features/auth/api-client';
 import { authErrorMessage } from '@/features/auth/messages';
 import { UserAvatar } from '@/features/avatar/UserAvatar';
+import { SpaceProblemView } from '../components/SpaceProblemView';
+import { problemForJoinError } from '../space-problem-logic';
 import { modeLine, spaceMeta, visibilityLabel } from '../spaces-logic';
 import { useJoinSpace, useSpaceLookup } from '../use-spaces';
 
@@ -45,6 +47,24 @@ export function JoinSpaceScreen({ initialCode }: { initialCode?: string }) {
   const back = () => (router.canGoBack() ? router.back() : router.replace('/spaces' as Href));
   const alreadyIn = found?.seated ?? false;
   const problem = join.isError ? join.error : lookupFailed;
+  // The space filled up while you were typing, or you were removed from it: a screen of its own (design: RoomFull, RoomRemoved).
+  const edge =
+    problem instanceof ApiError ? problemForJoinError(problem.code, problem.details) : null;
+  if (edge) {
+    const name =
+      problem instanceof ApiError && typeof problem.details.name === 'string'
+        ? problem.details.name
+        : null;
+    return (
+      <SpaceProblemView
+        problem={edge}
+        title={name}
+        onPrimary={() => router.replace('/spaces' as Href)}
+        onSecondary={() => join.reset()}
+        secondaryLabel="Try another code"
+      />
+    );
+  }
 
   return (
     <SafeAreaView style={[styles.root, { backgroundColor: colors.bg }]}>

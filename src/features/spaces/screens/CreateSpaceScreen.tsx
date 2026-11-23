@@ -16,14 +16,13 @@ import { defaultStake } from '@/features/games/pool-logic';
 import { usePoolInfoQuery } from '@/features/games/use-games';
 import { useWalletQuery } from '@/features/wallet/use-wallet';
 import { SCHEME_LABEL, ordinal, payoutSplit, schemesFor, seatFeeChoices } from '../spaces-logic';
+import { CREATE_GAMES, buildOptions, createGame, gameLine } from '../live-games';
 import { useCreateSpace } from '../use-spaces';
-
-const MIN_SEATS = 2;
-const MAX_SEATS = 4;
 
 /**
  * Create a space (design: CreateRoom): game, name, Free or Pool, seats, seat fee and payout, who can join and
- * when it starts. Whot! is the only live game so far. In Pool your own seat fee is locked as the space opens
+ * when it starts. Every live game is offered (Whot!, Crazy Cards, Imposter, Werewolf, Charades, Doodle Guess);
+ * the seat range, payout schemes and options come from the game itself. In Pool your own seat fee is locked as the space opens
  * (the server does that; if it can't, no space is made). The first time someone picks Pool they answer the
  * age gate.
  */
@@ -35,7 +34,10 @@ export function CreateSpaceScreen() {
   const wallet = useWalletQuery();
   const [name, setName] = useState('');
   const [mode, setMode] = useState<'free' | 'pool'>('free');
-  const [seats, setSeats] = useState(4);
+  const [slug, setSlug] = useState('whot');
+  const game = createGame(slug);
+  const [seats, setSeats] = useState(game.defaultSeats);
+  const [chosen, setChosen] = useState<Record<string, string | number>>({});
   const choices = seatFeeChoices(info.data);
   const [fee, setFee] = useState<number | null>(null);
   const [scheme, setScheme] = useState<SpacePayoutScheme>('p50_30_20');
@@ -48,11 +50,20 @@ export function CreateSpaceScreen() {
   const pool = mode === 'pool';
   const seatFee = fee ?? defaultStake(choices);
   const minor = info.data ? !info.data.isAdult && info.data.ageAnswered : false;
-  const schemes = schemesFor(seats);
+  const minSeats = game.minSeats;
+  const maxSeats = game.maxSeats;
+  const schemes = schemesFor(seats).filter((s) => game.schemes.includes(s));
   const effectiveScheme = schemes.includes(scheme) ? scheme : 'winner_all';
   const potWhenFull = seatFee * seats;
   const trimmed = name.trim();
   const canAfford = (wallet.data?.balanceKobo ?? Infinity) >= seatFee;
+
+  function pickGame(next: string) {
+    setSlug(next);
+    setSeats(createGame(next).defaultSeats);
+    setChosen({});
+    attempt.current = null;
+  }
 
   function pickPool() {
     if (minor) return;
@@ -65,12 +76,13 @@ export function CreateSpaceScreen() {
 
   function submit() {
     if (!trimmed) return;
-    const key = `${trimmed}:${mode}:${seats}:${seatFee}:${effectiveScheme}:${visibility}:${startRule}`;
+    const options = buildOptions(game, chosen);
+    const key = `${slug}:${trimmed}:${mode}:${seats}:${seatFee}:${effectiveScheme}:${visibility}:${startRule}:${JSON.stringify(options ?? {})}`;
     if (attempt.current?.key !== key) attempt.current = { key, id: newMessageId() };
     create.mutate(
       {
         id: attempt.current.id,
-        gameSlug: 'whot',
+        gameSlug: slug,
         name: trimmed,
         mode,
         seatFeeKobo: pool ? seatFee : 0,
@@ -78,6 +90,7 @@ export function CreateSpaceScreen() {
         maxSeats: seats,
         visibility,
         startRule,
+        ...(options ? { options } : {}),
       },
       {
         onSuccess: (space) => {
@@ -137,21 +150,43 @@ export function CreateSpaceScreen() {
           <Text variant="footnote" color="sub" style={styles.label}>
             Game
           </Text>
-          <View
-            accessible
-            accessibilityLabel="Whot!, selected. More games are coming."
-            style={[styles.game, { backgroundColor: colors.card, borderColor: '#C93E1C' }]}
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.games}
           >
-            <View style={styles.gameMark}>
-              <Text style={styles.gameMarkText}>W</Text>
-            </View>
-            <View style={styles.flex}>
-              <Text variant="callout">Whot!</Text>
-              <Text variant="footnote" color="sub">
-                2–4 players · Nigerian rules
-              </Text>
-            </View>
-          </View>
+            {CREATE_GAMES.map((g) => {
+              const on = g.slug === slug;
+              return (
+                <Pressable
+                  key={g.slug}
+                  accessibilityRole="button"
+                  accessibilityLabel={`${g.name}, ${gameLine(g)}`}
+                  accessibilityState={{ selected: on }}
+                  onPress={() => pickGame(g.slug)}
+                  style={[
+                    styles.game,
+                    { backgroundColor: colors.card, borderColor: on ? '#C93E1C' : colors.line },
+                  ]}
+                >
+                  <View style={[styles.gameMark, { backgroundColor: g.tile }]}>
+                    <Text style={styles.gameMarkText}>{g.mark}</Text>
+                  </View>
+                  <View style={styles.flex}>
+                    <Text variant="callout" numberOfLines={1}>
+                      {g.name}
+                    </Text>
+                    <Text variant="footnote" color="sub" numberOfLines={1}>
+                      {g.minSeats}–{g.maxSeats} players
+                    </Text>
+                  </View>
+                </Pressable>
+              );
+            })}
+          </ScrollView>
+          <Text variant="footnote" color="sub" style={styles.gameLine}>
+            {gameLine(game)}
+          </Text>
         </View>
 
         <TextField
@@ -179,18 +214,18 @@ export function CreateSpaceScreen() {
             <View style={styles.flex}>
               <Text variant="body">Players</Text>
               <Text variant="footnote" color="sub">
-                {MIN_SEATS}–{MAX_SEATS} players for Whot!
+                {minSeats}–{maxSeats} players for {game.name}
               </Text>
             </View>
             <View style={[styles.stepper, { backgroundColor: colors.chip }]}>
               <Pressable
                 accessibilityRole="button"
                 accessibilityLabel="Fewer players"
-                disabled={seats <= MIN_SEATS}
-                onPress={() => setSeats((n) => Math.max(MIN_SEATS, n - 1))}
+                disabled={seats <= minSeats}
+                onPress={() => setSeats((n) => Math.max(minSeats, n - 1))}
                 style={[
                   styles.stepBtn,
-                  { backgroundColor: colors.card, opacity: seats <= MIN_SEATS ? 0.4 : 1 },
+                  { backgroundColor: colors.card, opacity: seats <= minSeats ? 0.4 : 1 },
                 ]}
               >
                 <Text variant="headline">−</Text>
@@ -205,11 +240,11 @@ export function CreateSpaceScreen() {
               <Pressable
                 accessibilityRole="button"
                 accessibilityLabel="More players"
-                disabled={seats >= MAX_SEATS}
-                onPress={() => setSeats((n) => Math.min(MAX_SEATS, n + 1))}
+                disabled={seats >= maxSeats}
+                onPress={() => setSeats((n) => Math.min(maxSeats, n + 1))}
                 style={[
                   styles.stepBtn,
-                  { backgroundColor: colors.card, opacity: seats >= MAX_SEATS ? 0.4 : 1 },
+                  { backgroundColor: colors.card, opacity: seats >= maxSeats ? 0.4 : 1 },
                 ]}
               >
                 <Text variant="headline">+</Text>
@@ -248,6 +283,26 @@ export function CreateSpaceScreen() {
           )}
         </View>
 
+        {game.options.map((spec) => (
+          <View key={spec.key}>
+            <Text variant="footnote" color="sub" style={styles.label}>
+              {spec.label}
+            </Text>
+            <Segmented
+              label={spec.label}
+              value={String(chosen[spec.key] ?? spec.default)}
+              onChange={(v) =>
+                setChosen((c) => ({
+                  ...c,
+                  [spec.key]:
+                    spec.choices.find((x) => String(x.value) === v)?.value ?? spec.default,
+                }))
+              }
+              options={spec.choices.map((c) => ({ key: String(c.value), label: c.label }))}
+            />
+          </View>
+        ))}
+
         {pool ? (
           <View
             style={styles.pot}
@@ -261,6 +316,11 @@ export function CreateSpaceScreen() {
               <Text style={styles.potAmount}>{formatNaira(potWhenFull)}</Text>
             </View>
             <View style={styles.potRow}>
+              {game.sidesWin ? (
+                <Text variant="footnote" style={{ color: '#C9C9D1' }}>
+                  The winning side shares the pot equally.
+                </Text>
+              ) : null}
               {payoutSplit(potWhenFull, effectiveScheme, seats).map((p) => (
                 <View key={p.place} style={styles.potCell}>
                   <Text style={styles.potKobo}>{formatNaira(p.kobo)}</Text>
@@ -345,14 +405,17 @@ const styles = StyleSheet.create({
   cancel: { fontSize: 17 },
   body: { padding: 16, gap: 16, paddingBottom: 24 },
   label: { marginBottom: 8 },
+  games: { gap: 10, paddingRight: 8 },
+  gameLine: { marginTop: 8 },
   game: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
+    gap: 10,
     padding: 10,
     borderRadius: 18,
     borderWidth: 3,
     minHeight: 64,
+    width: 190,
   },
   gameMark: {
     width: 48,

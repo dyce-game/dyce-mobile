@@ -41,6 +41,8 @@ const space = (o: Partial<SpaceView> = {}): SpaceView => ({
   minSeats: 2,
   visibility: 'friends',
   startRule: 'host',
+  options: {},
+  quickMatch: false,
   status: 'waiting',
   members: [member({ userId: 'h', isHost: true })],
   matchId: 'm',

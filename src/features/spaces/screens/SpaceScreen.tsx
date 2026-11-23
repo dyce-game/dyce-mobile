@@ -8,6 +8,9 @@ import { ApiError } from '@/features/auth/api-client';
 import { authErrorMessage } from '@/features/auth/messages';
 import { useSession } from '@/features/auth/use-session';
 import { UserAvatar } from '@/features/avatar/UserAvatar';
+import { PARTY_RESULT_DELAY_MS, hasPartyScreen } from '../party/common-logic';
+import { SpaceProblemView } from '../components/SpaceProblemView';
+import { problemForSpace } from '../space-problem-logic';
 import { lobbyAction, modeLine, visibilityLabel } from '../spaces-logic';
 import {
   useCloseSpace,
@@ -16,6 +19,7 @@ import {
   useSpaceQuery,
   useStartSpace,
 } from '../use-spaces';
+import { isCardGame } from '../tables/model';
 import { TableScreen } from './TableScreen';
 
 /**
@@ -28,9 +32,17 @@ export function SpaceScreen({ spaceId }: { spaceId: string }) {
   const query = useSpaceQuery(spaceId);
   const space = query.data;
 
+  // A party game ends on a reveal people read (the imposters, the roles, the word), and a card game on the
+  // table's results panel (every hand turned over): the table stays up for a while after the space ends, and
+  // its own "See results" button moves on sooner.
+  const party = !!space && (hasPartyScreen(space.gameSlug) || isCardGame(space.gameSlug));
   useEffect(() => {
-    if (space?.status === 'ended') router.replace(`/space/${spaceId}/result` as Href);
-  }, [space?.status, spaceId, router]);
+    if (space?.status !== 'ended') return;
+    const to = () => router.replace(`/space/${spaceId}/result` as Href);
+    if (!party) return to();
+    const id = setTimeout(to, PARTY_RESULT_DELAY_MS);
+    return () => clearTimeout(id);
+  }, [space?.status, party, spaceId, router]);
 
   const toSpaces = () => router.replace('/spaces' as Href);
 
@@ -55,19 +67,21 @@ export function SpaceScreen({ spaceId }: { spaceId: string }) {
     );
   }
 
-  if (space.status === 'live' && space.seated) return <TableScreen space={space} />;
+  if ((space.status === 'live' || (space.status === 'ended' && party)) && space.seated)
+    return <TableScreen space={space} />;
 
-  if (space.status === 'closed' || !space.seated) {
+  // Out of a space you were in (design: RoomHostLeft, RoomRemoved): the server says why, and what became of your seat fee.
+  const problem = problemForSpace(space);
+  if (problem) {
+    const again = problem.kind === 'host_closed' || problem.kind === 'expired';
     return (
-      <SafeAreaView style={[styles.center, { backgroundColor: colors.bg }]}>
-        <Text variant="headline">
-          {space.status === 'closed' ? 'This space was closed' : 'You left this space'}
-        </Text>
-        <Text color="sub" style={styles.text}>
-          {space.mode === 'pool' ? 'Seat fees were given back.' : 'Nothing was played.'}
-        </Text>
-        <TokenButton label="Back to spaces" onPress={toSpaces} />
-      </SafeAreaView>
+      <SpaceProblemView
+        problem={problem}
+        title={space.name}
+        onPrimary={() => (again ? router.replace('/space/new' as Href) : toSpaces())}
+        onSecondary={again ? toSpaces : undefined}
+        secondaryLabel="Back to spaces"
+      />
     );
   }
 

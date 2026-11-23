@@ -1,3 +1,4 @@
+import type { CanvasMessage } from '@dyce/games';
 import type { LiveState } from '@dyce/shared';
 import { LiveConnection, tableIsGone, type LiveStatus, type RoomLike } from './live-connection';
 
@@ -38,6 +39,9 @@ const state = (over: Partial<LiveState> = {}): LiveState => ({
   seats: [],
   turnUserId: null,
   turnDeadlineAt: null,
+  roomKind: 'turns',
+  canAct: false,
+  waiting: false,
   serverNow: 0,
   results: null,
   ...over,
@@ -67,6 +71,48 @@ function setup(opens: (() => Promise<RoomLike>)[]) {
   });
   return { conn, states, errors, statuses, timers, opened: () => n };
 }
+
+describe('LiveConnection canvas', () => {
+  it('hands every `canvas` message of the current room to the screen, in order, and ignores a room that was dropped', async () => {
+    const a = new FakeRoom();
+    const b = new FakeRoom();
+    const got: CanvasMessage[] = [];
+    const conn = new LiveConnection({
+      open: (() => {
+        const rooms = [a, b];
+        return async () => rooms.shift() as RoomLike;
+      })(),
+      onState: () => undefined,
+      onError: () => undefined,
+      onCanvas: (m) => got.push(m),
+      onStatus: () => undefined,
+      setTimer: (fn) => {
+        fn();
+        return 1;
+      },
+      clearTimer: () => undefined,
+      random: () => 0,
+    });
+    conn.start();
+    await flush();
+    const m1: CanvasMessage = { turn: 0, reset: true, strokes: [], extend: [] };
+    const m2: CanvasMessage = {
+      turn: 0,
+      reset: false,
+      strokes: [{ id: 1, color: 0, width: 4, pts: [[1, 2]] }],
+      extend: [],
+    };
+    a.emit('canvas', m1);
+    a.emit('canvas', m2);
+    expect(got).toEqual([m1, m2]);
+    // The line drops and the next one opens: only the new room's messages count.
+    a.drop();
+    await flush();
+    a.emit('canvas', m2);
+    b.emit('canvas', m1);
+    expect(got).toEqual([m1, m2, m1]);
+  });
+});
 
 describe('LiveConnection', () => {
   it('connects, passes state and errors through, and sends moves', async () => {

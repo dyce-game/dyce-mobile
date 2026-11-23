@@ -1,4 +1,5 @@
-import { LIVE_CLOSE_REPLACED, type LiveError, type LiveState } from '@dyce/shared';
+import type { CanvasMessage } from '@dyce/games';
+import { LIVE_CLOSE_REPLACED, type LiveChat, type LiveError, type LiveState } from '@dyce/shared';
 import { backoffMs } from '../chat/realtime-client';
 
 /**
@@ -32,6 +33,11 @@ export type LiveDeps = {
   open: () => Promise<RoomLike>;
   onState: (state: LiveState) => void;
   onError: (error: LiveError) => void;
+  /** Party games: a line of table talk, and the lines you missed while away (sent on every join). */
+  onChat?: (chat: LiveChat) => void;
+  onChatHistory?: (chats: LiveChat[]) => void;
+  /** Doodle Guess: a piece of the drawing (apply in order with `applyCanvas`). */
+  onCanvas?: (message: CanvasMessage) => void;
   onStatus: (status: LiveStatus) => void;
   setTimer?: (fn: () => void, ms: number) => unknown;
   clearTimer?: (id: unknown) => void;
@@ -150,6 +156,15 @@ export class LiveConnection {
     }) as (m: never) => void);
     room.onMessage('error', ((e: LiveError) => {
       if (this.room === room) this.deps.onError(e);
+    }) as (m: never) => void);
+    room.onMessage('chat', ((c: LiveChat) => {
+      if (this.room === room) this.deps.onChat?.(c);
+    }) as (m: never) => void);
+    room.onMessage('chat_history', ((h: LiveChat[]) => {
+      if (this.room === room) this.deps.onChatHistory?.(h);
+    }) as (m: never) => void);
+    room.onMessage('canvas', ((m: CanvasMessage) => {
+      if (this.room === room) this.deps.onCanvas?.(m);
     }) as (m: never) => void);
     room.onLeave((code) => {
       if (this.room !== room) return;
