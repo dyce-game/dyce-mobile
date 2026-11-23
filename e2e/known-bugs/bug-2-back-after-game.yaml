@@ -1,0 +1,43 @@
+# BUG-2 (open): after a game ends, "Back to chat" on the result screen puts the thread on screen, but the
+# thread's back arrow then returns to the game screens instead of the chat list. Expected: the chat list.
+# This flow FAILS until the bug is fixed. Run it with:
+#   node scripts/e2e/web-runner.mjs e2e/known-bugs/bug-2-back-after-game.yaml
+appId: games.dyce.app
+name: bug 2 back after game
+tags: [web, known-bug]
+---
+- launchApp:
+    clearState: true
+- runFlow:
+    file: ../subflows/login.yaml
+    env:
+      PHONE: '${ALICE_PHONE}'
+- tapOn: 'Ben QA.*'
+- tapOn: 'Open games'
+- scrollUntilVisible:
+    element: 'Pig, .*'
+- tapOn: 'Pig, .*'
+- tapOn: 'Send Pig'
+- runScript:
+    file: ../scripts/ben-game.js
+    env:
+      BEN_ACTION: accept
+- tapOn: 'Play Pig'
+- tapOn: 'Game menu'
+- tapOn: 'Resign'
+- extendedWaitUntil:
+    visible: 'Resign this game.+'
+    timeout: 5000
+- tapOn:
+    text: 'Resign'
+    index: -1 # the confirm button (the menu row of the same name is behind it)
+- extendedWaitUntil:
+    visible: 'Back to chat'
+    timeout: 15000
+- tapOn: 'Back to chat'
+- assertVisible: 'Ben QA, chat info'
+- tapOn: 'Back to chats'
+# expected: the chat list. Actual: the thread (or a game screen) is still on screen.
+- extendedWaitUntil:
+    visible: 'New in Chat'
+    timeout: 5000

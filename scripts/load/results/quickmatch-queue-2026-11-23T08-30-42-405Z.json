@@ -1,0 +1,78 @@
+{
+  "name": "quickmatch-queue",
+  "at": "2026-11-23T08:30:42.405Z",
+  "machine": {
+    "os": "win32 10.0.26200",
+    "cpu": "13th Gen Intel(R) Core(TM) i7-1355U",
+    "logicalCores": 12,
+    "memoryGB": 15.5,
+    "node": "v22.23.4",
+    "note": "one machine runs the load generator, the API, the game server and PostgreSQL together, and other tools were running on it"
+  },
+  "params": {
+    "users": 100,
+    "game": "whot"
+  },
+  "paired": 100,
+  "playing": 100,
+  "liveRoomsOpened": 50,
+  "leftSearching": 0,
+  "latencyMs": {
+    "join": {
+      "n": 100,
+      "min": 1797.9,
+      "p50": 1903,
+      "p95": 2133.8,
+      "p99": 2148.3,
+      "max": 2148.3
+    },
+    "joinToFound": {
+      "n": 100,
+      "min": 1832.4,
+      "p50": 2116.4,
+      "p95": 2213.1,
+      "p99": 3091.7,
+      "max": 3091.7
+    },
+    "accept": {
+      "n": 100,
+      "min": 371.9,
+      "p50": 647.2,
+      "p95": 1361.9,
+      "p99": 1493,
+      "max": 1493
+    },
+    "acceptToPlaying": {
+      "n": 100,
+      "min": 3681.6,
+      "p50": 6721,
+      "p95": 8525.7,
+      "p99": 8530.5,
+      "max": 8530.5
+    }
+  },
+  "violations": [],
+  "errors": {},
+  "processes": {
+    "api": {
+      "rssMBEnd": 150,
+      "rssMBPeakSampled": 150,
+      "cpuPercentOfOneCore": 25.9
+    },
+    "game": {
+      "rssMBEnd": 86,
+      "rssMBPeakSampled": 86,
+      "cpuPercentOfOneCore": 3
+    },
+    "db": {
+      "rssMBEnd": 28,
+      "rssMBPeakSampled": 28,
+      "cpuPercentOfOneCore": 0.1
+    },
+    "hostCpuLoadPercent": {
+      "samples": 3,
+      "avg": 54.7,
+      "max": 63
+    }
+  }
+}

@@ -1,0 +1,55 @@
+# A Free Word Hunt match from a chat: Alice sends it from the Games drawer, Ben accepts and plays his round
+# (API), Alice plays hers and both see the same result. Free: no cash moves.
+appId: games.dyce.app
+name: word hunt free
+tags: [web, phase2, games]
+---
+- launchApp:
+    clearState: true
+- runFlow:
+    file: subflows/login.yaml
+    env:
+      PHONE: '${ALICE_PHONE}'
+- tapOn: 'Ben QA.*'
+- tapOn: 'Open games'
+- scrollUntilVisible:
+    element: 'Word Hunt, .*'
+- tapOn: 'Word Hunt, .*'
+- assertVisible: 'Word Hunt vs Ben QA'
+- assertVisible: 'Not for this game yet' # Pool is not offered for Word Hunt
+- tapOn: 'Send Word Hunt'
+- takeScreenshot: wordhunt-card-sent
+- runScript:
+    file: scripts/ben-game.js
+    env:
+      BEN_ACTION: accept
+- takeScreenshot: wordhunt-card-accepted
+- assertVisible: 'Your turn'
+# Ben plays his round (starts, sends no words), then Alice plays hers
+- runScript:
+    file: scripts/ben-game.js
+    env:
+      BEN_ACTION: word-hunt
+- tapOn: 'Play Word Hunt'
+- assertVisible: 'Ben QA · played · 0 pts'
+- tapOn: 'Start the round.*'
+- extendedWaitUntil:
+    visible: 'Finish my round and send my words'
+    timeout: 10000
+- takeScreenshot: wordhunt-round
+- tapOn: 'Finish my round and send my words'
+# both sent no words: a draw, decided by the server and the same on Ben's side
+- extendedWaitUntil:
+    visible: "It's a draw"
+    timeout: 15000
+- assertVisible: 'You 0 · Ben QA 0'
+- assertVisible: 'Free play: nothing was won or lost in Dyce Cash.'
+- assertVisible: 'Rematch free'
+- takeScreenshot: wordhunt-result
+- tapOn: 'Back to chat'
+- assertVisible: 'Word Hunt.*'
+# (Back from the thread after a game loops through the game screens: BUG-2, e2e/known-bugs/.)
+- openLink: 'dyce://wallet'
+- extendedWaitUntil:
+    visible: 'Balance ₦200,000'
+    timeout: 15000

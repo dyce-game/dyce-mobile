@@ -1,0 +1,66 @@
+{
+  "name": "doodle-stream",
+  "at": "2026-11-23T08:40:07.275Z",
+  "machine": {
+    "os": "win32 10.0.26200",
+    "cpu": "13th Gen Intel(R) Core(TM) i7-1355U",
+    "logicalCores": 12,
+    "memoryGB": 15.5,
+    "node": "v22.23.4",
+    "note": "one machine runs the load generator, the API, the game server and PostgreSQL together, and other tools were running on it"
+  },
+  "params": {
+    "seats": 8,
+    "rooms": 1,
+    "actionsPerSecond": 5,
+    "pointsPerAction": 16
+  },
+  "receivers": 7,
+  "pointsSentPerDrawing": 4000,
+  "drawSeconds": 53.8,
+  "bytesPerReceiverPerDrawing": 113464,
+  "bytesPerSecondPerReceiver": 2015,
+  "kbpsPerReceiver": 16.1,
+  "canvasMessagesPerSecondPerReceiver": 4.2,
+  "pointsReceivedMin": 4000,
+  "roomOutboundBytesPerSecond": 14105,
+  "delayFromDrawerMs": {
+    "n": 1631,
+    "min": 1,
+    "p50": 167,
+    "p95": 287,
+    "p99": 412,
+    "max": 742
+  },
+  "gapBetweenCanvasMessagesMs": {
+    "n": 1645,
+    "min": 0,
+    "p50": 214,
+    "p95": 370,
+    "p99": 571,
+    "max": 802
+  },
+  "drawerRefused": [{}],
+  "processes": {
+    "api": {
+      "rssMBEnd": 85,
+      "rssMBPeakSampled": 86,
+      "cpuPercentOfOneCore": 0.5
+    },
+    "game": {
+      "rssMBEnd": 73,
+      "rssMBPeakSampled": 73,
+      "cpuPercentOfOneCore": 3.2
+    },
+    "db": {
+      "rssMBEnd": 27,
+      "rssMBPeakSampled": 27,
+      "cpuPercentOfOneCore": 0.1
+    },
+    "hostCpuLoadPercent": {
+      "samples": 9,
+      "avg": 57.8,
+      "max": 73
+    }
+  }
+}

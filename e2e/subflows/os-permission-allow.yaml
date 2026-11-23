@@ -1,0 +1,7 @@
+# Answers the OS permission prompt with "allow" (Android and iOS wording).
+appId: games.dyce.app
+name: os permission allow
+---
+- tapOn:
+    text: 'While using the app|Allow Full Access|Allow|OK'
+    optional: true

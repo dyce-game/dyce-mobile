@@ -1,0 +1,72 @@
+{
+  "name": "chat-fanout",
+  "at": "2026-11-23T06:03:36.573Z",
+  "machine": {
+    "os": "win32 10.0.26200",
+    "cpu": "13th Gen Intel(R) Core(TM) i7-1355U",
+    "logicalCores": 12,
+    "memoryGB": 15.5,
+    "node": "v22.23.4",
+    "note": "one machine runs the load generator, the API, the game server and PostgreSQL together, and other tools were running on it"
+  },
+  "params": {
+    "users": 120,
+    "groupSize": 8,
+    "groups": 15,
+    "messagesPerPerson": 10,
+    "intervalMs": 1500
+  },
+  "sockets": 120,
+  "messagesSent": 1200,
+  "seconds": 26.2,
+  "sendsPerSecond": 45.8,
+  "deliveriesExpected": 8400,
+  "deliveriesReceived": 8400,
+  "deliveryPercent": 100,
+  "deliveriesPerSecond": 320.8,
+  "latencyMs": {
+    "httpSend": {
+      "n": 1200,
+      "min": 13.6,
+      "p50": 76,
+      "p95": 3749,
+      "p99": 4073.7,
+      "max": 4175.2
+    },
+    "sendToDelivery": {
+      "n": 8400,
+      "min": 12,
+      "p50": 74,
+      "p95": 3745,
+      "p99": 4070,
+      "max": 4173
+    },
+    "socketConnect": {
+      "n": 120,
+      "min": 33.3,
+      "p50": 74.1,
+      "p95": 223.1,
+      "p99": 234.1,
+      "max": 236.9
+    }
+  },
+  "duplicates": {},
+  "errors": {},
+  "processes": {
+    "game": {
+      "rssMBEnd": 15,
+      "rssMBPeakSampled": 15,
+      "cpuPercentOfOneCore": 0.2
+    },
+    "api": {
+      "rssMBEnd": 116,
+      "rssMBPeakSampled": 116,
+      "cpuPercentOfOneCore": 34.4
+    },
+    "db": {
+      "rssMBEnd": 4,
+      "rssMBPeakSampled": 4,
+      "cpuPercentOfOneCore": 0.1
+    }
+  }
+}

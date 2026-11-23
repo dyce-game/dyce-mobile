@@ -1,0 +1,110 @@
+{
+  "name": "login-churn",
+  "at": "2026-11-23T06:02:41.456Z",
+  "machine": {
+    "os": "win32 10.0.26200",
+    "cpu": "13th Gen Intel(R) Core(TM) i7-1355U",
+    "logicalCores": 12,
+    "memoryGB": 15.5,
+    "node": "v22.23.4",
+    "note": "one machine runs the load generator, the API, the game server and PostgreSQL together, and other tools were running on it"
+  },
+  "params": {
+    "users": 300,
+    "concurrency": 25,
+    "warmupJourneys": 10,
+    "returning": true
+  },
+  "completed": 300,
+  "seconds": 9.3,
+  "journeysPerSecond": 32.2,
+  "returning": {
+    "completed": 300,
+    "seconds": 8.7,
+    "perSecond": 34.5
+  },
+  "latencyMs": {
+    "new otp/request": {
+      "n": 300,
+      "min": 57.1,
+      "p50": 116.6,
+      "p95": 223.6,
+      "p99": 247.3,
+      "max": 271.9
+    },
+    "new otp/verify": {
+      "n": 300,
+      "min": 87.4,
+      "p50": 203.5,
+      "p95": 277.6,
+      "p99": 344.3,
+      "max": 346.4
+    },
+    "GET /me": {
+      "n": 300,
+      "min": 34.1,
+      "p50": 90.1,
+      "p95": 163.3,
+      "p99": 200,
+      "max": 203.6
+    },
+    "refresh": {
+      "n": 600,
+      "min": 18.4,
+      "p50": 140.5,
+      "p95": 252.1,
+      "p99": 326.1,
+      "max": 360.8
+    },
+    "logout": {
+      "n": 300,
+      "min": 8.1,
+      "p50": 45,
+      "p95": 97.5,
+      "p99": 150.7,
+      "max": 151.8
+    },
+    "whole new-user journey": {
+      "n": 300,
+      "min": 372.7,
+      "p50": 763.5,
+      "p95": 1096.8,
+      "p99": 1210.3,
+      "max": 1262.5
+    },
+    "returning otp/request": {
+      "n": 300,
+      "min": 69.2,
+      "p50": 248.4,
+      "p95": 652.3,
+      "p99": 1118.3,
+      "max": 1133.5
+    },
+    "returning otp/verify": {
+      "n": 300,
+      "min": 60.2,
+      "p50": 353.9,
+      "p95": 813.5,
+      "p99": 914.6,
+      "max": 938.1
+    }
+  },
+  "nonSuccess": {},
+  "processes": {
+    "game": {
+      "rssMBEnd": 10,
+      "rssMBPeakSampled": 32,
+      "cpuPercentOfOneCore": 0.2
+    },
+    "api": {
+      "rssMBEnd": 84,
+      "rssMBPeakSampled": 130,
+      "cpuPercentOfOneCore": 23.1
+    },
+    "db": {
+      "rssMBEnd": 4,
+      "rssMBPeakSampled": 26,
+      "cpuPercentOfOneCore": 0.4
+    }
+  }
+}

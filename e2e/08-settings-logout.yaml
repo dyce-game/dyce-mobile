@@ -1,0 +1,42 @@
+# Settings: change who can add and message you (enforced by the server), open Help and legal, then log out;
+# the session is gone (back on Welcome) and another person can log in on the same device.
+appId: games.dyce.app
+name: settings and log out
+tags: [web, phase1, settings]
+---
+- launchApp:
+    clearState: true
+- runFlow:
+    file: subflows/login.yaml
+    env:
+      PHONE: '${ALICE_PHONE}'
+- tapOn: 'My profile.*'
+- assertVisible: 'Level.*'
+- tapOn: 'Settings'
+- assertVisible: 'Settings'
+- takeScreenshot: settings
+- assertVisible: 'Name, Alice QA'
+- assertVisible: 'Username, @${ALICE_USERNAME}'
+- assertVisible: 'Blocked people'
+# who can add and message me (the server enforces it; Everyone is the default)
+- tapOn: 'Nobody'
+- assertVisible: 'No new people can add or message you.*'
+- tapOn: 'Everyone'
+- scrollUntilVisible:
+    element: 'Help and legal.*'
+- tapOn: 'Help and legal.*'
+- takeScreenshot: help
+- back
+- scrollUntilVisible:
+    element: 'Log out'
+- tapOn: 'Log out'
+- extendedWaitUntil:
+    visible: 'Get started'
+    timeout: 10000
+# the device is free for someone else: Ben logs in and sees his own chats, not Alice's session
+# (Ben, not Alice again: the API allows one code per number every 30 seconds)
+- runFlow:
+    file: subflows/login.yaml
+    env:
+      PHONE: '${BEN_PHONE}'
+- assertVisible: 'Alice QA.*'

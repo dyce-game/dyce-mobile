@@ -1,0 +1,7 @@
+# Answers the OS permission prompt with "don't allow" (Android and iOS wording).
+appId: games.dyce.app
+name: os permission deny
+---
+- tapOn:
+    text: 'Don.t [Aa]llow|Don.t allow'
+    optional: true

@@ -1,0 +1,39 @@
+# New person signs up with the test code and says no to contacts; the rest of onboarding still works.
+# On web this is the real path (the browser has no contacts API); on a device the OS prompt is answered
+# with "Don't allow".
+appId: games.dyce.app
+name: onboarding contacts denied
+tags: [web, phase1, onboarding]
+env:
+  WEB_LOCAL_STORAGE: 'dev.contacts=deny'
+---
+- launchApp:
+    clearState: true
+- runFlow:
+    file: subflows/onboard-signup.yaml
+    env:
+      PHONE: '${NEW_PHONE_DENY}'
+# On a device the explainer is shown first; on web the dev switch has already answered "denied".
+- runFlow:
+    when:
+      visible: 'Allow contacts'
+    commands:
+      - tapOn: 'Allow contacts'
+      - runFlow:
+          when:
+            platform: Android
+          file: subflows/os-permission-deny.yaml
+      - runFlow:
+          when:
+            platform: iOS
+          file: subflows/os-permission-deny.yaml
+- extendedWaitUntil:
+    visible: 'Contacts are off'
+    timeout: 10000
+- assertVisible: 'Continue without contacts'
+- takeScreenshot: onboarding-contacts-off
+- tapOn: 'Continue without contacts'
+- runFlow:
+    file: subflows/onboard-finish.yaml
+    env:
+      NOTIFICATIONS: deny

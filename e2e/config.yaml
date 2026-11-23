@@ -1,0 +1,4 @@
+# Maestro workspace config: `maestro test e2e/` runs the numbered flows only. Subflows (subflows/) and the
+# reproductions of open bugs (known-bugs/) are never picked up by it. See README.md for the env each flow needs.
+flows:
+  - '[0-9][0-9]*.yaml'

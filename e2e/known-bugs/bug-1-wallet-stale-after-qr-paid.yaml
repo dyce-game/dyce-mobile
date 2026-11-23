@@ -1,0 +1,35 @@
+# BUG-1 (open): Alice shows a QR request, Ben pays it, her Request screen turns "Paid" - but after Done the
+# Wallet tab still shows the old balance (and no new activity row) until the tab is remounted. The server is
+# right (GET /wallet has the new balance). Expected: ₦202,000 appears without leaving the app.
+# This flow FAILS until the bug is fixed. Run it with:
+#   node scripts/e2e/web-runner.mjs e2e/known-bugs/bug-1-wallet-stale-after-qr-paid.yaml
+appId: games.dyce.app
+name: bug 1 wallet stale after qr paid
+tags: [web, known-bug]
+---
+- launchApp:
+    clearState: true
+- runFlow:
+    file: ../subflows/login.yaml
+    env:
+      PHONE: '${ALICE_PHONE}'
+- tapOn: 'Wallet'
+- assertVisible: 'Balance ₦200,000'
+- tapOn: 'Request'
+- tapOn: 'Rematch stake'
+- tapOn:
+    text: 'Request ₦2,000'
+    index: 1
+- extendedWaitUntil:
+    visible: 'Waiting for payment.*'
+    timeout: 10000
+- runScript:
+    file: ../scripts/ben-pays-alice-request.js
+- extendedWaitUntil:
+    visible: 'Paid'
+    timeout: 15000
+- tapOn: 'Done'
+# expected: the new balance, with no refresh
+- extendedWaitUntil:
+    visible: 'Balance ₦202,000'
+    timeout: 10000

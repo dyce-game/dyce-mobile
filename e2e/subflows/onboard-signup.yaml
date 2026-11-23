@@ -1,0 +1,30 @@
+# New person: Get started, phone number (Nigeria), the test code, display name and username.
+# Pass PHONE (a number that has never signed up). Leaves the app on the contacts step; the new username is
+# in ${output.newUsername}.
+appId: games.dyce.app
+name: onboarding signup
+---
+- tapOn: 'Get started'
+- runFlow: pick-nigeria.yaml
+- tapOn: '803 412 7781'
+- inputText: '${PHONE}'
+- tapOn: 'Continue'
+- assertVisible: 'Enter your code'
+- tapOn: 'Verification code'
+- inputText: '${OTP}'
+# username screen (new numbers go to it first)
+- extendedWaitUntil:
+    visible: 'Username'
+    timeout: 15000
+- tapOn: 'Your name'
+- inputText: 'Qa Newcomer'
+- evalScript: ${output.newUsername = 'qa' + Date.now().toString(36).slice(-7)}
+- tapOn: 'kemdi.plays'
+- inputText: '${output.newUsername}'
+- extendedWaitUntil:
+    visible: 'Available'
+    timeout: 10000
+- tapOn: 'Continue'
+- extendedWaitUntil:
+    visible: 'Skip' # the contacts step's Skip button
+    timeout: 10000

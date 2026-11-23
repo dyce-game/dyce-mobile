@@ -1,0 +1,12 @@
+appId: games.dyce.app
+name: smoke login
+tags: [web, smoke]
+---
+- launchApp:
+    clearState: true
+- assertVisible: 'Get started'
+- runFlow:
+    file: subflows/login.yaml
+    env:
+      PHONE: '${ALICE_PHONE}'
+- assertVisible: '.*Ben QA.*'

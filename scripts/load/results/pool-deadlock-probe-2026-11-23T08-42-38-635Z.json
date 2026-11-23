@@ -1,0 +1,32 @@
+{
+  "name": "pool-deadlock-probe",
+  "at": "2026-11-23T08:42:38.635Z",
+  "machine": {
+    "os": "win32 10.0.26200",
+    "cpu": "13th Gen Intel(R) Core(TM) i7-1355U",
+    "logicalCores": 12,
+    "memoryGB": 15.5,
+    "node": "v22.23.4",
+    "note": "one machine runs the load generator, the API, the game server and PostgreSQL together, and other tools were running on it"
+  },
+  "params": {
+    "moves": 16,
+    "matches": 16,
+    "apiPoolMax": 20
+  },
+  "seconds": 0.4,
+  "moveStatuses": {
+    "200": 16
+  },
+  "health": "ok",
+  "postgresConnections": [
+    {
+      "state": "idle",
+      "wait_event_type": "Client",
+      "n": 20,
+      "blocked": 0,
+      "sample_query": "SELECT mp.user_id, mp.seat, mp.accepted_at, mp.result, mp.placement, mp.staked_kobo, mp.pa"
+    }
+  ],
+  "wedged": false
+}

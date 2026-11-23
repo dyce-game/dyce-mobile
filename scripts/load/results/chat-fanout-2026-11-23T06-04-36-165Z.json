@@ -1,0 +1,130 @@
+{
+  "name": "chat-fanout",
+  "at": "2026-11-23T06:04:36.165Z",
+  "machine": {
+    "os": "win32 10.0.26200",
+    "cpu": "13th Gen Intel(R) Core(TM) i7-1355U",
+    "logicalCores": 12,
+    "memoryGB": 15.5,
+    "node": "v22.23.4",
+    "note": "one machine runs the load generator, the API, the game server and PostgreSQL together, and other tools were running on it"
+  },
+  "params": {
+    "users": 120,
+    "groupSize": 8,
+    "groups": 15,
+    "messagesPerPerson": 10,
+    "intervalMs": 1500
+  },
+  "sockets": 120,
+  "messagesSent": 1200,
+  "seconds": 36.6,
+  "sendsPerSecond": 32.8,
+  "deliveriesExpected": 8400,
+  "deliveriesReceived": 8400,
+  "deliveryPercent": 100,
+  "deliveriesPerSecond": 229.5,
+  "latencyMs": {
+    "httpSend": {
+      "n": 1200,
+      "min": 14.8,
+      "p50": 790.2,
+      "p95": 4518.5,
+      "p99": 4881,
+      "max": 6841.6
+    },
+    "sendToDelivery": {
+      "n": 8400,
+      "min": 13,
+      "p50": 790,
+      "p95": 4506,
+      "p99": 4857,
+      "max": 6845
+    },
+    "socketConnect": {
+      "n": 120,
+      "min": 20.2,
+      "p50": 62.5,
+      "p95": 118.4,
+      "p99": 123.4,
+      "max": 124.5
+    }
+  },
+  "timeline": {
+    "0-5s": {
+      "n": 39,
+      "min": 81.1,
+      "p50": 3509.3,
+      "p95": 4155.7,
+      "p99": 4324.4,
+      "max": 4324.4
+    },
+    "5-10s": {
+      "n": 110,
+      "min": 3077,
+      "p50": 4545.4,
+      "p95": 5085.4,
+      "p99": 6524.3,
+      "max": 6841.6
+    },
+    "10-15s": {
+      "n": 169,
+      "min": 569.5,
+      "p50": 1694.2,
+      "p95": 4146.3,
+      "p99": 4448.8,
+      "max": 4471
+    },
+    "15-20s": {
+      "n": 206,
+      "min": 15.1,
+      "p50": 2192.9,
+      "p95": 3809,
+      "p99": 3873.5,
+      "max": 4041
+    },
+    "20-25s": {
+      "n": 387,
+      "min": 15.2,
+      "p50": 107.6,
+      "p95": 1065,
+      "p99": 1110.8,
+      "max": 1257
+    },
+    "25-30s": {
+      "n": 245,
+      "min": 16.9,
+      "p50": 646.1,
+      "p95": 1348.9,
+      "p99": 1417.9,
+      "max": 1427.2
+    },
+    "30-35s": {
+      "n": 44,
+      "min": 14.8,
+      "p50": 506.8,
+      "p95": 700.6,
+      "p99": 752.9,
+      "max": 752.9
+    }
+  },
+  "duplicates": {},
+  "errors": {},
+  "processes": {
+    "game": {
+      "rssMBEnd": 15,
+      "rssMBPeakSampled": 15,
+      "cpuPercentOfOneCore": 0.3
+    },
+    "api": {
+      "rssMBEnd": 120,
+      "rssMBPeakSampled": 120,
+      "cpuPercentOfOneCore": 23.9
+    },
+    "db": {
+      "rssMBEnd": 4,
+      "rssMBPeakSampled": 4,
+      "cpuPercentOfOneCore": 0
+    }
+  }
+}

@@ -1,0 +1,39 @@
+# New person signs up with the test code, allows contacts (two of the address book are on Dyce), picks a look,
+# claims ₦200,000 and turns notifications on. On web the address book is the dev sample (device-contacts.ts)
+# and the two on-Dyce numbers are seeded by scripts/seed/seed.mjs; on a device it is the emulator's book.
+appId: games.dyce.app
+name: onboarding contacts allowed
+tags: [web, phase1, onboarding]
+---
+- launchApp:
+    clearState: true
+- runFlow:
+    file: subflows/onboard-signup.yaml
+    env:
+      PHONE: '${NEW_PHONE_ALLOW}'
+- tapOn: 'Allow contacts'
+- runFlow:
+    when:
+      platform: Android
+    file: subflows/os-permission-allow.yaml
+- runFlow:
+    when:
+      platform: iOS
+    file: subflows/os-permission-allow.yaml
+- extendedWaitUntil:
+    visible: '\d+ on Dyce|Nobody here yet'
+    timeout: 20000
+- takeScreenshot: onboarding-contacts-results
+# the people found on Dyce get a one-tap add; everyone else gets an invite link by text
+- runFlow:
+    when:
+      visible: '2 on Dyce'
+    commands:
+      - tapOn: 'Add @tunde.qa'
+      - assertVisible: '.*@tunde.qa.*'
+- assertVisible: 'Find by username'
+- tapOn: 'Continue'
+- runFlow:
+    file: subflows/onboard-finish.yaml
+    env:
+      NOTIFICATIONS: allow

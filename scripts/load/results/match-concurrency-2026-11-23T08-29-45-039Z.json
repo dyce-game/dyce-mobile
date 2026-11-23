@@ -1,0 +1,67 @@
+{
+  "name": "match-concurrency",
+  "at": "2026-11-23T08:29:45.039Z",
+  "machine": {
+    "os": "win32 10.0.26200",
+    "cpu": "13th Gen Intel(R) Core(TM) i7-1355U",
+    "logicalCores": 12,
+    "memoryGB": 15.5,
+    "node": "v22.23.4",
+    "note": "one machine runs the load generator, the API, the game server and PostgreSQL together, and other tools were running on it"
+  },
+  "params": {
+    "matches": 3,
+    "rounds": 25,
+    "identicalMovesPerRound": 1,
+    "holdsPerRound": 1,
+    "outOfTurnPerRound": 1
+  },
+  "contendedRounds": 75,
+  "skippedFinished": 0,
+  "seconds": 4.8,
+  "outcomes": {
+    "mover": {
+      "hold -> 200": 3,
+      "hold -> 409 stale_version": 70,
+      "hold -> 422 illegal_move": 2,
+      "roll -> 200": 72,
+      "roll -> 409 stale_version": 3
+    },
+    "otherPlayer": {
+      "roll -> 409 not_your_turn": 2,
+      "roll -> 409 stale_version": 73
+    }
+  },
+  "violations": [],
+  "invariant": "after N simultaneous moves at one stateVersion v, stateVersion is v+1 (one move applied)",
+  "latencyMs": {
+    "n": 225,
+    "min": 32.1,
+    "p50": 88.7,
+    "p95": 412.9,
+    "p99": 518.2,
+    "max": 556
+  },
+  "processes": {
+    "api": {
+      "rssMBEnd": 140,
+      "rssMBPeakSampled": 140,
+      "cpuPercentOfOneCore": 38.6
+    },
+    "game": {
+      "rssMBEnd": 82,
+      "rssMBPeakSampled": 82,
+      "cpuPercentOfOneCore": 0
+    },
+    "db": {
+      "rssMBEnd": 28,
+      "rssMBPeakSampled": 28,
+      "cpuPercentOfOneCore": 0
+    },
+    "hostCpuLoadPercent": {
+      "samples": 2,
+      "avg": 64,
+      "max": 88
+    }
+  }
+}

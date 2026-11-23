@@ -1,0 +1,44 @@
+# Spaces with a Whot! room: Alice creates a Free space for two, Ben joins by its code (API), the host starts
+# and the card table opens with Alice's hand dealt by the server.
+appId: games.dyce.app
+name: space whot
+tags: [web, phase2, spaces]
+---
+- launchApp:
+    clearState: true
+- runFlow:
+    file: subflows/login.yaml
+    env:
+      PHONE: '${ALICE_PHONE}'
+- tapOn: 'Spaces'
+- tapOn: 'New in Spaces'
+- tapOn: 'Whot!, .*'
+- tapOn: 'Sunday game night'
+- inputText: 'QA Whot night'
+- tapOn: 'Fewer players'
+- tapOn: 'Fewer players'
+- assertVisible: '2 players'
+- tapOn: 'Create free space'
+- extendedWaitUntil:
+    visible: 'Space code.*'
+    timeout: 10000
+- takeScreenshot: space-lobby
+- assertVisible: 'Waiting for 1 more'
+- assertVisible: 'You need at least 2 players'
+- runScript: scripts/ben-joins-space.js
+- extendedWaitUntil:
+    visible: 'Ben QA.*'
+    timeout: 15000
+- takeScreenshot: space-lobby-full
+- tapOn: 'Start with 2 players'
+# the card table opens; Ben joined over HTTP only and never connected to the game server, so the table says so
+# (the real reconnect and forfeit rules are proven by the game-server tests and `space-whot-reconnect`, to run on devices)
+- extendedWaitUntil:
+    visible: 'Ben QA lost connection'
+    timeout: 45000
+- assertVisible: 'Waiting up to 60 seconds.*'
+- takeScreenshot: space-table
+- tapOn: 'Keep waiting'
+- assertVisible: 'Ben QA, 6 cards.*'
+- assertVisible: 'Show your cards as a list'
+- assertVisible: 'Game menu'

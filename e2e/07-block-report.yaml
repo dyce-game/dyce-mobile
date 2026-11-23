@@ -1,0 +1,32 @@
+# Report a stranger from Requests (with a reason and "also block them"), then find them in Blocked people
+# and unblock. Strangers never land in Chat; a blocked person is silent and gone from Requests.
+appId: games.dyce.app
+name: block and report
+tags: [web, phase1, safety]
+---
+- launchApp:
+    clearState: true
+- runFlow:
+    file: subflows/login.yaml
+    env:
+      PHONE: '${ALICE_PHONE}'
+- tapOn: 'Requests, 2'
+- tapOn: 'Report or block @${EZE_USERNAME}'
+- takeScreenshot: report-or-block
+- tapOn: 'Report @${EZE_USERNAME}'
+- tapOn: 'Abusive messages.*'
+# "Also block them" is on by default, so leave it
+- tapOn: 'Send report'
+- extendedWaitUntil:
+    visible: 'Report sent'
+    timeout: 10000
+- takeScreenshot: report-sent
+- tapOn: 'Done'
+# the reported person is blocked: gone from Requests, listed in Settings > Blocked people
+- assertNotVisible: '@${EZE_USERNAME}, message request.*'
+- tapOn: 'My profile.*'
+- tapOn: 'Settings'
+- tapOn: 'Blocked people'
+- assertVisible: '.*@${EZE_USERNAME}.*'
+- tapOn: 'Unblock @${EZE_USERNAME}'
+- assertNotVisible: 'Unblock @${EZE_USERNAME}'

@@ -1,0 +1,6 @@
+# On the phone screen: open the country list and choose Nigeria (+234).
+appId: games.dyce.app
+name: pick Nigeria
+---
+- tapOn: 'Country: .*'
+- tapOn: 'Nigeria \+234'

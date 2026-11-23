@@ -1,0 +1,95 @@
+{
+  "name": "login-churn",
+  "at": "2026-11-23T08:40:51.849Z",
+  "machine": {
+    "os": "win32 10.0.26200",
+    "cpu": "13th Gen Intel(R) Core(TM) i7-1355U",
+    "logicalCores": 12,
+    "memoryGB": 15.5,
+    "node": "v22.23.4",
+    "note": "one machine runs the load generator, the API, the game server and PostgreSQL together, and other tools were running on it"
+  },
+  "params": {
+    "users": 100,
+    "concurrency": 5,
+    "warmupJourneys": 10,
+    "returning": false
+  },
+  "completed": 100,
+  "seconds": 32.4,
+  "journeysPerSecond": 3.1,
+  "returning": null,
+  "latencyMs": {
+    "new otp/request": {
+      "n": 100,
+      "min": 17.3,
+      "p50": 161.6,
+      "p95": 714.4,
+      "p99": 1287,
+      "max": 1287
+    },
+    "new otp/verify": {
+      "n": 100,
+      "min": 40.9,
+      "p50": 261.8,
+      "p95": 2583.4,
+      "p99": 3693.7,
+      "max": 3693.7
+    },
+    "GET /me": {
+      "n": 100,
+      "min": 7.2,
+      "p50": 155.4,
+      "p95": 639,
+      "p99": 1075.5,
+      "max": 1075.5
+    },
+    "refresh": {
+      "n": 200,
+      "min": 28.4,
+      "p50": 194.1,
+      "p95": 909,
+      "p99": 1541.7,
+      "max": 1557.5
+    },
+    "logout": {
+      "n": 100,
+      "min": 10.9,
+      "p50": 97.2,
+      "p95": 358.3,
+      "p99": 1406.7,
+      "max": 1406.7
+    },
+    "whole new-user journey": {
+      "n": 100,
+      "min": 473.6,
+      "p50": 1050.2,
+      "p95": 4512.2,
+      "p99": 5438.8,
+      "max": 5438.8
+    }
+  },
+  "nonSuccess": {},
+  "processes": {
+    "api": {
+      "rssMBEnd": 112,
+      "rssMBPeakSampled": 112,
+      "cpuPercentOfOneCore": 9.5
+    },
+    "game": {
+      "rssMBEnd": 73,
+      "rssMBPeakSampled": 73,
+      "cpuPercentOfOneCore": 0.4
+    },
+    "db": {
+      "rssMBEnd": 27,
+      "rssMBPeakSampled": 27,
+      "cpuPercentOfOneCore": 0
+    },
+    "hostCpuLoadPercent": {
+      "samples": 5,
+      "avg": 46.8,
+      "max": 51
+    }
+  }
+}

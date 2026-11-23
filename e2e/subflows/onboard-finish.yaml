@@ -1,0 +1,41 @@
+# After contacts: pick an avatar, claim the welcome bonus, answer the notification step, land on Chat with
+# ₦200,000 in the wallet. Pass NOTIFICATIONS: 'allow' (turn them on) or 'deny' (Not now).
+# On web the step has a plain "Continue" (there is no OS prompt) for allow, and "Not now" for deny.
+appId: games.dyce.app
+name: onboarding finish
+---
+- assertVisible: 'Pick your look'
+- tapOn: 'Shuffle'
+- tapOn: 'Use this look'
+- extendedWaitUntil:
+    visible: 'Your first ₦200,000'
+    timeout: 10000
+- assertVisible: '.*cannot be bought or withdrawn.*'
+- tapOn: 'Claim it'
+- extendedWaitUntil:
+    visible: "Know the second it's your turn"
+    timeout: 10000
+- takeScreenshot: onboarding-notifications
+- runFlow:
+    when:
+      true: '${NOTIFICATIONS == "allow"}'
+    commands:
+      - tapOn: 'Turn on notifications|Continue'
+      - runFlow:
+          when:
+            platform: Android
+          file: os-permission-allow.yaml
+      - runFlow:
+          when:
+            platform: iOS
+          file: os-permission-allow.yaml
+- runFlow:
+    when:
+      true: '${NOTIFICATIONS != "allow"}'
+    commands:
+      - tapOn: 'Not now|Continue' # web has no Not now: there is no OS prompt to refuse
+- extendedWaitUntil:
+    visible: 'New in Chat'
+    timeout: 15000
+- tapOn: 'Wallet'
+- assertVisible: 'Balance ₦200,000'

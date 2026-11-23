@@ -1,0 +1,74 @@
+{
+  "name": "whot-rooms",
+  "at": "2026-11-23T08:38:28.531Z",
+  "machine": {
+    "os": "win32 10.0.26200",
+    "cpu": "13th Gen Intel(R) Core(TM) i7-1355U",
+    "logicalCores": 12,
+    "memoryGB": 15.5,
+    "node": "v22.23.4",
+    "note": "one machine runs the load generator, the API, the game server and PostgreSQL together, and other tools were running on it"
+  },
+  "params": {
+    "seats": 50,
+    "rooms": [4, 3, 3, 2, 4, 3, 3, 2, 4, 3, 3, 2, 4, 3, 3, 2, 2],
+    "thinkMs": 1500,
+    "timeoutSeconds": 400
+  },
+  "seatsConnected": 50,
+  "roomsFinished": 16,
+  "roomsTotal": 17,
+  "playSeconds": 400.3,
+  "movesSent": 1362,
+  "movesPerSecond": 3.4,
+  "latencyMs": {
+    "roomSetup": {
+      "n": 17,
+      "min": 405.1,
+      "p50": 2548.1,
+      "p95": 4925.9,
+      "p99": 4925.9,
+      "max": 4925.9
+    },
+    "connectToFirstState": {
+      "n": 50,
+      "min": 43.3,
+      "p50": 246.7,
+      "p95": 1971.7,
+      "p99": 2138.9,
+      "max": 2138.9
+    },
+    "moveRoundTrip": {
+      "n": 1362,
+      "min": 3.5,
+      "p50": 14.3,
+      "p95": 336.9,
+      "p99": 1423.6,
+      "max": 2122
+    }
+  },
+  "refusedMoves": {},
+  "refusedForARealReason": [],
+  "processes": {
+    "api": {
+      "rssMBEnd": 70,
+      "rssMBPeakSampled": 137,
+      "cpuPercentOfOneCore": 0.6
+    },
+    "game": {
+      "rssMBEnd": 64,
+      "rssMBPeakSampled": 97,
+      "cpuPercentOfOneCore": 1.4
+    },
+    "db": {
+      "rssMBEnd": 27,
+      "rssMBPeakSampled": 29,
+      "cpuPercentOfOneCore": 0.1
+    },
+    "hostCpuLoadPercent": {
+      "samples": 50,
+      "avg": 52,
+      "max": 79
+    }
+  }
+}

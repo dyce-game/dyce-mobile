@@ -1,0 +1,119 @@
+{
+  "name": "chat-fanout",
+  "at": "2026-11-23T06:05:49.792Z",
+  "machine": {
+    "os": "win32 10.0.26200",
+    "cpu": "13th Gen Intel(R) Core(TM) i7-1355U",
+    "logicalCores": 12,
+    "memoryGB": 15.5,
+    "node": "v22.23.4",
+    "note": "one machine runs the load generator, the API, the game server and PostgreSQL together, and other tools were running on it"
+  },
+  "params": {
+    "users": 120,
+    "groupSize": 8,
+    "groups": 15,
+    "messagesPerPerson": 10,
+    "intervalMs": 1500
+  },
+  "sockets": 120,
+  "messagesSent": 1200,
+  "seconds": 27,
+  "sendsPerSecond": 44.4,
+  "deliveriesExpected": 8400,
+  "deliveriesReceived": 8400,
+  "deliveryPercent": 100,
+  "deliveriesPerSecond": 310.7,
+  "latencyMs": {
+    "httpSend": {
+      "n": 1200,
+      "min": 13.6,
+      "p50": 289,
+      "p95": 1655.9,
+      "p99": 2290.5,
+      "max": 4252.1
+    },
+    "sendToDelivery": {
+      "n": 8400,
+      "min": 12,
+      "p50": 286,
+      "p95": 1649,
+      "p99": 2288,
+      "max": 4251
+    },
+    "socketConnect": {
+      "n": 120,
+      "min": 41.1,
+      "p50": 94.7,
+      "p95": 130.1,
+      "p99": 132.5,
+      "max": 220.2
+    }
+  },
+  "timeline": {
+    "0-5s": {
+      "n": 200,
+      "min": 19.6,
+      "p50": 1255.8,
+      "p95": 1762,
+      "p99": 4244.7,
+      "max": 4252.1
+    },
+    "5-10s": {
+      "n": 263,
+      "min": 17.1,
+      "p50": 929.5,
+      "p95": 2264.1,
+      "p99": 2385,
+      "max": 2753.7
+    },
+    "10-15s": {
+      "n": 375,
+      "min": 15.4,
+      "p50": 85.4,
+      "p95": 351.3,
+      "p99": 416.7,
+      "max": 488.4
+    },
+    "15-20s": {
+      "n": 318,
+      "min": 13.6,
+      "p50": 306.8,
+      "p95": 843.1,
+      "p99": 951.6,
+      "max": 961.2
+    },
+    "20-25s": {
+      "n": 44,
+      "min": 15.3,
+      "p50": 301.3,
+      "p95": 636.3,
+      "p99": 648.3,
+      "max": 648.3
+    }
+  },
+  "duplicates": {},
+  "errors": {},
+  "processes": {
+    "game": {
+      "rssMBEnd": 15,
+      "rssMBPeakSampled": 15,
+      "cpuPercentOfOneCore": 0.1
+    },
+    "api": {
+      "rssMBEnd": 110,
+      "rssMBPeakSampled": 110,
+      "cpuPercentOfOneCore": 16.9
+    },
+    "db": {
+      "rssMBEnd": 4,
+      "rssMBPeakSampled": 4,
+      "cpuPercentOfOneCore": 0.1
+    },
+    "hostCpuLoadPercent": {
+      "samples": 3,
+      "avg": 72,
+      "max": 79
+    }
+  }
+}

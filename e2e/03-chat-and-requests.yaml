@@ -1,0 +1,45 @@
+# Chat and Requests: read and reply in a thread, get a live message from a friend (no refresh), then handle
+# message requests from two strangers: accept one into Chat, decline the other.
+# Ben and the strangers are the API (scripts/*.js); Alice is the app.
+appId: games.dyce.app
+name: chat and requests
+tags: [web, phase1, chat]
+---
+- launchApp:
+    clearState: true
+- runFlow:
+    file: subflows/login.yaml
+    env:
+      PHONE: '${ALICE_PHONE}'
+# --- a friend's chat
+- tapOn: 'Ben QA, 1 unread.*'
+- assertVisible: '.*Ready when you are.*'
+- tapOn: 'Message'
+- inputText: 'On my way'
+- tapOn: 'Send message'
+- assertVisible: '.*On my way.*'
+# a live message arrives over the socket without any refresh
+- runScript:
+    file: scripts/ben-sends-message.js
+    env:
+      BEN_SAYS: 'Race you to 100'
+- extendedWaitUntil:
+    visible: '.*Race you to 100.*'
+    timeout: 10000
+- takeScreenshot: chat-thread
+- tapOn: 'Back to chats'
+# --- Requests: strangers never land in Chat
+- assertNotVisible: '.*Dami QA.*'
+- tapOn: 'Requests, 2'
+- assertVisible: '@${DAMI_USERNAME}, message request.*'
+- assertVisible: '@${EZE_USERNAME}, message request.*'
+- takeScreenshot: chat-requests
+- tapOn: 'Decline chat from @${EZE_USERNAME}'
+- assertNotVisible: '@${EZE_USERNAME}, message request.*'
+- tapOn: 'Accept chat with @${DAMI_USERNAME}'
+# accepting opens the chat; the stranger is now in the main list, and Requests is down to nothing
+- assertVisible: 'Dami QA, chat info'
+- tapOn: 'Back to chats'
+- tapOn: 'All'
+- assertVisible: 'Dami QA.*'
+- assertNotVisible: 'Requests, 2'

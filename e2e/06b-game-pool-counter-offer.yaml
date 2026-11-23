@@ -1,0 +1,41 @@
+# Counter-offer: Alice sends Pig in Pool for ₦1,000, Ben suggests ₦500 (API), Alice accepts the new stake; the
+# money locked is the counter amount on both sides, and a second invite shows the decline refund.
+appId: games.dyce.app
+name: pool counter offer
+tags: [web, phase2, games, money]
+---
+- launchApp:
+    clearState: true
+- runFlow:
+    file: subflows/login.yaml
+    env:
+      PHONE: '${ALICE_PHONE}'
+- runScript: scripts/balances.js
+- evalScript: ${output.aliceBefore = output.aliceKobo; output.benBefore = output.benKobo}
+- tapOn: 'Ben QA.*'
+- tapOn: 'Open games'
+- scrollUntilVisible:
+    element: 'Pig, .*'
+- tapOn: 'Pig, .*'
+- tapOn: 'Pool'
+- tapOn: 'Lock ₦1,000 & send'
+- extendedWaitUntil:
+    visible: '.*Pig.*'
+    timeout: 10000
+- runScript:
+    file: scripts/ben-game.js
+    env:
+      BEN_ACTION: counter
+      COUNTER_KOBO: '50000'
+- takeScreenshot: counter-card
+- assertVisible: 'Ben QA offered ₦500 each'
+- assertVisible: 'Pot ₦1,000 if accepted'
+# Alice's ₦1,000 stake is held until she answers; accepting the counter makes the stake ₦500 on both sides
+- tapOn: 'Accept ₦500'
+- extendedWaitUntil:
+    visible: 'Play Pig.*|.*Your turn.*'
+    timeout: 10000
+- takeScreenshot: counter-accepted
+- runScript: scripts/balances.js
+- assertTrue: ${output.aliceKobo == output.aliceBefore - 50000}
+- assertTrue: ${output.benKobo == output.benBefore - 50000}

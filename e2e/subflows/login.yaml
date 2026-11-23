@@ -1,0 +1,17 @@
+# Logs a seeded (already onboarded) person in through the real phone + code screens.
+# Pass PHONE (the number as typed, national format). The OTP is the dev test code in ${OTP}.
+# The country is chosen explicitly so the run does not depend on the device locale.
+appId: games.dyce.app
+name: login subflow
+---
+- tapOn: 'Log in'
+- runFlow: pick-nigeria.yaml
+- tapOn: '803 412 7781' # the phone field's placeholder (its label text "Phone" is not focusable)
+- inputText: '${PHONE}'
+- tapOn: 'Continue'
+- assertVisible: 'Enter your code'
+- tapOn: 'Verification code'
+- inputText: '${OTP}'
+- extendedWaitUntil:
+    visible: 'Chat'
+    timeout: 15000
