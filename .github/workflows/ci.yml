@@ -4,18 +4,35 @@ on:
   pull_request:
   push:
     branches: [main]
+  # The backend repo's CI calls this to prove a backend change does not break the app (see its `app-compat` job).
+  workflow_call:
+    inputs:
+      backend_ref:
+        description: Backend commit or branch to build against
+        type: string
+        default: ''
+
+permissions:
+  contents: read
 
 concurrency:
-  group: ci-${{ github.ref }}
+  group: ci-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 # The app links @dyce/shared and @dyce/games from the sibling dyce-backend repo (ADR-011), so every job checks
-# out both side by side. Replace OWNER with the GitHub owner, add a BACKEND_REPO_TOKEN secret if the backend
-# repo is private, and pin `ref` to the backend commit a release build was made against.
+# out both side by side. Configure in the repository settings (Settings > Secrets and variables > Actions):
+#   variable BACKEND_REPO        owner/name of the backend repository   (default dyce-game/dyce-backend)
+#   variable BACKEND_REF         branch, tag or commit to test against  (default main; pin it on release branches)
+#   secret   BACKEND_REPO_TOKEN  read-only token, REQUIRED while the backend repository is private
+env:
+  BACKEND_REPO: ${{ vars.BACKEND_REPO || 'dyce-game/dyce-backend' }}
+  BACKEND_REF: ${{ inputs.backend_ref || vars.BACKEND_REF || 'main' }}
+
 jobs:
   check:
-    name: Lint, typecheck, unit tests
+    name: Lint, typecheck, format, unit tests, release config
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     defaults:
       run:
         working-directory: Dyce
@@ -25,7 +42,8 @@ jobs:
           path: Dyce
       - uses: actions/checkout@v4
         with:
-          repository: OWNER/dyce-backend
+          repository: ${{ env.BACKEND_REPO }}
+          ref: ${{ env.BACKEND_REF }}
           path: dyce-backend
           token: ${{ secrets.BACKEND_REPO_TOKEN || github.token }}
       - uses: pnpm/action-setup@v4
@@ -41,10 +59,13 @@ jobs:
       - run: pnpm lint
       - run: pnpm typecheck
       - run: pnpm test
+      # eas.json, the three app.config variants, and "no permission without the library that uses it".
+      - run: pnpm release:check
 
   web-export:
-    name: App bundles (web export)
+    name: App bundles (web export) and the bundle is sane
     runs-on: ubuntu-latest
+    timeout-minutes: 25
     defaults:
       run:
         working-directory: Dyce
@@ -54,7 +75,8 @@ jobs:
           path: Dyce
       - uses: actions/checkout@v4
         with:
-          repository: OWNER/dyce-backend
+          repository: ${{ env.BACKEND_REPO }}
+          ref: ${{ env.BACKEND_REF }}
           path: dyce-backend
           token: ${{ secrets.BACKEND_REPO_TOKEN || github.token }}
       - uses: pnpm/action-setup@v4
@@ -65,5 +87,21 @@ jobs:
           node-version: 22
           cache: pnpm
           cache-dependency-path: Dyce/pnpm-lock.yaml
+      # Metro's transform cache: a warm cache cuts the export time a lot. Keyed on the lockfile and source.
+      - uses: actions/cache@v4
+        with:
+          path: Dyce/node_modules/.cache
+          key: metro-${{ runner.os }}-${{ hashFiles('Dyce/pnpm-lock.yaml') }}-${{ github.sha }}
+          restore-keys: |
+            metro-${{ runner.os }}-${{ hashFiles('Dyce/pnpm-lock.yaml') }}-
       - run: pnpm install --frozen-lockfile
+      # Built the way a production build is: the production variant, a real-looking API URL.
       - run: pnpm export:web
+        env:
+          APP_ENV: production
+          EXPO_PUBLIC_API_URL: https://api.dyce.games
+          EXPO_PUBLIC_GAME_SERVER_URL: wss://game.dyce.games
+      # Boot smoke: the export is serveable, has a script entry, and points at the API it was told to.
+      - run: node tools/release/check-web-export.mjs
+        env:
+          EXPECT_API_URL: https://api.dyce.games

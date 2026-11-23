@@ -1,23 +1,63 @@
 {
-  "cli": { "version": ">= 16.0.0", "appVersionSource": "remote" },
+  "cli": {
+    "version": ">= 16.0.0",
+    "appVersionSource": "remote"
+  },
   "build": {
+    "base": {
+      "env": {
+        "EXPO_NO_TELEMETRY": "1"
+      }
+    },
     "development": {
+      "extends": "base",
       "developmentClient": true,
       "distribution": "internal",
       "channel": "development",
-      "env": { "EXPO_PUBLIC_API_URL": "https://api-staging.dyce.games" },
-      "ios": { "simulator": true }
+      "environment": "development",
+      "env": {
+        "APP_ENV": "development",
+        "EXPO_PUBLIC_API_URL": "https://api-staging.dyce.games",
+        "EXPO_PUBLIC_GAME_SERVER_URL": "wss://game-staging.dyce.games",
+        "SENTRY_DISABLE_AUTO_UPLOAD": "true"
+      },
+      "ios": { "simulator": true },
+      "android": { "buildType": "apk" }
     },
     "preview": {
+      "extends": "base",
       "distribution": "internal",
       "channel": "preview",
-      "env": { "EXPO_PUBLIC_API_URL": "https://api-staging.dyce.games" }
+      "environment": "preview",
+      "autoIncrement": true,
+      "env": {
+        "APP_ENV": "preview",
+        "EXPO_PUBLIC_API_URL": "https://api-staging.dyce.games",
+        "EXPO_PUBLIC_GAME_SERVER_URL": "wss://game-staging.dyce.games"
+      },
+      "android": { "buildType": "apk" }
     },
     "production": {
+      "extends": "base",
+      "distribution": "store",
       "channel": "production",
+      "environment": "production",
       "autoIncrement": true,
-      "env": { "EXPO_PUBLIC_API_URL": "https://api.dyce.games" }
+      "env": {
+        "APP_ENV": "production",
+        "EXPO_PUBLIC_API_URL": "https://api.dyce.games",
+        "EXPO_PUBLIC_GAME_SERVER_URL": "wss://game.dyce.games"
+      },
+      "android": { "buildType": "app-bundle" }
     }
   },
-  "submit": { "production": {} }
+  "submit": {
+    "production": {
+      "ios": {},
+      "android": {
+        "track": "internal",
+        "releaseStatus": "draft"
+      }
+    }
+  }
 }

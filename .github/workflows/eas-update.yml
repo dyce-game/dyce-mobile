@@ -1,0 +1,71 @@
+name: EAS Update (OTA)
+
+# Manual: publishes a JavaScript-only update to the builds on a channel (docs/RUNBOOK.md "Rollback" covers undoing it).
+# NEEDS ACCOUNTS: an Expo account, EXPO_TOKEN, and EAS_PROJECT_ID (from `eas init`) as a repository variable.
+# An update only reaches builds with the same runtime version (a fingerprint of the native code), so it can never be
+# delivered to a build it was not made for. A change to a native dependency needs a new store build instead.
+on:
+  workflow_dispatch:
+    inputs:
+      channel:
+        description: Channel (the same name as the build profile)
+        type: choice
+        options: [preview, production]
+        default: preview
+      backend_ref:
+        description: Backend commit or tag to bundle against (REQUIRED for production)
+        type: string
+        default: ''
+      message:
+        description: Release note (shown in the EAS dashboard; no personal data)
+        type: string
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  update:
+    name: Publish to ${{ inputs.channel }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: Dyce
+    env:
+      EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+      EAS_PROJECT_ID: ${{ vars.EAS_PROJECT_ID }}
+      APP_ENV: ${{ inputs.channel }}
+      BACKEND_REF: ${{ inputs.backend_ref || vars.BACKEND_REF || 'main' }}
+    steps:
+      - name: Refuse to run without what it needs
+        run: |
+          if [ -z "$EXPO_TOKEN" ]; then echo "::error::EXPO_TOKEN is not set."; exit 1; fi
+          if [ -z "$EAS_PROJECT_ID" ]; then echo "::error::Repository variable EAS_PROJECT_ID is not set (run eas init first)."; exit 1; fi
+          if [ "${{ inputs.channel }}" = "production" ] && [ -z "${{ inputs.backend_ref }}" ]; then echo "::error::A production update must name the backend commit or tag."; exit 1; fi
+        working-directory: .
+      - uses: actions/checkout@v4
+        with:
+          path: Dyce
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ vars.BACKEND_REPO || 'dyce-game/dyce-backend' }}
+          ref: ${{ env.BACKEND_REF }}
+          path: dyce-backend
+          token: ${{ secrets.BACKEND_REPO_TOKEN || github.token }}
+      - uses: pnpm/action-setup@v4
+        with:
+          package_json_file: Dyce/package.json
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: Dyce/pnpm-lock.yaml
+      - uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint && pnpm typecheck && pnpm test && pnpm release:check
+      # Public (non-secret) values are read from the EAS environment of the same name as the channel.
+      - run: eas update --channel "${{ inputs.channel }}" --environment "${{ inputs.channel }}" --message "${{ inputs.message }}" --non-interactive

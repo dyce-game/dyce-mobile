@@ -1,0 +1,79 @@
+name: EAS Build
+
+# Manual: a store or beta build is a deliberate act (docs/RELEASE_CHECKLIST.md). NEEDS ACCOUNTS: it does nothing useful
+# until an Expo account, the EXPO_TOKEN secret and (for store builds) the store credentials in EAS exist. The eas-cli
+# flags below follow eas-cli >= 16; run `eas build --help` and `eas env:create --help` once to confirm them.
+on:
+  workflow_dispatch:
+    inputs:
+      profile:
+        description: Build profile (eas.json)
+        type: choice
+        options: [preview, production, development]
+        default: preview
+      platform:
+        description: Platform
+        type: choice
+        options: [all, ios, android]
+        default: all
+      backend_ref:
+        description: Backend commit or tag the app is built against (REQUIRED for production)
+        type: string
+        default: ''
+      submit:
+        description: Submit to the stores after the build (production only; needs store credentials in EAS)
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build ${{ inputs.profile }} (${{ inputs.platform }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: Dyce
+    env:
+      EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+      PROFILE: ${{ inputs.profile }}
+      BACKEND_REF: ${{ inputs.backend_ref || vars.BACKEND_REF || 'main' }}
+    steps:
+      - name: Refuse to run without what it needs
+        run: |
+          if [ -z "$EXPO_TOKEN" ]; then echo "::error::EXPO_TOKEN is not set. Create an Expo access token and add it as a repository secret."; exit 1; fi
+          if [ "$PROFILE" = "production" ] && [ -z "${{ inputs.backend_ref }}" ]; then echo "::error::A production build must name the backend commit or tag (backend_ref)."; exit 1; fi
+        working-directory: .
+      - uses: actions/checkout@v4
+        with:
+          path: Dyce
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ vars.BACKEND_REPO || 'dyce-game/dyce-backend' }}
+          ref: ${{ env.BACKEND_REF }}
+          path: dyce-backend
+          token: ${{ secrets.BACKEND_REPO_TOKEN || github.token }}
+      - uses: pnpm/action-setup@v4
+        with:
+          package_json_file: Dyce/package.json
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: Dyce/pnpm-lock.yaml
+      - uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm release:check
+      # The EAS builder fetches the backend packages itself (tools/release/fetch-backend.mjs); tell it which ref.
+      - name: Pin the backend ref for this build
+        run: eas env:create --environment "$PROFILE" --name BACKEND_REF --value "$BACKEND_REF" --visibility plaintext --force --non-interactive
+      - name: Build (and submit)
+        run: >
+          eas build --non-interactive --no-wait
+          --profile "$PROFILE" --platform ${{ inputs.platform }}
+          ${{ (inputs.submit && inputs.profile == 'production') && '--auto-submit' || '' }}

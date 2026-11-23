@@ -1,4 +1,5 @@
 import { createApiClient } from '@/features/auth/api-client';
+import { createAccountApi } from '@/features/account/account-api';
 import { createAuthApi } from '@/features/auth/auth-api';
 import { createSessionStore } from '@/features/auth/session-store';
 import { jwtExpiresAt } from '@/features/auth/jwt';
@@ -10,6 +11,7 @@ import { createGamesApi } from '@/features/games/games-api';
 import { createInvitesApi } from '@/features/invites/invites-api';
 import { createNotificationsApi } from '@/features/notifications/notifications-api';
 import { createSafetyApi } from '@/features/safety/safety-api';
+import { createQuickMatchApi } from '@/features/quickmatch/quick-match-api';
 import { createSpacesApi } from '@/features/spaces/spaces-api';
 import { createWalletApi } from '@/features/wallet/wallet-api';
 import { config } from './config';
@@ -32,9 +34,11 @@ export const walletApi = createWalletApi(api);
 export const gamesApi = createGamesApi(api);
 export const safetyApi = createSafetyApi(api);
 export const spacesApi = createSpacesApi(api);
+export const quickMatchApi = createQuickMatchApi(api);
 export const discoveryApi = createDiscoveryApi(api);
 export const notificationsApi = createNotificationsApi(api);
 export const invitesApi = createInvitesApi(api, config.apiUrl);
+export const accountApi = createAccountApi(api);
 
 /**
  * An access token that is good for at least another minute, refreshing first if it isn't. Used before
