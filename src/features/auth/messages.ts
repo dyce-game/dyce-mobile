@@ -11,6 +11,14 @@ export function authErrorMessage(err: unknown): string {
       return "Can't reach Dyce. Check your connection and try again.";
     case 'invalid_phone':
       return "That doesn't look like a valid mobile number.";
+    case 'invalid_email':
+      return "That doesn't look like a valid email address. Check it and try again.";
+    case 'email_failed':
+      return "We couldn't send the email. Check the address and try again in a moment.";
+    case 'email_auth_disabled':
+      return 'Email sign-in is not available right now. Use your phone number instead.';
+    case 'identity_taken':
+      return 'That is already used by another Dyce account.';
     case 'otp_resend_too_soon':
       return retry
         ? `Please wait ${retry}s before asking for another code.`

@@ -10,6 +10,7 @@ import { authErrorMessage } from '@/features/auth/messages';
 import { useMeQuery } from '@/features/avatar/use-avatar';
 import { NotificationSettings } from '@/features/notifications/NotificationSettings';
 import { unregisterDevice } from '@/features/notifications/push';
+import { useAuthMethods } from '@/features/auth/use-auth-methods';
 import { authApi, sessionStore } from '@/lib/api';
 import { POLICY_NOTES, POLICY_OPTIONS } from '../profile-logic';
 import { useUpdateProfile } from '../use-profile';
@@ -26,6 +27,7 @@ export function SettingsScreen() {
   const { colors } = useTheme();
   const client = useQueryClient();
   const me = useMeQuery();
+  const methods = useAuthMethods();
   const update = useUpdateProfile();
   const profile = me.data?.profile;
   const policy = profile?.requestPolicy ?? 'everyone';
@@ -102,6 +104,32 @@ export function SettingsScreen() {
         <Card>
           <Row title="Name" value={profile?.displayName ?? ''} />
           <Row title="Username" value={profile ? `@${profile.username}` : ''} />
+          {me.data?.signIn ? (
+            <>
+              {methods.email ? (
+                <Row
+                  title="Email"
+                  sub={
+                    me.data.signIn.emailHint
+                      ? 'You can log in with it. Tap to use a different one.'
+                      : 'Add one to log in with it too.'
+                  }
+                  value={me.data.signIn.emailHint ?? 'Not added'}
+                  onPress={() => go('/settings/email')}
+                />
+              ) : null}
+              <Row
+                title="Phone number"
+                sub={
+                  me.data.signIn.phone
+                    ? 'Used to log in. It stays private.'
+                    : 'Add one so friends in your contacts can find you.'
+                }
+                value={me.data.signIn.phone ? 'Added' : 'Not added'}
+                onPress={me.data.signIn.phone ? undefined : () => go('/settings/phone')}
+              />
+            </>
+          ) : null}
           <Row title="Edit profile" onPress={() => go('/profile/edit')} last />
         </Card>
 
@@ -218,7 +246,7 @@ function Row({
   return onPress ? (
     <Pressable
       accessibilityRole="button"
-      accessibilityLabel={title}
+      accessibilityLabel={value ? `${title}, ${value}` : title}
       onPress={onPress}
       style={style}
     >

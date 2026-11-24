@@ -27,6 +27,7 @@ real money exists. Nothing here touches a shared dev database.
 | `09-space-whot.yaml` | **Spaces**: create a Free Whot! space for two, Ben joins by code (API), the lobby updates live, the host starts, the 3D card table opens and shows that Ben never connected | 2 | yes |
 | `10-wallet-balance-after-qr-paid.yaml` | after Ben pays Alice's QR request, her **Wallet tab shows ₦202,000 with no refresh** (regression test of BUG-1) | 1 | yes |
 | `11-back-after-game.yaml` | resign a Free Pig game, "Back to chat" on the result, then the thread's back arrow reaches the **chat list** (regression test of BUG-2) | 2 | yes |
+| `12-email-signup-login.yaml` | **Sign up with email**: a bad address is explained before any code, a wrong code is rejected, a right one creates the account (name, username), Settings shows the masked address and "Phone number: Not added", log out, **Log in with email** reaches the same account (the OTP test code stands in for the Resend email) | 1 | yes |
 | `known-bugs/*.yaml` | reproductions of open bugs. They **fail until the bug is fixed**, then move into the numbered flows; none is open today (the folder is empty) | - | yes |
 | `subflows/*.yaml` | login, pick Nigeria, sign-up, finish onboarding, the OS permission prompts | - | - |
 | `scripts/*.js` | the "second phone": Ben, as an API client, pays, requests, accepts, counters, joins, plays Word Hunt, sends a message; reads both wallets | - | - |
@@ -119,7 +120,7 @@ steps are skipped, and a flow header `env: WEB_LOCAL_STORAGE: 'dev.contacts=deny
 
 | Flow | Linted | Executed on web (our runner, headless Chrome, light) | Executed by Maestro | On a device |
 | ---- | ------ | ---------------------------------------------------- | ------------------- | ----------- |
-| 00 to 11 and 06b | yes | **yes, pass** (see `STATUS.md` for the dated run) | no | no |
+| 00 to 12 and 06b | yes | **yes, pass** (see `STATUS.md` for the dated run) | no | no |
 
 Not covered by anything that has run:
 

@@ -8,50 +8,31 @@ import {
   View,
 } from 'react-native';
 import { useRouter, type Href } from 'expo-router';
-import { getLocales } from 'expo-localization';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { normalizePhone, OTP_LENGTH, regionOf } from '@dyce/shared';
-import { OtpInput, Text, TextField, TokenButton, useTheme } from '@dyce/ui';
+import { Text, TokenButton, useTheme } from '@dyce/ui';
 import { authApi, sessionStore } from '@/lib/api';
 import { track } from '@/lib/analytics';
 import { AuthHeader } from '../components/AuthHeader';
+import { CodeEntry } from '../components/CodeEntry';
+import { PhoneField } from '../components/PhoneField';
 import { getPendingInvite } from '@/features/invites/pending-invite';
 import { splitDial } from '@/features/invites/invite-link';
+import { COUNTRIES, defaultCountry, spaced, type Country } from '../countries';
 import { authErrorMessage } from '../messages';
 import { hrefForStep } from '../routes';
-
-type Country = { code: string; dial: string; name: string };
-const COUNTRIES: Country[] = [
-  { code: 'NG', dial: '+234', name: 'Nigeria' },
-  { code: 'GH', dial: '+233', name: 'Ghana' },
-  { code: 'KE', dial: '+254', name: 'Kenya' },
-  { code: 'ZA', dial: '+27', name: 'South Africa' },
-  { code: 'GB', dial: '+44', name: 'United Kingdom' },
-  { code: 'US', dial: '+1', name: 'United States' },
-  { code: 'CA', dial: '+1', name: 'Canada' },
-  { code: 'AE', dial: '+971', name: 'UAE' },
-];
-
-/** Country picker defaults to the device's region, falling back to Nigeria. */
-function defaultCountry(): Country {
-  const region = getLocales()[0]?.regionCode?.toUpperCase();
-  return COUNTRIES.find((c) => c.code === region) ?? COUNTRIES[0]!;
-}
-
-function spaced(e164: string): string {
-  const m = /^(\+\d{1,3})(\d{3})(\d{3})(\d+)$/.exec(e164);
-  return m ? `${m[1]} ${m[2]} ${m[3]} ${m[4]}` : e164;
-}
+import { useAuthMethods } from '../use-auth-methods';
 
 /**
  * Phone number, then the 6-digit code, on one screen (as designed). Signing in and signing up are the
- * same flow: a new number simply creates an account when its code is verified.
+ * same flow: a new number simply creates an account when its code is verified. "Use email instead" (when the
+ * server offers it) leads to the same flow with an address.
  */
 export function PhoneScreen() {
   const router = useRouter();
   const { colors } = useTheme();
+  const methods = useAuthMethods();
   const [country, setCountry] = useState<Country>(defaultCountry);
-  const [pickerOpen, setPickerOpen] = useState(false);
   const [phone, setPhone] = useState('');
   const [stage, setStage] = useState<'phone' | 'code'>('phone');
   const [code, setCode] = useState('');
@@ -166,110 +147,47 @@ export function PhoneScreen() {
           </Text>
 
           {stage === 'phone' ? (
-            <View style={styles.form}>
-              <TextField
-                label="Phone"
-                value={phone}
-                onChangeText={(t) => {
+            <>
+              <PhoneField
+                country={country}
+                onCountry={(c) => {
+                  setCountry(c);
+                  setError(undefined);
+                }}
+                phone={phone}
+                onPhone={(t) => {
                   setPhone(t);
                   setError(undefined);
                 }}
-                placeholder="803 412 7781"
-                keyboardType="phone-pad"
-                autoComplete="tel"
-                textContentType="telephoneNumber"
-                autoFocus
                 error={error}
-                returnKeyType="go"
-                onSubmitEditing={() => void sendCode()}
-                leading={
-                  <Pressable
-                    accessibilityRole="button"
-                    accessibilityLabel={`Country: ${country.name} ${country.dial}. Change`}
-                    onPress={() => setPickerOpen((o) => !o)}
-                    style={styles.country}
-                  >
-                    <Text variant="callout">
-                      {country.code} {country.dial}
-                    </Text>
-                  </Pressable>
-                }
+                onSubmit={() => void sendCode()}
               />
-              {pickerOpen ? (
-                <View
-                  style={[
-                    styles.picker,
-                    { backgroundColor: colors.card, borderColor: colors.line },
-                  ]}
-                >
-                  {COUNTRIES.map((c) => (
-                    <Pressable
-                      key={c.code}
-                      accessibilityRole="button"
-                      accessibilityLabel={`${c.name} ${c.dial}`}
-                      onPress={() => {
-                        setCountry(c);
-                        setPickerOpen(false);
-                        setError(undefined);
-                      }}
-                      style={styles.pickerRow}
-                    >
-                      <Text variant="callout" color={c.code === country.code ? 'accent' : 'text'}>
-                        {c.name}
-                      </Text>
-                      <Text color="sub">{c.dial}</Text>
-                    </Pressable>
-                  ))}
-                </View>
-              ) : null}
-            </View>
-          ) : (
-            <View style={styles.form}>
-              <OtpInput
-                value={code}
-                onChange={onCodeChange}
-                errorSignal={errorSignal}
-                disabled={busy}
-                autoFocus
-              />
-              {error ? (
-                <Text color="accent" variant="footnote" accessibilityLiveRegion="polite">
-                  {error}
-                </Text>
-              ) : pasted && code.length === OTP_LENGTH ? (
-                <Text color="money" variant="footnote">
-                  Code filled in
-                </Text>
-              ) : null}
-              <View style={styles.resend}>
+              {methods.email ? (
                 <Pressable
-                  accessibilityRole="button"
-                  accessibilityLabel="Change number"
-                  onPress={back}
-                  style={styles.link}
+                  accessibilityRole="link"
+                  accessibilityLabel="Use email instead"
+                  onPress={() => router.replace('/email?mode=signup' as Href)}
+                  style={styles.alt}
                 >
                   <Text color="accent" variant="callout">
-                    Change number
+                    Use email instead
                   </Text>
                 </Pressable>
-                <Pressable
-                  accessibilityRole="button"
-                  accessibilityLabel={
-                    secondsLeft > 0 ? `Resend code in ${secondsLeft} seconds` : 'Resend code'
-                  }
-                  accessibilityState={{ disabled: secondsLeft > 0 || busy }}
-                  disabled={secondsLeft > 0 || busy}
-                  onPress={() => void sendCode()}
-                  style={styles.link}
-                >
-                  <Text color={secondsLeft > 0 ? 'sub' : 'accent'} variant="callout">
-                    {secondsLeft > 0
-                      ? `Resend in 0:${String(secondsLeft).padStart(2, '0')}`
-                      : 'Resend code'}
-                  </Text>
-                </Pressable>
-              </View>
-            </View>
+              ) : null}
+            </>
+          ) : (
+            <CodeEntry
+              code={code}
+              onCodeChange={onCodeChange}
+              busy={busy}
+              error={error}
+              errorSignal={errorSignal}
+              pasted={pasted}
+              secondsLeft={secondsLeft}
+              onResend={() => void sendCode()}
+              onChange={back}
+              changeLabel="Change number"
+            />
           )}
         </ScrollView>
 
@@ -301,18 +219,7 @@ const styles = StyleSheet.create({
   flex: { flex: 1 },
   content: { padding: 24, gap: 8 },
   title: { marginTop: 16 },
-  form: { marginTop: 20, gap: 12 },
-  country: { minHeight: 44, justifyContent: 'center', paddingRight: 8 },
-  picker: { borderWidth: 1, borderRadius: 16, overflow: 'hidden' },
-  pickerRow: {
-    minHeight: 48,
-    paddingHorizontal: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  resend: { flexDirection: 'row', justifyContent: 'space-between' },
-  link: { minHeight: 44, justifyContent: 'center' },
+  alt: { minHeight: 44, justifyContent: 'center', alignSelf: 'flex-start' },
   footer: { paddingHorizontal: 24, paddingBottom: 12, gap: 10 },
   fine: { textAlign: 'center' },
 });

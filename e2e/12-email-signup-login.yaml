@@ -1,0 +1,92 @@
+# Email sign-in (ADR-043): a new person SIGNS UP WITH EMAIL (Welcome > Sign up with email > address > code > name and
+# username), sees the masked address in Settings, logs out, then LOGS IN WITH EMAIL and lands on the same account.
+# The OTP test code stands in for the Resend email, so nothing is sent. A bad address is refused before any code.
+appId: games.dyce.app
+name: email sign up and log in
+tags: [web, phase1, auth, email]
+env:
+  WEB_LOCAL_STORAGE: 'dev.contacts=deny'
+---
+- launchApp:
+    clearState: true
+- assertVisible: 'Sign up with email|Sign up using email'
+- assertVisible: 'Log in with email'
+- evalScript: ${output.newEmail = 'qa.' + Date.now().toString(36) + '@example.com'}
+- tapOn: 'Sign up with email|Sign up using email'
+- assertVisible: 'What''s your email\?'
+- assertVisible: 'Use your phone number instead'
+# nothing typed: Continue is off; a half-typed address is explained, not sent
+- tapOn: 'you@example.com'
+- inputText: 'not-an-address'
+- tapOn: 'Continue'
+- assertVisible: '.*valid email address.*'
+- tapOn: 'Email' # the field again (the button took the focus; its label focuses it)
+- eraseText: 30
+- inputText: '${output.newEmail}'
+- tapOn: 'Continue'
+- extendedWaitUntil:
+    visible: 'Check your email'
+    timeout: 15000
+- assertVisible: 'Code sent to q••.*@example.com.*'
+- takeScreenshot: email-code
+# a wrong code is rejected with the number of tries left
+- tapOn: 'Verification code'
+- inputText: '000000'
+- assertVisible: ".*That code isn't right.*"
+- tapOn: 'Verification code'
+- inputText: '${OTP}'
+# a new address creates an account: the username screen comes first, as for a new phone number
+- extendedWaitUntil:
+    visible: 'Username'
+    timeout: 15000
+- tapOn: 'Your name'
+- inputText: 'Email Newcomer'
+- evalScript: ${output.newUsername = 'qe' + Date.now().toString(36).slice(-7)}
+- tapOn: 'kemdi.plays'
+- inputText: '${output.newUsername}'
+- extendedWaitUntil:
+    visible: 'Available'
+    timeout: 10000
+- tapOn: 'Continue'
+- extendedWaitUntil:
+    visible: 'Skip'
+    timeout: 10000
+# contacts: the web dev switch answers "denied", which is the shortest honest path through the step
+- extendedWaitUntil:
+    visible: 'Contacts are off'
+    timeout: 10000
+- tapOn: 'Continue without contacts'
+- runFlow:
+    file: subflows/onboard-finish.yaml
+    env:
+      NOTIFICATIONS: deny
+# Settings shows the linked address masked (never in full) and that no phone number is added yet
+- tapOn: 'My profile.*'
+- tapOn: 'Settings'
+- assertVisible: 'Email, q••.*@example.com'
+- assertVisible: 'Phone number, .*'
+- assertVisible: 'Not added'
+- takeScreenshot: settings-email
+- scrollUntilVisible:
+    element: 'Log out'
+- tapOn: 'Log out'
+- extendedWaitUntil:
+    visible: 'Get started'
+    timeout: 10000
+# the API allows one code per address every 30 s: wait it out
+- evalScript: ${ (function () { var end = Date.now() + 31000; while (Date.now() < end) {} })() }
+- tapOn: 'Log in with email'
+- assertVisible: 'Log in with email'
+- tapOn: 'you@example.com'
+- inputText: '${output.newEmail}'
+- tapOn: 'Continue'
+- extendedWaitUntil:
+    visible: 'Check your email'
+    timeout: 15000
+- tapOn: 'Verification code'
+- inputText: '${OTP}'
+# the same account: it is already onboarded, so it opens straight on Chat
+- extendedWaitUntil:
+    visible: 'New in Chat'
+    timeout: 15000
+- assertVisible: 'Chat'

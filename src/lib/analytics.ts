@@ -20,7 +20,7 @@ export type AnalyticsEvent =
   | { name: 'signup_started' }
   | {
       name: 'signup_completed';
-      step: 'phone' | 'username' | 'contacts' | 'avatar' | 'bonus' | 'notifications';
+      step: 'phone' | 'email' | 'username' | 'contacts' | 'avatar' | 'bonus' | 'notifications';
     }
   | { name: 'contacts_permission'; result: 'granted' | 'denied' }
   | { name: 'avatar_saved' }

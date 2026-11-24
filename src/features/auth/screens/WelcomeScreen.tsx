@@ -3,15 +3,20 @@ import { useRouter, type Href } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Text, TokenButton, brand, useTheme } from '@dyce/ui';
 import { images } from '@/assets';
+import { useAuthMethods } from '../use-auth-methods';
 
 /**
- * First screen for signed-out users. Phone + code is the only way in (no passwords, no social login in
- * v1), so "Get started" and "Log in" both lead to the same screen.
+ * First screen for signed-out users. A code to your phone or your email is the way in (no passwords, no social
+ * login in v1). Signing up and logging in are the same flow for each, so "Get started" and "Log in" lead to the
+ * phone screen and "Sign up with email" and "Log in with email" to the email screen. The email options hide when the
+ * server has email sign-in switched off.
  */
 export function WelcomeScreen() {
   const router = useRouter();
   const { colors } = useTheme();
+  const methods = useAuthMethods();
   const go = () => router.push('/phone' as Href);
+  const goEmail = (mode: 'signup' | 'login') => router.push(`/email?mode=${mode}` as Href);
 
   return (
     <SafeAreaView style={[styles.root, { backgroundColor: colors.bg }]}>
@@ -37,6 +42,14 @@ export function WelcomeScreen() {
 
       <View style={styles.actions}>
         <TokenButton label="Get started" onPress={go} />
+        {methods.email ? (
+          <TokenButton
+            label="Sign up with email"
+            tone="chip"
+            accessibilityLabel="Sign up using email"
+            onPress={() => goEmail('signup')}
+          />
+        ) : null}
         <Pressable
           accessibilityRole="link"
           accessibilityLabel="Log in"
@@ -50,6 +63,18 @@ export function WelcomeScreen() {
             </Text>
           </Text>
         </Pressable>
+        {methods.email ? (
+          <Pressable
+            accessibilityRole="link"
+            accessibilityLabel="Log in with email"
+            onPress={() => goEmail('login')}
+            style={styles.login}
+          >
+            <Text color="accent" variant="callout">
+              Log in with email
+            </Text>
+          </Pressable>
+        ) : null}
       </View>
     </SafeAreaView>
   );
