@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Linking, Pressable, StyleSheet, View } from 'react-native';
+import { Linking, Platform, Pressable, StyleSheet, View } from 'react-native';
 import { useRouter, type Href } from 'expo-router';
 import { Text, TokenButton, useTheme } from '@dyce/ui';
 import { UserAvatar } from '@/features/avatar/UserAvatar';
@@ -169,7 +169,10 @@ export function StoreButtons({
   const stores = [
     { label: 'Get it on iPhone', url: config.iosStoreUrl },
     { label: 'Get it on Android', url: config.androidStoreUrl },
-  ].filter((s): s is { label: string; url: string } => !!s.url);
+  ]
+    // Apple 2.3.10: the iPhone app and its pages never name or link another mobile platform.
+    .filter((s) => Platform.OS !== 'ios' || s.label !== 'Get it on Android')
+    .filter((s): s is { label: string; url: string } => !!s.url);
   return (
     <View style={styles.stores}>
       <TokenButton label={joinLabel} tone={primary ? 'ember' : 'chip'} onPress={onJoin} />

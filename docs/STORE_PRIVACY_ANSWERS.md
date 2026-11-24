@@ -49,7 +49,7 @@ The app has **no ads and no tracking** (no App Tracking Transparency prompt is n
 | User Content: **Other User Content** | Yes (poll answers, reactions, avatar choice) | Yes | App functionality | |
 | Identifiers: **User ID** | Yes (username and internal id) | Yes | App functionality, analytics of abuse | |
 | Identifiers: **Device ID** | Yes (push token; the hashed random install id) | Yes | App functionality (notifications), fraud prevention | |
-| Usage Data: **Product Interaction** | Yes (PostHog events), **only when analytics is on** | **No** (random install id, no account link) | Analytics | |
+| Usage Data: **Product Interaction** | Yes (PostHog events), **only when the person turns on Settings > Privacy > Share usage and crash data** (off by default in store builds) | **No** (random install id, no account link) | Analytics | |
 | Diagnostics: **Crash Data** and **Performance Data** | Yes (Sentry), **only when on** | **No** (no user is set) | App functionality (fix crashes) | |
 | Other Data Types: **birth year** | Yes | Yes | App functionality (18+ check for Pools) | VERIFY the best Apple category |
 | Financial Info, Health, Location, Sensitive Info, Browsing History, Search History, Purchases | **No** | | | location: VERIFY "Near you" |

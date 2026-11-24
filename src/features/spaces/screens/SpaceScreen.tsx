@@ -8,6 +8,7 @@ import { ApiError } from '@/features/auth/api-client';
 import { authErrorMessage } from '@/features/auth/messages';
 import { useSession } from '@/features/auth/use-session';
 import { UserAvatar } from '@/features/avatar/UserAvatar';
+import { reportHref } from '@/features/safety/safety-logic';
 import { PARTY_RESULT_DELAY_MS, hasPartyScreen } from '../party/common-logic';
 import { isLudoRoom } from '../tables/ludo-table-logic';
 import { SpaceProblemView } from '../components/SpaceProblemView';
@@ -210,6 +211,26 @@ function Lobby({ space }: { space: SpaceView }) {
                 {m.isHost ? 'Host · Ready' : 'Ready'}
                 {space.mode === 'pool' && m.stakedKobo > 0 ? ' · Paid' : ''}
               </Text>
+              {m.userId !== myId ? (
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel={`Report or block ${name}`}
+                  onPress={() =>
+                    router.push(
+                      reportHref({
+                        userId: m.userId,
+                        username: m.username,
+                        name: m.displayName,
+                      }) as Href,
+                    )
+                  }
+                  style={styles.removeBtn}
+                >
+                  <Text variant="footnote" color="sub">
+                    Report
+                  </Text>
+                </Pressable>
+              ) : null}
               {canRemove ? (
                 <Pressable
                   accessibilityRole="button"

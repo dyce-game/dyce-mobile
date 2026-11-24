@@ -111,3 +111,6 @@ Server side items are in `../dyce-backend/docs/BACKLOG.md` ("Groups, bots and me
 - Anti-cheat signals for Word Hunt and Anagrams ("a perfect score, found fast") and for engine-like Chess play; a push before a forfeit ("2 hours left to move").
 - A Pool forfeit still reads `loss` after `settle_match`; the card could say "forfeited" from `live_meta`.
 - A 4-device Ludo room run, and a Ludo room quick match.
+
+## Apple review follow-ups (2026-11-24, see APPLE_COMPLIANCE.md)
+- Report from the live table menu (M1), a report history screen (M4), the iOS 18 limited-contacts check (M7), the camera permission together with QR scanning (M8), a "Hide details on the lock screen" push setting (D4), a first-run "Help improve Dyce?" prompt (D5).

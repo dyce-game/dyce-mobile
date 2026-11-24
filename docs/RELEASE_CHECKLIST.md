@@ -41,6 +41,7 @@ monitoring and runbook (**this work**), store submissions, launch.
 | H10 | **Names**: final name for "Word Tiles", confirm "Crazy Cards" (BUILD_PLAN open decision 3). The names Uno and Scrabble must never ship | listing text and in-app copy | **HUMAN** |
 | H11 | **Export compliance**: `app.config.ts` declares standard encryption only (TLS) so the App Store skips the question. Confirm that is true | an incorrect declaration is a compliance problem | **HUMAN** |
 | H12 | **Email sign-in (Resend)**: an account, the sending domain verified (DKIM, SPF, DMARC), a restricted API key, `EMAIL_DRIVER=resend`, `RESEND_API_KEY` and `EMAIL_FROM` set, and a real code received in Gmail, Outlook, Yahoo, iCloud and a business inbox, **in the inbox and not in spam** (the step-by-step is `SETUP_GUIDE.md` section 4). Or launch with `EMAIL_AUTH_ENABLED=false` and say so | the production API refuses to start with email on and no driver; delivery has only been proved against a mock | **HUMAN** |
+| H13 | **Apple review readiness** (`APPLE_COMPLIANCE.md`): enrol as an **organisation** (D-U-N-S), set `REVIEW_LOGINS` and paste `APP_REVIEW_NOTES.md`, host the Privacy Policy, Terms and Support pages and create `support@dyce.games`, answer the age rating (simulated gambling: frequent) and App Privacy questions, EU trader status if the EU is on. `pnpm release:check --store` must pass | the app is rejected or not shown | **HUMAN** |
 
 Monitoring accounts (MONITORING.md):
 

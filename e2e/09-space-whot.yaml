@@ -30,6 +30,8 @@ tags: [web, phase2, spaces]
     visible: 'Ben QA.*'
     timeout: 15000
 - takeScreenshot: space-lobby-full
+# Apple 1.2: every other player in the lobby can be reported or blocked
+- assertVisible: 'Report or block Ben QA.*'
 - tapOn: 'Start with 2 players'
 # the card table opens; Ben joined over HTTP only and never connected to the game server, so the table says so
 # (the real reconnect and forfeit rules are proven by the game-server tests and `space-whot-reconnect`, to run on devices)

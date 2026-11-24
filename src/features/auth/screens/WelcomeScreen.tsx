@@ -37,7 +37,7 @@ export function WelcomeScreen() {
         <Text variant="title" accessibilityRole="header" style={styles.headline}>
           Game night lives in your chats.
         </Text>
-        <Text color="sub">Send a game like a text. Play anyone, iPhone or Android.</Text>
+        <Text color="sub">Send a game like a text. Play anyone, on any phone.</Text>
       </View>
 
       <View style={styles.actions}>

@@ -9,6 +9,7 @@ import { useExportData } from '@/features/account/use-account';
 import { authErrorMessage } from '@/features/auth/messages';
 import { useMeQuery } from '@/features/avatar/use-avatar';
 import { NotificationSettings } from '@/features/notifications/NotificationSettings';
+import { PrivacySettings } from '@/features/privacy/PrivacySettings';
 import { unregisterDevice } from '@/features/notifications/push';
 import { useAuthMethods } from '@/features/auth/use-auth-methods';
 import { authApi, sessionStore } from '@/lib/api';
@@ -141,6 +142,8 @@ export function SettingsScreen() {
         </Card>
 
         <NotificationSettings />
+
+        <PrivacySettings />
 
         <Text style={styles.label} color="sub">
           Your data

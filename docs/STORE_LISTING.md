@@ -8,6 +8,8 @@ Rules for every line of copy (CLAUDE.md, SPEC section 14):
 - Say plainly that **Dyce Cash is play money**: it cannot be bought, sold or withdrawn and has no real-world value. Never imply winnings.
 - Never use the names **Uno** or **Scrabble** (use **Crazy Cards** and **Word Tiles**, final name still open, H10). Do not name other apps.
 - Pools are **18+** and use Dyce Cash only.
+- **Apple 2.3.10: nothing sent to the App Store (name, subtitle, promotional text, description, keywords, screenshots, previews, review notes) names or shows another mobile platform.** Only the Google Play fields may say "Android". Say "any phone" in shared text. `pnpm release:check` does not read this file: re-read it before every submission.
+- Apple 2.3.8: icons, screenshots and previews must suit a 4+ audience even though the app is rated higher (no gambling imagery, no chips or cards on money).
 - No emoji in the listing text itself is required; store text is plain.
 
 ## 1. Names and categories
@@ -24,9 +26,9 @@ Rules for every line of copy (CLAUDE.md, SPEC section 14):
 ## 2. Short texts
 
 **iOS promotional text (170, editable without a review):**
-> Send a game like you send a message. Play with friends on iPhone and Android, stake Dyce Cash (play money) and meet new players in Spaces.
+> Send a game like you send a message. Play with friends on any phone, stake Dyce Cash (play money) and meet new players in Spaces.
 
-(138 used)
+(124 used)
 
 **Google Play short description (80):**
 > Chat with friends and send them games. Play money, real fun. Android and iPhone.
@@ -42,7 +44,7 @@ Rules for every line of copy (CLAUDE.md, SPEC section 14):
 
 > **Dyce is a messaging app where games are what you send.**
 >
-> Chat with your friends like you always do. Then tap the games button, pick a game and send it. It lands in the conversation as a card: your friend taps it and you are playing. Friends on Android and iPhone play together.
+> Chat with your friends like you always do. Then tap the games button, pick a game and send it. It lands in the conversation as a card: your friend taps it and you are playing. Friends on any phone play together.
 >
 > **Games for everyone**
 > Sports: Cup Pong, 8 Ball, Darts, Basketball, Archery, Mini Golf. Board: Chess, Checkers, Ayo, Ludo, Sea Battle, Dots and Boxes. Words: Word Tiles, Word Hunt, Anagrams. Cards: Whot!, Crazy Cards. Party games for groups: Charades, Imposter, Werewolf, Doodle Guess. New games keep arriving.

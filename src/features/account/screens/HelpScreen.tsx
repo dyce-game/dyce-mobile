@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Linking, Pressable, StyleSheet, View } from 'react-native';
 import { useRouter, type Href } from 'expo-router';
 import { Icon, Text, useTheme } from '@dyce/ui';
+import { config } from '@/lib/config';
 import { EdgeFrame, EdgeTitle } from '../components/EdgeFrame';
 import {
   HELP_TOPICS,
@@ -21,8 +22,9 @@ const TOPIC_COLORS: Record<HelpTopicId, string> = {
 /**
  * Help and legal (design: Help; SPEC section 12). Topics filter the answers; each answer opens in place. Under it
  * Pool rules (their own screen) and the legal documents, which are DRAFT copy until a lawyer has reviewed them
- * (see legal-copy.ts and docs/BACKLOG.md). There is no support inbox in v1, so the screen says where to turn
- * instead of showing a button that goes nowhere.
+ * (see legal-copy.ts and docs/BACKLOG.md). "Contact us" opens a mail to the published support address (Apple 1.2
+ * and 1.5 need contact information in the app); the Privacy Policy and Terms also open from the hosted pages that
+ * App Store Connect links to (5.1.1(i)).
  */
 export function HelpScreen() {
   const router = useRouter();
@@ -119,9 +121,33 @@ export function HelpScreen() {
         ))}
       </View>
 
+      <Text variant="footnote" color="sub" style={styles.label}>
+        Contact us
+      </Text>
+      <View style={[styles.card, { backgroundColor: colors.card }]}>
+        <LinkRow
+          title="Email support"
+          sub={config.supportEmail}
+          onPress={() =>
+            void Linking.openURL(`mailto:${config.supportEmail}?subject=Dyce%20support`).catch(
+              () => undefined,
+            )
+          }
+        />
+        <LinkRow
+          title="Privacy Policy on the web"
+          onPress={() => void Linking.openURL(config.privacyUrl).catch(() => undefined)}
+        />
+        <LinkRow
+          title="Terms on the web"
+          last
+          onPress={() => void Linking.openURL(config.termsUrl).catch(() => undefined)}
+        />
+      </View>
+
       <Text color="sub" style={styles.contact}>
-        Dyce has no support inbox yet. If someone is cheating or bothering you, report them from
-        their profile or the game menu.
+        If someone is cheating or bothering you, report or block them from their profile or the game
+        menu. A person reads every report.
       </Text>
     </EdgeFrame>
   );

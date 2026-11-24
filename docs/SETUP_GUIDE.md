@@ -349,6 +349,16 @@ Start this in week 0. The in-app Terms, Privacy, Pool rules and community guidel
 
 ---
 
+### Apple review readiness (from `APPLE_COMPLIANCE.md`)
+
+- [ ] **Developer account as an organisation** (needs a D-U-N-S number): gambling-type apps must come from a legal entity (5.1.1(ix)).
+- [ ] **Support mailbox** `support@dyce.games` exists and is read (the app's Help screen mails it; Apple 1.2 and 1.5). Or set `EXPO_PUBLIC_SUPPORT_EMAIL` per EAS environment.
+- [ ] **Host the Privacy Policy and Terms** at `https://dyce.games/privacy` and `/terms` (or set `EXPO_PUBLIC_PRIVACY_URL` and `EXPO_PUBLIC_TERMS_URL`); use the same URLs in App Store Connect, plus a Support URL.
+- [ ] **Demo accounts for the reviewer:** set `REVIEW_LOGINS` on the production API and fill `APP_REVIEW_NOTES.md`; rotate it after approval.
+- [ ] **Age rating** answered as in `APPLE_COMPLIANCE.md` section 6, and the **App Privacy** answers from `STORE_PRIVACY_ANSWERS.md`.
+- [ ] EU: **trader status** in App Store Connect, or leave the EU storefronts off.
+- [ ] Run `pnpm release:check --store` until it passes.
+
 ## 11. Rehearsals and device tests before launch
 
 Do each in **staging**, record the date and who, fix the docs where reality differed. The full list is `RELEASE_CHECKLIST.md` section 4; the ones that need your hands:

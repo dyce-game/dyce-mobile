@@ -154,6 +154,63 @@ for (const key of ['NSContactsUsageDescription', 'NSMotionUsageDescription']) {
   check((p.ios.infoPlist?.[key] ?? '').length > 20, `app.config: ${key} needs a real sentence`);
 }
 
+// --- Apple review guardrails (docs/APPLE_COMPLIANCE.md) ----------------------------------------------------------------
+check(
+  p.ios.privacyManifests?.NSPrivacyTracking === false,
+  'app.config: ios.privacyManifests must declare NSPrivacyTracking false (the app does not track people across other companies apps)',
+);
+check(
+  Array.isArray(p.ios.privacyManifests?.NSPrivacyCollectedDataTypes) &&
+    p.ios.privacyManifests.NSPrivacyCollectedDataTypes.length > 0,
+  'app.config: ios.privacyManifests must list the collected data types (keep in step with docs/STORE_PRIVACY_ANSWERS.md)',
+);
+check(
+  !/android|google play/i.test(`${p.name} ${p.description ?? ''}`),
+  'app.config: the iOS app name and description must not name another mobile platform (Apple 2.3.10)',
+);
+check(
+  p.ios.infoPlist?.NSUserTrackingUsageDescription === undefined,
+  'app.config: NSUserTrackingUsageDescription is set but the app does not track (declare tracking only with a real ATT flow)',
+);
+
+// Things only a person can supply. They are listed on every run and fail the run with `--store`, which is what the
+// store-submission checklist runs (docs/RELEASE_CHECKLIST.md). A normal run (CI) only prints them.
+const storeBlockers = [];
+const blocker = (ok, msg) => ok || storeBlockers.push(msg);
+blocker(
+  !!p.icon,
+  'no app icon (app.config.ts `icon`, 1024x1024 PNG): App Store Connect rejects the upload',
+);
+const splash = (p.plugins ?? []).find((x) => Array.isArray(x) && x[0] === 'expo-splash-screen');
+blocker(!!splash?.[1]?.image, 'no splash image configured for expo-splash-screen');
+const legal = readFileSync(resolve(root, 'src/features/account/legal-copy.ts'), 'utf8');
+blocker(
+  !/LEGAL_DRAFT_NOTICE\s*=/.test(legal),
+  'the in-app Terms, Privacy and Pool rules are still marked DRAFT (placeholder text: Apple 2.1(a); needs the lawyer-reviewed text)',
+);
+blocker(
+  !!p.extra?.supportEmail,
+  'EXPO_PUBLIC_SUPPORT_EMAIL is not set: the app falls back to support@dyce.games, so that mailbox must exist (Apple 1.2 and 1.5)',
+);
+blocker(
+  !!p.extra?.privacyUrl,
+  'EXPO_PUBLIC_PRIVACY_URL is not set: the hosted Privacy Policy must exist at the default https://dyce.games/privacy (Apple 5.1.1(i))',
+);
+blocker(
+  !!p.extra?.termsUrl,
+  'EXPO_PUBLIC_TERMS_URL is not set: the hosted Terms must exist at the default https://dyce.games/terms',
+);
+const wantStore = process.argv.includes('--store');
+if (storeBlockers.length > 0) {
+  const lines = storeBlockers.map((m) => `  - ${m}`).join('\n');
+  if (wantStore) problems.push(...storeBlockers);
+  else {
+    console.warn(
+      `store submission: ${storeBlockers.length} thing(s) still open (pnpm release:check --store fails on them)\n${lines}`,
+    );
+  }
+}
+
 if (problems.length > 0) {
   console.error(
     `release config: ${problems.length} problem(s)\n` + problems.map((m) => `  - ${m}`).join('\n'),

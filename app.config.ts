@@ -81,6 +81,53 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     ...(IS_PROD ? { associatedDomains: [`applinks:${DOMAIN}`] } : {}),
     // Standard encryption only (TLS): lets the App Store skip the export-compliance question on every upload.
     config: { usesNonExemptEncryption: false },
+    /**
+     * Privacy manifest (PrivacyInfo.xcprivacy; required for uploads since 2024-05-01). Expo's own modules and
+     * Sentry ship their required-reason API entries, which Xcode merges at build time. This declares what the app
+     * itself collects, to match docs/STORE_PRIVACY_ANSWERS.md section 2: keep the two in step. Nothing is used to
+     * track people across other companies' apps or sites.
+     */
+    privacyManifests: {
+      NSPrivacyTracking: false,
+      NSPrivacyTrackingDomains: [],
+      NSPrivacyCollectedDataTypes: [
+        ...(
+          [
+            'NSPrivacyCollectedDataTypePhoneNumber',
+            'NSPrivacyCollectedDataTypeEmailAddress',
+            'NSPrivacyCollectedDataTypeName',
+            'NSPrivacyCollectedDataTypeContacts',
+            'NSPrivacyCollectedDataTypeUserID',
+            'NSPrivacyCollectedDataTypeDeviceID',
+            'NSPrivacyCollectedDataTypeOtherUserContent',
+            'NSPrivacyCollectedDataTypeGameplayContent',
+            'NSPrivacyCollectedDataTypeCustomerSupport',
+          ] as const
+        ).map((type) => ({
+          NSPrivacyCollectedDataType: type,
+          NSPrivacyCollectedDataTypeLinked: true,
+          NSPrivacyCollectedDataTypeTracking: false,
+          NSPrivacyCollectedDataTypePurposes: ['NSPrivacyCollectedDataTypePurposeAppFunctionality'],
+        })),
+        // Only with the person's consent (Settings > Privacy), and not linked to who they are.
+        ...(
+          [
+            'NSPrivacyCollectedDataTypeProductInteraction',
+            'NSPrivacyCollectedDataTypeCrashData',
+            'NSPrivacyCollectedDataTypePerformanceData',
+          ] as const
+        ).map((type) => ({
+          NSPrivacyCollectedDataType: type,
+          NSPrivacyCollectedDataTypeLinked: false,
+          NSPrivacyCollectedDataTypeTracking: false,
+          NSPrivacyCollectedDataTypePurposes: [
+            type === 'NSPrivacyCollectedDataTypeProductInteraction'
+              ? 'NSPrivacyCollectedDataTypePurposeAnalytics'
+              : 'NSPrivacyCollectedDataTypePurposeAppFunctionality',
+          ],
+        })),
+      ],
+    },
     infoPlist: {
       NSContactsUsageDescription:
         'Dyce finds friends who are already on Dyce. Phone numbers are checked on our server and never stored.',
@@ -147,6 +194,10 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     sentryDsn: process.env.EXPO_PUBLIC_SENTRY_DSN ?? null,
     posthogKey: process.env.EXPO_PUBLIC_POSTHOG_KEY ?? null,
     posthogHost: process.env.EXPO_PUBLIC_POSTHOG_HOST ?? null,
+    // Published contact and policy pages (Apple 1.2, 1.5, 5.1.1(i)); the defaults are the planned addresses.
+    supportEmail: process.env.EXPO_PUBLIC_SUPPORT_EMAIL ?? null,
+    privacyUrl: process.env.EXPO_PUBLIC_PRIVACY_URL ?? null,
+    termsUrl: process.env.EXPO_PUBLIC_TERMS_URL ?? null,
     ...(EAS_PROJECT_ID ? { eas: { projectId: EAS_PROJECT_ID } } : {}),
   },
 });

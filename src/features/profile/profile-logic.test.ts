@@ -40,6 +40,8 @@ describe('nameProblem', () => {
     expect(nameProblem('   ')).toMatch(/name/i);
     expect(nameProblem('x'.repeat(MAX_DISPLAY_NAME_LENGTH + 1))).toMatch(/characters/);
     expect(nameProblem('x'.repeat(MAX_DISPLAY_NAME_LENGTH))).toBeNull();
+    expect(nameProblem('Nigerian Queen')).toBeNull();
+    expect(nameProblem('big.b1tch')).toMatch(/isn't allowed/);
   });
 });
 

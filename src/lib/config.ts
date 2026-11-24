@@ -10,6 +10,9 @@ type Extra = {
   posthogKey?: unknown;
   posthogHost?: unknown;
   appEnv?: unknown;
+  supportEmail?: unknown;
+  privacyUrl?: unknown;
+  termsUrl?: unknown;
 };
 const extra = (Constants.expoConfig?.extra ?? {}) as Extra;
 
@@ -42,6 +45,14 @@ export const config = {
   /** Product analytics. Null = PostHog is off: events only reach the dev console. */
   posthogKey: str(extra.posthogKey),
   posthogHost: str(extra.posthogHost) ?? 'https://eu.i.posthog.com',
+  /**
+   * Where people reach us (Apple 1.2 and 1.5: published contact information). The mailbox itself is a launch task
+   * (docs/SETUP_GUIDE.md section 10); the address can be changed per build with EXPO_PUBLIC_SUPPORT_EMAIL.
+   */
+  supportEmail: str(extra.supportEmail) ?? 'support@dyce.games',
+  /** The hosted Privacy Policy and Terms (the same URLs go in App Store Connect). */
+  privacyUrl: str(extra.privacyUrl) ?? 'https://dyce.games/privacy',
+  termsUrl: str(extra.termsUrl) ?? 'https://dyce.games/terms',
   apiUrl: resolveApiUrl(extra.apiUrl ?? 'http://localhost:3000').replace(/\/$/, ''),
   /** Store pages for "Get it on iPhone / Android". Unset until the store listings exist (BACKLOG). */
   // The manifest turns an unset value into an empty object, so only a real string counts.

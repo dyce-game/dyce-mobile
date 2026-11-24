@@ -1,4 +1,5 @@
 import {
+  checkContent,
   formatNaira,
   MAX_DISPLAY_NAME_LENGTH,
   type RequestPolicy,
@@ -75,5 +76,6 @@ export function nameProblem(raw: string): string | null {
   if (name.length === 0) return 'Enter a name.';
   if (name.length > MAX_DISPLAY_NAME_LENGTH)
     return `Keep it to ${MAX_DISPLAY_NAME_LENGTH} characters.`;
+  if (!checkContent(name, 'name').ok) return "That wording isn't allowed on Dyce.";
   return null;
 }

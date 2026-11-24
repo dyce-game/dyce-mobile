@@ -22,10 +22,18 @@ tags: [web, phase1, settings]
 - tapOn: 'Nobody'
 - assertVisible: 'No new people can add or message you.*'
 - tapOn: 'Everyone'
+# Apple 5.1.1(ii): usage and crash data is a choice, and a store build starts with it off (beta builds start on)
+- scrollUntilVisible:
+    element: 'Share usage and crash data'
+- assertVisible: 'Share usage and crash data'
 - scrollUntilVisible:
     element: 'Help and legal.*'
 - tapOn: 'Help and legal.*'
 - takeScreenshot: help
+# Apple 1.2 and 1.5: contact information inside the app
+- scrollUntilVisible:
+    element: 'Email support.*'
+- assertVisible: 'Email support.*'
 - back
 - scrollUntilVisible:
     element: 'Log out'

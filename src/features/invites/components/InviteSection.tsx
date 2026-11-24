@@ -6,12 +6,21 @@ import { sessionStore } from '@/lib/api';
 import { PillButton } from '@/components/PillButton';
 import { authErrorMessage } from '@/features/auth/messages';
 import type { InvitableContact } from '@/features/contacts/sync';
+import { useMeQuery } from '@/features/avatar/use-avatar';
 import { useSendInvite } from '../use-invites';
 
 /** The game an invite is for. Word Hunt is the one a guest can play in a browser today (Cup Pong joins later). */
 export const INVITE_GAME = 'word-hunt';
 
 type RowState = { phase: 'idle' | 'sending' | 'sent'; error?: string };
+
+/**
+ * What the invited person receives, shown before anything is sent (Apple 5.1.2(v): say what the message is and who
+ * appears to send it). Keep it in step with the text in dyce-backend apps/api/src/invites/invites.service.ts.
+ */
+export function invitePreview(senderName: string): string {
+  return `${senderName} challenged you to Word Hunt on Dyce. Play in your browser, no app needed: dyce.games/i/…`;
+}
 
 /**
  * "Not on Dyce yet": people from your contacts you can text a game to (design: Invite, NewChat). The server
@@ -29,6 +38,8 @@ export function InviteSection({
 }) {
   const { colors } = useTheme();
   const send = useSendInvite();
+  const me = useMeQuery();
+  const senderName = me.data?.profile?.displayName || me.data?.profile?.username || 'Your name';
   const [rows, setRows] = useState<Record<string, RowState>>({});
   const [typed, setTyped] = useState('');
   const [typedState, setTypedState] = useState<RowState>({ phase: 'idle' });
@@ -71,6 +82,10 @@ export function InviteSection({
     <View style={styles.wrap}>
       <Text variant="caption" color="sub" accessibilityRole="header">
         {heading}
+      </Text>
+      <Text variant="footnote" color="sub">
+        Each invite is one text from Dyce, sent only when you tap Invite. They get: &quot;
+        {invitePreview(senderName)}&quot; It does not come from your phone number.
       </Text>
 
       {contacts.map((c) => {

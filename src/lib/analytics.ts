@@ -1,6 +1,7 @@
 import { AppState, Platform } from 'react-native';
 import { createAnalytics } from './analytics-core';
 import { config } from './config';
+import { defaultAllowed, loadConsent, onConsentChange } from './privacy-consent';
 import { secureStorage } from './storage';
 
 /**
@@ -79,6 +80,12 @@ const analytics = createAnalytics({
     if (__DEV__) console.log('[analytics]', JSON.stringify({ name, ...props }));
   },
 });
+
+// Consent (Apple 5.1.1(ii)): a store build sends nothing until the person agrees in Settings; beta builds default on.
+// The saved choice is read at start-up and every later change is applied at once.
+analytics.setEnabled(defaultAllowed());
+onConsentChange((allowed) => analytics.setEnabled(allowed));
+void loadConsent();
 
 // Send what is queued when the app leaves the foreground: it may not come back.
 AppState.addEventListener('change', (state) => {

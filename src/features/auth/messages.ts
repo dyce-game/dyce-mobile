@@ -1,4 +1,4 @@
-import { formatNaira } from '@dyce/shared';
+import { CONTENT_BLOCKED, formatNaira } from '@dyce/shared';
 import { ApiError } from './api-client';
 
 /** Short, warm, plain copy for every error the auth endpoints can return. No slang in system copy. */
@@ -47,8 +47,19 @@ export function authErrorMessage(err: unknown): string {
       return 'That name is taken.';
     case 'username_reserved':
       return 'That name is reserved. Try another.';
-    case 'validation_failed':
-      return 'Please check what you typed.';
+    case 'validation_failed': {
+      // The server's objectionable-text filter (Apple 1.2) answers with the wording below.
+      const issues = Array.isArray(err.details.issues) ? (err.details.issues as unknown[]) : [];
+      const blocked = issues.some(
+        (i) =>
+          typeof i === 'object' &&
+          i !== null &&
+          (i as { message?: unknown }).message === CONTENT_BLOCKED,
+      );
+      return blocked
+        ? "That wording isn't allowed on Dyce. Please change it."
+        : 'Please check what you typed.';
+    }
     case 'contacts_rate_limited':
       return retry
         ? `You've checked a lot of contacts today. Try again in ${formatWait(retry)}.`
