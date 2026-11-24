@@ -10,7 +10,7 @@ export function winRateLabel(rate: number | null): string {
   return rate === null ? '—' : `${Math.round(rate * 100)}%`;
 }
 
-/** "Last: Sea Battle pool · you lost ₦1,000" / "Last: Pig · you won". */
+/** "Last: Sea Battle pool · you lost Ð1,000" / "Last: Pig · you won". */
 export function headToHeadLast(h: HeadToHead): string | null {
   const last = h.last;
   if (!last) return null;
@@ -88,7 +88,7 @@ export function resetsIn(resetsAt: string, now: Date): string {
       : `Resets Monday · ${m}m`;
 }
 
-/** "640 XP" or "+₦12.5k" / "−₦2k". */
+/** "640 XP" or "+Ð12.5k" / "−Ð2k". */
 export function boardValue(metric: 'xp' | 'pool', value: number): string {
   if (metric === 'xp') return `${value.toLocaleString('en-NG')} XP`;
   return `${value < 0 ? '−' : '+'}${formatNaira(Math.abs(value), { compact: true })}`;

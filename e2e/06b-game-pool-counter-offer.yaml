@@ -1,4 +1,4 @@
-# Counter-offer: Alice sends Pig in Pool for ₦1,000, Ben suggests ₦500 (API), Alice accepts the new stake; the
+# Counter-offer: Alice sends Pig in Pool for Ð1,000, Ben suggests Ð500 (API), Alice accepts the new stake; the
 # money locked is the counter amount on both sides, and a second invite shows the decline refund.
 appId: games.dyce.app
 name: pool counter offer
@@ -18,7 +18,7 @@ tags: [web, phase2, games, money]
     element: 'Pig, .*'
 - tapOn: 'Pig, .*'
 - tapOn: 'Pool'
-- tapOn: 'Lock ₦1,000 & send'
+- tapOn: 'Lock Ð1,000 & send'
 - extendedWaitUntil:
     visible: '.*Pig.*'
     timeout: 10000
@@ -28,10 +28,10 @@ tags: [web, phase2, games, money]
       BEN_ACTION: counter
       COUNTER_KOBO: '50000'
 - takeScreenshot: counter-card
-- assertVisible: 'Ben QA offered ₦500 each'
-- assertVisible: 'Pot ₦1,000 if accepted'
-# Alice's ₦1,000 stake is held until she answers; accepting the counter makes the stake ₦500 on both sides
-- tapOn: 'Accept ₦500'
+- assertVisible: 'Ben QA offered Ð500 each'
+- assertVisible: 'Pot Ð1,000 if accepted'
+# Alice's Ð1,000 stake is held until she answers; accepting the counter makes the stake Ð500 on both sides
+- tapOn: 'Accept Ð500'
 - extendedWaitUntil:
     visible: 'Play Pig.*|.*Your turn.*'
     timeout: 10000

@@ -90,7 +90,7 @@ type AvatarConfigV2 = {
 - **Expressions preview:** tap the face to cycle smile / grin / wink / laugh / surprised.
 - **Accessibility:** every option has a text label for screen readers ("Hair: high afro puff, selected"); colour options announce names; sliders announce values; reduce motion disables idle animation and camera swoops.
 - **Safety:** no free-text or user-uploaded textures in v1 (no moderation burden); offensive combinations are impossible by construction.
-- **Save:** validates, writes config, optimistic snapshot, enqueues render, haptic success, returns to caller (onboarding → "Looks like me · Claim ₦200k").
+- **Save:** validates, writes config, optimistic snapshot, enqueues render, haptic success, returns to caller (onboarding → "Looks like me · Claim Ð200k").
 
 ## 5. Commission brief for the 3D artist (send this section)
 

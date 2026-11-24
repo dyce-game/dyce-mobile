@@ -234,12 +234,12 @@ function GuestEnd({
         </Text>
         <Text color="sub" style={styles.center}>
           {name} plays the same grid next. Get Dyce to keep your score on your record and claim the
-          ₦200k everyone starts with.
+          Ð200k everyone starts with.
         </Text>
         <View style={styles.stats}>
           <Stat value={String(score)} label={score === 1 ? 'point' : 'points'} />
           <Stat value={String(words.length)} label={words.length === 1 ? 'word' : 'words'} />
-          <Stat value="₦200k" label="waiting" />
+          <Stat value="Ð200k" label="waiting" />
         </View>
         {words.length > 0 ? <WordChips words={words} muted /> : null}
         <Text variant="footnote" color="sub" style={styles.center}>

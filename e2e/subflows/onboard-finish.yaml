@@ -1,5 +1,5 @@
 # After contacts: pick an avatar, claim the welcome bonus, answer the notification step, land on Chat with
-# ₦200,000 in the wallet. Pass NOTIFICATIONS: 'allow' (turn them on) or 'deny' (Not now).
+# Ð200,000 in the wallet. Pass NOTIFICATIONS: 'allow' (turn them on) or 'deny' (Not now).
 # On web the step has a plain "Continue" (there is no OS prompt) for allow, and "Not now" for deny.
 appId: games.dyce.app
 name: onboarding finish
@@ -8,7 +8,7 @@ name: onboarding finish
 - tapOn: 'Shuffle'
 - tapOn: 'Use this look'
 - extendedWaitUntil:
-    visible: 'Your first ₦200,000'
+    visible: 'Your first Ð200,000'
     timeout: 10000
 - assertVisible: '.*cannot be bought or withdrawn.*'
 - tapOn: 'Claim it'
@@ -38,4 +38,4 @@ name: onboarding finish
     visible: 'New in Chat'
     timeout: 15000
 - tapOn: 'Wallet'
-- assertVisible: 'Balance ₦200,000'
+- assertVisible: 'Balance Ð200,000'

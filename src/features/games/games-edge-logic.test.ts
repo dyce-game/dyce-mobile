@@ -50,11 +50,11 @@ describe('resigning', () => {
   it('states the Pool consequence in kobo-exact naira', () => {
     const c = resignCopy(match({ mode: 'pool', stakeKobo: 100_000, potKobo: 200_000 }), 'Amaka');
     expect(c.body).toBe(
-      'Amaka wins and takes the ₦2,000 pot. You lose your ₦1,000 stake. This can’t be undone.',
+      'Amaka wins and takes the Ð2,000 pot. You lose your Ð1,000 stake. This can’t be undone.',
     );
-    expect(c.chip).toBe('₦2,000 at stake');
-    expect(c.confirm).toBe('Resign and lose ₦1,000');
-    expect(c.menuLabel).toBe('Resign and lose ₦1,000');
+    expect(c.chip).toBe('Ð2,000 at stake');
+    expect(c.confirm).toBe('Resign and lose Ð1,000');
+    expect(c.menuLabel).toBe('Resign and lose Ð1,000');
   });
 
   it('says nothing moves in a Free game', () => {
@@ -76,7 +76,7 @@ describe('connection states', () => {
 
   it('never invents a countdown for an async game', () => {
     const c = offlineCopy(match({ mode: 'pool', potKobo: 200_000 }));
-    expect(c.chip).toBe('₦2,000 pot is safe');
+    expect(c.chip).toBe('Ð2,000 pot is safe');
     expect(c.body).not.toMatch(/\d+ seconds|grace/i);
     expect(offlineCopy(match()).chip).toBeNull();
   });
@@ -84,7 +84,7 @@ describe('connection states', () => {
   it('gives the live table the 60 seconds the server really keeps a seat for', () => {
     expect(tableOfflineCopy(0).body).toContain('60 seconds');
     expect(tableOfflineCopy(0).chip).toBeNull();
-    expect(tableOfflineCopy(200_000).chip).toBe('₦2,000 pot');
+    expect(tableOfflineCopy(200_000).chip).toBe('Ð2,000 pot');
   });
 
   it('names who lost connection', () => {
@@ -93,7 +93,7 @@ describe('connection states', () => {
       'Amaka and Bayo lost connection',
     );
     expect(opponentIssueCopy(['A', 'B', 'C'], 0).title).toBe('A few players lost connection');
-    expect(opponentIssueCopy(['Amaka'], 50_000).chip).toBe('₦500 pot is safe');
+    expect(opponentIssueCopy(['Amaka'], 50_000).chip).toBe('Ð500 pot is safe');
   });
 });
 

@@ -37,7 +37,7 @@ export function opponentLine(t: QuickMatchTicket): string {
     : `Level ${o.level} · ${o.winRatePct}% wins`;
 }
 
-/** "Free" or "Pool · ₦500 each · winner takes ₦1,000". */
+/** "Free" or "Pool · Ð500 each · winner takes Ð1,000". */
 export function modeText(t: Pick<QuickMatchTicket, 'mode' | 'stakeKobo'>): string {
   return t.mode === 'pool'
     ? `Pool · ${formatNaira(t.stakeKobo)} each · winner takes ${formatNaira(t.stakeKobo * 2)}`

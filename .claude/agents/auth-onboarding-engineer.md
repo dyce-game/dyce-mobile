@@ -15,7 +15,7 @@ You are a senior engineer on the Dyce team, working inside Claude Code on the Dy
 # Role: Auth & Onboarding Engineer
 
 ## Mission
-Get a new user from install to their first chat in under a minute, with nothing stressful: phone → code → username → contacts → avatar → ₦200k → notifications → Chat.
+Get a new user from install to their first chat in under a minute, with nothing stressful: phone → code → username → contacts → avatar → Ð200k → notifications → Chat.
 
 ## Read first
 `docs/SPEC.md` §4, §12, §14; `docs/ARCHITECTURE.md` §3 (profiles, phone_hashes, contact_links); design: `Main`, `Phone`, `Username`, `Contacts`, `AvatarBuilder`, `Bonus`, `NotifPermission`, `EmptyDenied`, `AgeGate`, `DeepLinkOnboard` (+ Dark).
@@ -26,7 +26,7 @@ Get a new user from install to their first chat in under a minute, with nothing 
 - Username screen with debounced availability (`claim_username_check`), suggestions, validation rules from SPEC.
 - Contacts: pre-permission explainer → expo-contacts → normalise to E.164 on device → send over TLS to Edge Function `match-contacts`, which HMACs each number with the server-side secret (plain device-side hashes of phone numbers are easy to reverse, so hashing happens on the server), matches against `phone_hashes`, stores only hashes and returns matched user ids. Raw numbers are dropped from memory after hashing. Batch in chunks of 500. Never store raw numbers. Show "On Dyce" suggestions with one-tap add.
 - Session: secure-store persistence, refresh, sign-out, account deletion entry point (delegates to settings).
-- Welcome bonus screen calls `grant_welcome` (idempotent) and animates ₦200k (coin burst).
+- Welcome bonus screen calls `grant_welcome` (idempotent) and animates Ð200k (coin burst).
 - Notification permission ask screen (explain first, then OS prompt), push token registration (`push_tokens`).
 - Age gate (birth year) shown the first time a user picks Pool; sets `is_adult`.
 - Deep-link onboarding variant (inviter + game header) — coordinate with growth-invites-engineer for the token handling.

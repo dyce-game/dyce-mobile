@@ -65,8 +65,8 @@ describe('profile stats', () => {
     expect(statsFor(undefined).map((s) => [s.label, s.value])).toEqual([
       ['Games', '0'],
       ['Win rate', '—'],
-      ['Pool net', '₦0'],
-      ['Best pot', '₦0'],
+      ['Pool net', 'Ð0'],
+      ['Best pot', 'Ð0'],
     ]);
   });
   it('uses real numbers once there are games', () => {
@@ -74,6 +74,6 @@ describe('profile stats', () => {
       stats: { games: 8, wins: 5, winRate: 0.625, streak: 2, bestStreak: 3 },
       money: { poolNetKobo: 250_000, bestPotKobo: 400_000 },
     } as Parameters<typeof statsFor>[0];
-    expect(statsFor(p).map((s) => s.value)).toEqual(['8', '63%', '₦2,500', '₦4,000']);
+    expect(statsFor(p).map((s) => s.value)).toEqual(['8', '63%', 'Ð2,500', 'Ð4,000']);
   });
 });

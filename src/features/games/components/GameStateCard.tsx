@@ -17,7 +17,7 @@ export type StateCardProps = {
   center: ReactNode;
   title: string;
   body: string;
-  /** The pill about what is at stake ("₦2,000 pot is safe"). */
+  /** The pill about what is at stake ("Ð2,000 pot is safe"). */
   chip?: string | null;
   primary: { label: string; onPress: () => void; busy?: boolean };
   secondary?: { label: string; onPress: () => void } | null;

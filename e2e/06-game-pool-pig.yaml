@@ -1,4 +1,4 @@
-# A Pool match end to end: Alice sends Pig (the reference game, in dev builds) for ₦500 each from the Games
+# A Pool match end to end: Alice sends Pig (the reference game, in dev builds) for Ð500 each from the Games
 # drawer, Ben accepts, the pot is locked, Alice resigns (a real, deliberate loss) and the server pays Ben the
 # pot. Wallets are read from the API on both sides (scripts/balances.js) before, during and after.
 appId: games.dyce.app
@@ -20,9 +20,9 @@ tags: [web, phase2, games, money]
     element: 'Pig, .*'
 - tapOn: 'Pig, .*'
 - tapOn: 'Pool'
-- tapOn: '₦500 each'
-- assertVisible: '.*₦1,000.*Locked until the game ends.*'
-- tapOn: 'Lock ₦500 & send'
+- tapOn: 'Ð500 each'
+- assertVisible: '.*Ð1,000.*Locked until the game ends.*'
+- tapOn: 'Lock Ð500 & send'
 - extendedWaitUntil:
     visible: '.*Pig.*'
     timeout: 10000
@@ -30,7 +30,7 @@ tags: [web, phase2, games, money]
 # the stake is locked the moment it is sent
 - runScript: scripts/balances.js
 - assertTrue: ${output.aliceKobo == output.aliceBefore - 50000}
-# Ben accepts: his ₦500 is locked too
+# Ben accepts: his Ð500 is locked too
 - runScript:
     file: scripts/ben-game.js
     env:
@@ -40,20 +40,20 @@ tags: [web, phase2, games, money]
 - tapOn: 'Play Pig'
 - takeScreenshot: pool-host
 - tapOn: 'Game menu'
-- tapOn: 'Resign and lose ₦500'
+- tapOn: 'Resign and lose Ð500'
 - assertVisible: 'Resign this game\?'
-- assertVisible: 'Ben QA wins and takes the ₦1,000 pot.*'
+- assertVisible: 'Ben QA wins and takes the Ð1,000 pot.*'
 - takeScreenshot: pool-resign-confirm
 - tapOn:
-    text: 'Resign and lose ₦500'
+    text: 'Resign and lose Ð500'
     index: -1 # the confirm button (the menu row of the same name is behind it)
 - extendedWaitUntil:
     visible: 'Ben QA took the pool'
     timeout: 15000
-- assertVisible: '−₦500' # (a real minus sign, U+2212)
+- assertVisible: '−Ð500' # (a real minus sign, U+2212)
 - assertVisible: 'Dyce Cash is virtual.*'
 - takeScreenshot: pool-result
-# the server paid the pot: Alice down ₦500, Ben up ₦500, nothing left locked, same on both sides
+# the server paid the pot: Alice down Ð500, Ben up Ð500, nothing left locked, same on both sides
 - runScript: scripts/balances.js
 - assertTrue: ${output.aliceKobo == output.aliceBefore - 50000}
 - assertTrue: ${output.benKobo == output.benBefore + 50000}

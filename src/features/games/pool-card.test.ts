@@ -25,11 +25,11 @@ const card = (over: Partial<GameCardPayload> = {}): GameCardPayload => ({
 describe('cardState in Pool', () => {
   it('tells the sender their stake is locked and tells the invitee what matching means', () => {
     expect(cardState(card(), ME, ME, 'Tunde')).toMatchObject({
-      text: 'Waiting for Tunde · ₦1,000 locked',
+      text: 'Waiting for Tunde · Ð1,000 locked',
       invite: 'wait',
     });
     expect(cardState(card(), THEM, ME, 'Tunde')).toMatchObject({
-      text: 'Tunde locked ₦1,000. Match it to play for ₦2,000.',
+      text: 'Tunde locked Ð1,000. Match it to play for Ð2,000.',
       invite: 'answer',
     });
   });
@@ -37,11 +37,11 @@ describe('cardState in Pool', () => {
   it('turns a counter-offer around: the sender answers it, the invitee waits', () => {
     const countered = card({ status: 'countered', counterStakeKobo: 500 * N });
     expect(cardState(countered, ME, ME, 'Tunde')).toMatchObject({
-      text: 'Tunde offered ₦500 each',
+      text: 'Tunde offered Ð500 each',
       invite: 'counter-answer',
     });
     expect(cardState(countered, THEM, ME, 'Tunde')).toMatchObject({
-      text: 'You offered ₦500 each',
+      text: 'You offered Ð500 each',
       invite: 'counter-wait',
     });
   });
@@ -55,10 +55,10 @@ describe('cardState in Pool', () => {
   it('shows the pot on the result and says the stake came back when it did not start', () => {
     const won = card({ status: 'finished', winnerIds: [ME] });
     expect(cardState(won, ME, ME, 'Tunde')).toMatchObject({
-      text: 'You won ₦2,000',
+      text: 'You won Ð2,000',
       cta: 'results',
     });
-    expect(cardState(won, ME, THEM, 'Tunde').text).toBe('Tunde took ₦2,000');
+    expect(cardState(won, ME, THEM, 'Tunde').text).toBe('Tunde took Ð2,000');
     expect(cardState(card({ status: 'finished', draw: true }), ME, ME, 'Tunde').text).toBe(
       'Pot split, stakes back',
     );

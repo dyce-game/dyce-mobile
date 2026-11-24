@@ -15,17 +15,17 @@ real money exists. Nothing here touches a shared dev database.
 | File | Journey | Phase | Runs on web |
 | ---- | ------- | ----- | ----------- |
 | `00-smoke-login.yaml` | a seeded person logs in by phone and code | 1 | yes |
-| `01-onboarding-contacts-allowed.yaml` | new number, code, display name, username, **contacts allowed** (two on Dyce, one-tap add, invite rows), pick a look, claim ₦200,000, notifications on, lands in Chat with the balance | 1 | yes (dev address book) |
+| `01-onboarding-contacts-allowed.yaml` | new number, code, display name, username, **contacts allowed** (two on Dyce, one-tap add, invite rows), pick a look, claim Ð200,000, notifications on, lands in Chat with the balance | 1 | yes (dev address book) |
 | `02-onboarding-contacts-denied.yaml` | same path with **contacts denied** (the OS prompt on a device, `dev.contacts=deny` on web); "Contacts are off", continue without contacts; notifications declined | 1 | yes (dev switch) |
 | `03-chat-and-requests.yaml` | read and reply in a thread, a **live** message arrives with no refresh, two strangers land in **Requests** (never Chat): decline one, accept the other into Chat | 1 | yes |
-| `04-qr-pay.yaml` | **request ₦2,000 by QR**, a second person (Ben, the API) pays it, the request turns "Paid by Ben QA", history shows it; then Ben shows a code, Alice **pays a code**, balance after, paid screen, receipt | 1 | yes |
+| `04-qr-pay.yaml` | **request Ð2,000 by QR**, a second person (Ben, the API) pays it, the request turns "Paid by Ben QA", history shows it; then Ben shows a code, Alice **pays a code**, balance after, paid screen, receipt | 1 | yes |
 | `05-game-free-wordhunt.yaml` | send a **Free Word Hunt** from the Games drawer, Ben accepts and plays his round (API), the card turns to "Your turn", Alice plays her round, both get the same result, no cash moves | 2 | yes |
-| `06-game-pool-pig.yaml` | **Pool** match (Pig, the reference game): lock ₦500 each, Ben accepts, Alice resigns (a real loss), the server pays Ben the ₦1,000 pot; wallets read from the API before, during and after, nothing left locked | 2 | yes |
-| `06b-game-pool-counter-offer.yaml` | Pool invite for ₦1,000, Ben counters ₦500 (API), Alice accepts the counter, ₦500 locked on both sides | 2 | yes |
+| `06-game-pool-pig.yaml` | **Pool** match (Pig, the reference game): lock Ð500 each, Ben accepts, Alice resigns (a real loss), the server pays Ben the Ð1,000 pot; wallets read from the API before, during and after, nothing left locked | 2 | yes |
+| `06b-game-pool-counter-offer.yaml` | Pool invite for Ð1,000, Ben counters Ð500 (API), Alice accepts the counter, Ð500 locked on both sides | 2 | yes |
 | `07-block-report.yaml` | report a stranger from Requests (reason, "also block them" on by default), find them in Blocked people, unblock | 1 | yes |
 | `08-settings-logout.yaml` | Settings: "Who can add and message me" (Nobody and back), Help and legal, **log out**, a second person logs in on the same device | 1 | yes |
 | `09-space-whot.yaml` | **Spaces**: create a Free Whot! space for two, Ben joins by code (API), the lobby updates live, the host starts, the 3D card table opens and shows that Ben never connected | 2 | yes |
-| `10-wallet-balance-after-qr-paid.yaml` | after Ben pays Alice's QR request, her **Wallet tab shows ₦202,000 with no refresh** (regression test of BUG-1) | 1 | yes |
+| `10-wallet-balance-after-qr-paid.yaml` | after Ben pays Alice's QR request, her **Wallet tab shows Ð202,000 with no refresh** (regression test of BUG-1) | 1 | yes |
 | `11-back-after-game.yaml` | resign a Free Pig game, "Back to chat" on the result, then the thread's back arrow reaches the **chat list** (regression test of BUG-2) | 2 | yes |
 | `12-email-signup-login.yaml` | **Sign up with email**: a bad address is explained before any code, a wrong code is rejected, a right one creates the account (name, username), Settings shows the masked address and "Phone number: Not added", log out, **Log in with email** reaches the same account (the OTP test code stands in for the Resend email) | 1 | yes |
 | `known-bugs/*.yaml` | reproductions of open bugs. They **fail until the bug is fixed**, then move into the numbered flows; none is open today (the folder is empty) | - | yes |
@@ -106,8 +106,8 @@ steps are skipped, and a flow header `env: WEB_LOCAL_STORAGE: 'dev.contacts=deny
 
 - Select by the **accessibility label or visible text**, never by position: `tapOn: 'Send Dyce Cash'`. The app has almost
   no `testID`s (the one exception is in `TextField`); Maestro matches an accessibility label as text on both platforms.
-- Escape regular-expression characters in text: `'Resign this game\?'`, `'₦500 each'`. The app uses a real minus sign (U+2212) in
-  "−₦500" and curly apostrophes in some copy.
+- Escape regular-expression characters in text: `'Resign this game\?'`, `'Ð500 each'`. The app uses a real minus sign (U+2212) in
+  "−Ð500" and curly apostrophes in some copy.
 - A control whose label is not unique needs `index`: `Resign` is
   both the menu row and the confirm button, and `Wallet` is the tab and the heading.
 - Text fields: tap the **placeholder** (`'803 412 7781'`) (the label focuses the field too since 2026-11-24, but the placeholder is what the flows use).
@@ -136,8 +136,8 @@ Not covered by anything that has run:
 A static audit of every touchable in the app (`node scripts/qa/a11y-audit.mjs`) finds **no touchable without an accessible
 name**. These were hard to select, and are worth a `testID` or a distinct label:
 
-- ~~`Request ₦2,000` is the label of both the amount chip and the submit button~~ (fixed 2026-11-24: the chips read `Amount ₦2,000`).
-  `Resign` / `Resign and lose ₦500` is still the label of both the game-menu row and the confirm button (`GameMenuSheet`, the resign card).
+- ~~`Request Ð2,000` is the label of both the amount chip and the submit button~~ (fixed 2026-11-24: the chips read `Amount Ð2,000`).
+  `Resign` / `Resign and lose Ð500` is still the label of both the game-menu row and the confirm button (`GameMenuSheet`, the resign card).
 - ~~The `TextField` label is a separate `Text`, so tapping it does not focus the input~~ (fixed 2026-11-24: tapping the label focuses
   the field; placeholders still work and are what the flows tap).
 - The tab bar labels carry the badge (`Chat, 1 unread`), so the text `Chat` only matches the inner label on some platforms.

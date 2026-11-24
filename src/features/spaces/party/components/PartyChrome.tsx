@@ -58,7 +58,7 @@ export function Scene({ colors, children }: { colors: SceneColors; children: Rea
 
 // ---- header -----------------------------------------------------------------------------------------
 
-/** "SPACE POOL · ₦1,800 POT" or "FREE SPACE · XP", as the designs label the mode. */
+/** "SPACE POOL · Ð1,800 POT" or "FREE SPACE · XP", as the designs label the mode. */
 export function modeLabel(space: Pick<SpaceView, 'mode' | 'potKobo'>): string {
   return space.mode === 'pool'
     ? `SPACE POOL · ${formatNaira(space.potKobo)} POT`

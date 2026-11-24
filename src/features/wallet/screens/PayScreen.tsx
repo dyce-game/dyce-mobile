@@ -143,7 +143,7 @@ export function PayScreen({ code }: { code: string }) {
               <>
                 {anyAmount ? (
                   <TextField
-                    label="Amount (₦)"
+                    label="Amount (Ð)"
                     value={amountText}
                     onChangeText={setAmountText}
                     placeholder="0"
@@ -151,7 +151,7 @@ export function PayScreen({ code }: { code: string }) {
                     maxLength={9}
                     leading={
                       <Text color="sub" variant="callout">
-                        ₦
+                        Ð
                       </Text>
                     }
                   />

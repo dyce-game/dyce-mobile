@@ -66,8 +66,8 @@ describe('the rules sheet copy', () => {
 describe('poolRulesLine', () => {
   it('adds the minimum stake, and prefers the one the server sent', () => {
     const chess = rulesFor('chess')!;
-    expect(poolRulesLine(chess)).toMatch(/Minimum stake ₦500\.$/);
-    expect(poolRulesLine(chess, 100_000)).toMatch(/Minimum stake ₦1,000\.$/);
+    expect(poolRulesLine(chess)).toMatch(/Minimum stake Ð500\.$/);
+    expect(poolRulesLine(chess, 100_000)).toMatch(/Minimum stake Ð1,000\.$/);
     expect(poolRulesLine(rulesFor('_example')!)).toBe('Not available.');
   });
 });

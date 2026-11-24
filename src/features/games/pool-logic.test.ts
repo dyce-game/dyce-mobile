@@ -79,19 +79,19 @@ describe('stakes', () => {
       stakeChoices(info({ minStakeKobo: 500 * N, maxStakeKobo: 2_000 * N })).map((s) => s / N),
     ).toEqual([500, 1_000, 2_000]);
     expect(stakeChoices(undefined)).toHaveLength(5);
-    // A game can ask for more than the platform minimum (Chess: ₦500).
+    // A game can ask for more than the platform minimum (Chess: Ð500).
     expect(stakeChoices(info(), 500 * N).map((s) => s / N)).toEqual([500, 1_000, 2_000, 5_000]);
     expect(stakeChoices(info(), null)).toHaveLength(5);
   });
 
   it('labels chips the way the design does', () => {
-    expect(stakeChipLabel(200 * N)).toBe('₦200');
-    expect(stakeChipLabel(1_000 * N)).toBe('₦1k');
-    expect(stakeChipLabel(5_000 * N)).toBe('₦5k');
-    expect(stakeChipLabel(1_500 * N)).toBe('₦1,500');
+    expect(stakeChipLabel(200 * N)).toBe('Ð200');
+    expect(stakeChipLabel(1_000 * N)).toBe('Ð1k');
+    expect(stakeChipLabel(5_000 * N)).toBe('Ð5k');
+    expect(stakeChipLabel(1_500 * N)).toBe('Ð1,500');
   });
 
-  it('starts on ₦1,000 when it is on offer', () => {
+  it('starts on Ð1,000 when it is on offer', () => {
     expect(defaultStake(stakeChoices(info()))).toBe(1_000 * N);
     expect(defaultStake([200 * N, 500 * N])).toBe(200 * N);
   });
@@ -110,7 +110,7 @@ describe('counter-offers', () => {
 
   it('calls zero "Free"', () => {
     expect(counterLabel(0)).toBe('Free');
-    expect(counterLabel(500 * N)).toBe('₦500');
+    expect(counterLabel(500 * N)).toBe('Ð500');
   });
 });
 
@@ -140,11 +140,11 @@ describe('the card', () => {
   it('shows the pot for Pool only', () => {
     const base = { counterStakeKobo: null, status: 'active' } as const;
     const pool = { ...base, mode: 'pool', stakeKobo: 1_000 * N, potKobo: 2_000 * N } as const;
-    expect(potLine(pool)).toBe('Pot ₦2,000 · locked until the game ends');
-    expect(potLine({ ...pool, status: 'finished' })).toBe('Pot ₦2,000');
+    expect(potLine(pool)).toBe('Pot Ð2,000 · locked until the game ends');
+    expect(potLine({ ...pool, status: 'finished' })).toBe('Pot Ð2,000');
     expect(potLine({ ...pool, status: 'cancelled' })).toBeNull();
     expect(potLine({ ...pool, status: 'countered', counterStakeKobo: 500 * N })).toBe(
-      'Pot ₦1,000 if accepted',
+      'Pot Ð1,000 if accepted',
     );
     expect(potLine({ ...pool, status: 'countered', counterStakeKobo: 0 })).toBeNull();
     expect(potLine({ ...base, mode: 'free', stakeKobo: 0, potKobo: 0 })).toBeNull();
@@ -162,13 +162,13 @@ describe('poolResult', () => {
   it('shows a win as the net gain with the pot and your balance', () => {
     const r = poolResult(finished(), ME, 'Tunde', 201_000 * N)!;
     expect(r.outcome).toBe('won');
-    expect(r.amount).toBe('+₦1,000');
+    expect(r.amount).toBe('+Ð1,000');
     expect(r.lines).toEqual([
-      { label: 'Pot', value: '₦2,000' },
-      { label: 'Your stake back', value: '₦1,000' },
-      { label: "Tunde's stake", value: '₦1,000' },
-      { label: 'Dyce fee', value: '₦0' },
-      { label: 'New balance', value: '₦201,000' },
+      { label: 'Pot', value: 'Ð2,000' },
+      { label: 'Your stake back', value: 'Ð1,000' },
+      { label: "Tunde's stake", value: 'Ð1,000' },
+      { label: 'Dyce fee', value: 'Ð0' },
+      { label: 'New balance', value: 'Ð201,000' },
     ]);
   });
 
@@ -182,8 +182,8 @@ describe('poolResult', () => {
     });
     const r = poolResult(lost, ME, 'Tunde', 199_000 * N)!;
     expect(r.outcome).toBe('lost');
-    expect(r.amount).toBe('−₦1,000');
-    expect(r.lines.map((l) => l.value)).toEqual(['₦1,000', '₦2,000 pot', '₦199,000']);
+    expect(r.amount).toBe('−Ð1,000');
+    expect(r.lines.map((l) => l.value)).toEqual(['Ð1,000', 'Ð2,000 pot', 'Ð199,000']);
   });
 
   it('shows a draw as a split pot with both stakes back', () => {
@@ -198,8 +198,8 @@ describe('poolResult', () => {
     expect(r.outcome).toBe('draw');
     expect(r.amount).toBe('Pot split');
     expect(r.lines).toEqual([
-      { label: 'Back to you', value: '₦1,000' },
-      { label: 'Back to Tunde', value: '₦1,000' },
+      { label: 'Back to you', value: 'Ð1,000' },
+      { label: 'Back to Tunde', value: 'Ð1,000' },
     ]);
   });
 
@@ -212,7 +212,7 @@ describe('poolResult', () => {
 describe('the Pool rule line and the forfeit clock', () => {
   it('says what the pot does in plain words', () => {
     expect(poolRuleLine(1_000 * N)).toBe(
-      'Winner takes ₦2,000. A draw refunds both. No reply in 24 hours refunds you. No move for 24 hours is a forfeit.',
+      'Winner takes Ð2,000. A draw refunds both. No reply in 24 hours refunds you. No move for 24 hours is a forfeit.',
     );
   });
 

@@ -123,7 +123,7 @@ export function PoolIssueScreen({ matchId, kind }: { matchId: string; kind: Pool
       <ScrollView contentContainerStyle={styles.body}>
         {kind === 'low-balance' ? (
           <PoolIssuePanel
-            glyph="₦"
+            glyph="Ð"
             title="Not enough Dyce Cash"
             sub={`${who}'s pool needs ${formatNaira(stake)} from you`}
             left={{ label: 'Your balance', value: formatNaira(balance) }}

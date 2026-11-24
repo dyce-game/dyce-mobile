@@ -65,7 +65,7 @@ describe('quick match logic', () => {
     expect(opponentLine(ticket())).toBe('');
     expect(modeText(ticket())).toBe('Free');
     expect(modeText(ticket({ mode: 'pool', stakeKobo: 50_000 }))).toBe(
-      'Pool · ₦500 each · winner takes ₦1,000',
+      'Pool · Ð500 each · winner takes Ð1,000',
     );
   });
 

@@ -148,7 +148,7 @@ function knownText(pattern) {
       .replace(/\b(Alice|Ben|Cara|Dami|Eze|Fola|Tunde|Ngozi) QA\b/g, 'X')
       .replace(/@?\b(tunde|ngozi)\.qa\b/g, 'X')
       .replace(/@X\b/g, 'X')
-      .replace(/₦[\d,.]+[kK]?/g, '₦X')
+      .replace(/Ð[\d,.]+[kK]?/g, 'ÐX')
       .replace(/\b\d+\b/g, 'X');
   const alts = holeify(filled)
     .split('|')
@@ -163,8 +163,8 @@ function knownText(pattern) {
     const wildcard = /\.[*+]/.test(alt);
     const s = alt.replace(/\.[*+]/g, ' ').trim();
     if (/^(X\s*)+$/.test(s)) return null; // the whole label is a run-time value
-    if (/^[−-]?₦X$/.test(s)) return null; // an amount
-    const hasHole = /\bX\b|₦X/.test(s);
+    if (/^[−-]?ÐX$/.test(s)) return null; // an amount
+    const hasHole = /\bX\b|ÐX/.test(s);
     // a literal that contains the sample (the pattern may be a prefix, or a part, of a longer label)
     if (wildcard && s.length > 2)
       for (const lit of literals) if (lit.toLowerCase().includes(s.toLowerCase())) return null;

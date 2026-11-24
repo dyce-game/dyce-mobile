@@ -14,11 +14,11 @@ describe('parseNairaInput', () => {
   it('reads whole naira in the ways people type them', () => {
     expect(parseNairaInput('1500')).toBe(150_000);
     expect(parseNairaInput('1,500')).toBe(150_000);
-    expect(parseNairaInput(' ₦ 2,000 ')).toBe(200_000);
+    expect(parseNairaInput(' Ð 2,000 ')).toBe(200_000);
     expect(parseNairaInput('5000.')).toBe(500_000);
   });
   it('refuses empty, zero, decimals, letters and absurd lengths', () => {
-    for (const bad of ['', '0', '000', '12.50', 'abc', '12a', '-5', '1234567890', '₦']) {
+    for (const bad of ['', '0', '000', '12.50', 'abc', '12a', '-5', '1234567890', 'Ð']) {
       expect(parseNairaInput(bad)).toBeNull();
     }
   });
@@ -152,7 +152,7 @@ describe('initials and tiles', () => {
       bg: '#C93E1C',
     });
     expect(historyTile({ kind: 'grant', counterparty: null })).toEqual({
-      mark: '₦',
+      mark: 'Ð',
       bg: '#C93E1C',
     });
     expect(historyTile({ kind: 'payout', counterparty: null }).mark).toBe('P');

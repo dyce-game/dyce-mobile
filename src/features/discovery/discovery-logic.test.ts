@@ -38,7 +38,7 @@ describe('profile text', () => {
       netKobo: -100_000,
       at: '',
     };
-    expect(headToHeadLast(h2h({ last }))).toBe('Last: Sea Battle pool · you lost ₦1,000');
+    expect(headToHeadLast(h2h({ last }))).toBe('Last: Sea Battle pool · you lost Ð1,000');
     expect(
       headToHeadLast(h2h({ last: { ...last, mode: 'free', result: 'win', netKobo: null } })),
     ).toBe('Last: Sea Battle · you won');
@@ -79,8 +79,8 @@ describe('leaderboard text', () => {
 
   it('formats XP and Pool values', () => {
     expect(boardValue('xp', 1640)).toMatch(/^1[,.]?640 XP$/);
-    expect(boardValue('pool', 1_250_000)).toBe('+₦12.5k');
-    expect(boardValue('pool', -200_000)).toBe('−₦2,000');
+    expect(boardValue('pool', 1_250_000)).toBe('+Ð12.5k');
+    expect(boardValue('pool', -200_000)).toBe('−Ð2,000');
   });
 
   it('says how far behind the person above you are', () => {

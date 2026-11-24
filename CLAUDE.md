@@ -1,6 +1,6 @@
 # Dyce — project rules for Claude Code (the Expo app)
 
-Dyce is a chat-first mobile app for playing games with friends, family and strangers. It looks and feels like a messaging app (inspired by iMessage + iMessage games), with games launched from the composer, multiplayer **Spaces**, and a virtual-cash **Wallet** (every user starts with **₦200k Dyce Cash**). Android and iOS users play together.
+Dyce is a chat-first mobile app for playing games with friends, family and strangers. It looks and feels like a messaging app (inspired by iMessage + iMessage games), with games launched from the composer, multiplayer **Spaces**, and a virtual-cash **Wallet** (every user starts with **Ð200k Dyce Cash**). Android and iOS users play together.
 
 **Two repositories (ADR-011).** This repo (`Dyce`) is the **Expo app**. The server lives in the sibling repo **`../dyce-backend`** (NestJS API on PostgreSQL, `packages/shared`, `packages/games`, later the Colyseus game server). Keep both checked out side by side. This repo is also the home of the product docs, the build plan, `STATUS.md` and the design.
 

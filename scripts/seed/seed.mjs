@@ -6,7 +6,7 @@
 // Writes <tmp>/dyce-qa-seed.json (users with tokens, and fresh phone numbers for the onboarding flows) and
 // prints it. Re-running is safe: existing users are signed in again, nothing is duplicated. People:
 // Usernames carry a per-run suffix (alice.k3f9) and are in the env (ALICE_USERNAME).
-//   alice  the person the flows log in as: onboarded, ₦200k, friends with ben and cara
+//   alice  the person the flows log in as: onboarded, Ð200k, friends with ben and cara
 //   ben    alice's friend, the "second phone" that pays alice's QR request and accepts game invites
 //   cara   alice's friend, in a group with alice and ben
 //   dami   a stranger who has messaged alice: lands in Requests (accept / decline / block / report flows)

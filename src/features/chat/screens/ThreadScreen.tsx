@@ -60,7 +60,7 @@ import {
  * "typing…" and Sent/Read under your last message. A conversation from someone you don't know is a request:
  * you read it, then Accept or Decline before you can answer. Three shapes share this screen:
  *
- * - **a person**: the header opens Chat info; friends get the ₦ button and the games button;
+ * - **a person**: the header opens Chat info; friends get the Ð button and the games button;
  * - **a group**: the header shows who is in it and opens the group's page; each message carries the sender's
  *   name and avatar; polls; the + button makes polls and starts a Space;
  * - **a practice bot**: a scripted partner, no read receipts, nothing to report or block.
@@ -264,7 +264,7 @@ export function ThreadScreen({ conversationId }: { conversationId: string }) {
             style={styles.money}
           >
             <Text variant="headline" color="accent">
-              ₦
+              Ð
             </Text>
           </Pressable>
         ) : null}

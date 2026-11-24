@@ -16,7 +16,7 @@ const COPY: Record<
   { title: string; body: string; owner: string }
 > = {
   bonus: {
-    title: 'Your first ₦200,000',
+    title: 'Your first Ð200,000',
     body: 'Every player starts with Dyce Cash to play with. It is virtual: it cannot be bought or withdrawn.',
     owner: '',
   },

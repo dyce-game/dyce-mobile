@@ -30,7 +30,7 @@ export function ChatInfoScreen({ conversationId }: { conversationId: string }) {
   const tiles: { glyph: string; label: string; onPress: () => void }[] =
     peer?.relationship === 'friends'
       ? [
-          { glyph: '₦', label: 'Send', onPress: () => go(`/wallet/send?to=${peer.id}`) },
+          { glyph: 'Ð', label: 'Send', onPress: () => go(`/wallet/send?to=${peer.id}`) },
           { glyph: '↓', label: 'Request', onPress: () => go('/wallet/request') },
         ]
       : [];

@@ -3,8 +3,8 @@ import { formatNaira, type PoolInfo } from '@dyce/shared';
 /**
  * The "How Pool works" rules (design: PoolRules), in the words of the product docs (SPEC section 9) and with the
  * numbers the server is actually using. Where the design and the docs disagree the docs win: stakes run to
- * ₦20,000 (not ₦50,000), Spaces pay "winner takes all", 60 / 40 or 50 / 30 / 20, and the daily top-up is for
- * balances under ₦10,000. Pure: no React, so it is unit tested.
+ * Ð20,000 (not Ð50,000), Spaces pay "winner takes all", 60 / 40 or 50 / 30 / 20, and the daily top-up is for
+ * balances under Ð10,000. Pure: no React, so it is unit tested.
  */
 
 const NAIRA = 100;
@@ -71,7 +71,7 @@ export function poolRules(info?: Partial<Limits>): PoolRule[] {
   ];
 }
 
-/** Today's limits as two lines: "Up to 20 Pool games a day" and "Up to ₦100,000 staked a day". */
+/** Today's limits as two lines: "Up to 20 Pool games a day" and "Up to Ð100,000 staked a day". */
 export function poolLimitLines(info?: Partial<Limits>): string[] {
   const l = { ...DEFAULTS, ...info };
   return [
@@ -80,7 +80,7 @@ export function poolLimitLines(info?: Partial<Limits>): string[] {
   ];
 }
 
-/** "You've used 3 of 20 games and ₦4,000 of ₦100,000 today" (null before the numbers have loaded). */
+/** "You've used 3 of 20 games and Ð4,000 of Ð100,000 today" (null before the numbers have loaded). */
 export function poolUsageLine(
   info?: Pick<
     PoolInfo,

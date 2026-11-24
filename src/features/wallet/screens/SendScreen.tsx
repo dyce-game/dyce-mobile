@@ -20,7 +20,7 @@ const MAX_NAIRA = 200_000;
  * Send Dyce Cash (design: SendMoney): a sheet with who it's going to, a big amount, quick amounts, a note and
  * the keypad. "Send" leads to a short confirm step ("Virtual cash · can't be undone"), then success. The
  * idempotency key is made at confirm and reused on a retry, so a bad connection can't send twice. Opened from a
- * chat's ₦ button it already knows the person; from the Wallet it starts with a friend picker.
+ * chat's Ð button it already knows the person; from the Wallet it starts with a friend picker.
  */
 export function SendScreen() {
   const router = useRouter();

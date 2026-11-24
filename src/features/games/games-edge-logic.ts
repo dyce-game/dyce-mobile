@@ -32,7 +32,7 @@ export type ResignCopy = {
   /** The pill under the text: what is at stake. Null in Free. */
   chip: string | null;
   confirm: string;
-  /** The line on the menu row ("Resign and lose ₦1,000"). */
+  /** The line on the menu row ("Resign and lose Ð1,000"). */
   menuLabel: string;
 };
 

@@ -140,7 +140,7 @@ export const LEGAL_DOCS: Record<LegalDocId, LegalDoc> = {
       {
         heading: 'Limits that protect you',
         paragraphs: [
-          'Pool stakes run from ₦100 to ₦20,000, with a daily cap on games and on the total you stake. You can lower your own limits. Pool is only for people who confirm they are 18 or older.',
+          'Pool stakes run from Ð100 to Ð20,000, with a daily cap on games and on the total you stake. You can lower your own limits. Pool is only for people who confirm they are 18 or older.',
         ],
       },
       {
@@ -165,7 +165,7 @@ export type HelpTopic = { id: HelpTopicId; mark: string; title: string };
 export type HelpItem = { topic: HelpTopicId; q: string; a: string };
 
 export const HELP_TOPICS: HelpTopic[] = [
-  { id: 'pools', mark: '₦', title: 'Pools and refunds' },
+  { id: 'pools', mark: 'Ð', title: 'Pools and refunds' },
   { id: 'spaces', mark: '4+', title: 'Spaces' },
   { id: 'account', mark: '@', title: 'Account' },
   { id: 'safety', mark: '!', title: 'Safety' },

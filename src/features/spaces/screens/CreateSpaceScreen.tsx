@@ -278,7 +278,7 @@ export function CreateSpaceScreen() {
             </View>
           ) : (
             <Text variant="footnote" color="sub" style={styles.freeNote}>
-              No entry, no cash. Anyone can join with a ₦0 balance.
+              No entry, no cash. Anyone can join with a Ð0 balance.
             </Text>
           )}
         </View>

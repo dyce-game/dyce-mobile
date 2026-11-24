@@ -100,7 +100,7 @@ describe('words', () => {
     expect(spaceMeta(space({ status: 'live' }))).toBe('Whot! · 1 playing');
     expect(modeLine(space())).toBe('Free');
     expect(modeLine(space({ mode: 'pool', seatFeeKobo: 50_000, payoutScheme: 'p50_30_20' }))).toBe(
-      'Pool · ₦500 a seat · 50 / 30 / 20',
+      'Pool · Ð500 a seat · 50 / 30 / 20',
     );
     expect([1, 2, 3, 4].map(ordinal)).toEqual(['1st', '2nd', '3rd', '4th']);
   });
@@ -117,8 +117,8 @@ describe('words', () => {
 
   it('result rows say prize or loss; net is payout minus what was put in', () => {
     const pool = { mode: 'pool', seatFeeKobo: 50_000 } as const;
-    expect(prizeText(pool, member({ payoutKobo: 75_000, stakedKobo: 50_000 }))).toBe('₦750');
-    expect(prizeText(pool, member({ payoutKobo: 0, stakedKobo: 50_000 }))).toBe('−₦500');
+    expect(prizeText(pool, member({ payoutKobo: 75_000, stakedKobo: 50_000 }))).toBe('Ð750');
+    expect(prizeText(pool, member({ payoutKobo: 0, stakedKobo: 50_000 }))).toBe('−Ð500');
     expect(prizeText({ mode: 'free', seatFeeKobo: 0 }, member({ placement: 1 }))).toBe('Winner');
     expect(netKobo({ payoutKobo: 75_000, stakedKobo: 50_000 })).toBe(25_000);
     expect(netKobo({ payoutKobo: 0, stakedKobo: 50_000 })).toBe(-50_000);

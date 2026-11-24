@@ -43,7 +43,7 @@ type Step = 'choose' | 'age' | 'issue';
 
 /**
  * Free or Pool for the game you picked (design: ModeSheet). Pool shows the stake chips, the pot, whether the
- * other person may counter, and "Lock ₦1,000 & send". The first time someone picks Pool they answer the age gate
+ * other person may counter, and "Lock Ð1,000 & send". The first time someone picks Pool they answer the age gate
  * (AgeGate); a stake that can't be covered, or would go over today's limit, says so in plain words (PoolIssues).
  * The server decides all of it: this only asks.
  */
@@ -207,7 +207,7 @@ export function ModeSheetBody({
     const canTopup = !!wallet.data?.topup.available && !topup.isSuccess;
     return (
       <PoolIssuePanel
-        glyph="₦"
+        glyph="Ð"
         title="Not enough Dyce Cash"
         sub={`A ${formatNaira(stake)} stake needs ${formatNaira(stake)} from you`}
         left={{ label: 'Your balance', value: formatNaira(balance ?? 0) }}

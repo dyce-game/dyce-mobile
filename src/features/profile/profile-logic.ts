@@ -50,7 +50,7 @@ export function xpLabel(level: number, xp: number): string {
 
 export type ProfileStat = { key: string; label: string; value: string; money?: boolean };
 
-/** The four stat cards, from your real finished games ("—" and ₦0 before the first one). */
+/** The four stat cards, from your real finished games ("—" and Ð0 before the first one). */
 export function statsFor(p: UserProfile | undefined): ProfileStat[] {
   const rate = p?.stats.winRate;
   return [

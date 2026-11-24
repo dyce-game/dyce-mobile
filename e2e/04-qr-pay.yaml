@@ -12,12 +12,12 @@ tags: [web, phase1, money]
     env:
       PHONE: '${ALICE_PHONE}'
 - tapOn: 'Wallet'
-- assertVisible: 'Balance ₦200,000'
-# --- Alice asks for ₦2,000 with a QR code
+- assertVisible: 'Balance Ð200,000'
+# --- Alice asks for Ð2,000 with a QR code
 - tapOn: 'Request'
 - assertVisible: 'Anyone can scan the QR'
 - tapOn: 'Rematch stake'
-- tapOn: 'Request ₦2,000'
+- tapOn: 'Request Ð2,000'
 - extendedWaitUntil:
     visible: 'Waiting for payment.*'
     timeout: 10000
@@ -33,7 +33,7 @@ tags: [web, phase1, money]
 - tapOn: 'Done'
 # The history is refetched on open, so it shows the payment (the balance on the Wallet tab: flow 10).
 - tapOn: 'History'
-- assertVisible: '.*received ₦2,000.*'
+- assertVisible: '.*received Ð2,000.*'
 - back
 # --- Ben shows a QR request; Alice pays it by entering the code ("Pay a code")
 - runScript:
@@ -43,12 +43,12 @@ tags: [web, phase1, money]
 - inputText: '${output.requestCode}'
 - tapOn: 'Continue'
 - assertVisible: 'Ben QA'
-- assertVisible: 'Balance after ₦200,500.*'
-- tapOn: 'Pay ₦1,500'
-- assertVisible: 'Paid ₦1,500'
-- assertVisible: 'Balance ₦200,500'
+- assertVisible: 'Balance after Ð200,500.*'
+- tapOn: 'Pay Ð1,500'
+- assertVisible: 'Paid Ð1,500'
+- assertVisible: 'Balance Ð200,500'
 - tapOn: 'View receipt'
-- assertVisible: '.*Paid ₦1,500.*'
+- assertVisible: '.*Paid Ð1,500.*'
 - back
 - tapOn: 'Done'
-- assertVisible: 'Balance ₦200,500'
+- assertVisible: 'Balance Ð200,500'

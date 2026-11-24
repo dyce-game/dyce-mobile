@@ -14,7 +14,7 @@ import {
 
 const NAIRA = 100;
 
-/** The seat-fee chips in Create a space (design: ₦200, ₦500, ₦1,000, ₦2,000). */
+/** The seat-fee chips in Create a space (design: Ð200, Ð500, Ð1,000, Ð2,000). */
 export const SEAT_FEE_PRESETS_KOBO = [200, 500, 1_000, 2_000].map((n) => n * NAIRA);
 
 /** The presets that are inside the server's limits. */
@@ -75,7 +75,7 @@ export function spaceMeta(s: Pick<SpaceView, 'gameName' | 'members' | 'maxSeats'
   return `${s.gameName} · ${n} of ${s.maxSeats} seated`;
 }
 
-/** The mode line on a card: "Free", or "Pool · ₦500 a seat · 50 / 30 / 20". */
+/** The mode line on a card: "Free", or "Pool · Ð500 a seat · 50 / 30 / 20". */
 export function modeLine(s: Pick<SpaceView, 'mode' | 'seatFeeKobo' | 'payoutScheme'>): string {
   return s.mode === 'pool'
     ? `Pool · ${formatNaira(s.seatFeeKobo)} a seat · ${SCHEME_LABEL[s.payoutScheme]}`

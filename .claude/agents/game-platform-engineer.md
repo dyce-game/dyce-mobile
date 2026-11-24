@@ -24,7 +24,7 @@ Make every game plug into one platform: launched from the chat composer, played 
 - **Catalogue**: query `games` table, local cache, feature flags per game.
 - **Games drawer** (sheet from composer): category chips, 3-column grid of **GameTile**s playing muted looping thumbnails with expo-video (only tiles in view play; at most 6 players at once; poster image while loading; respect Low Power/Data Saver by showing posters only), player count and FREE/POOL chips; long-press → Game detail.
 - **Mode sheet**: Free / Pool, stake presets, balance, pot, rule line, 18+ gate trigger, limits checks; Send → Edge Function `create-match` (creates match + stakes sender + posts `game` message + push).
-- **Invite responses**: Accept (Match ₦X / Play free), Counter (once), Decline; `respond-match` Edge Function; expiry countdown on card.
+- **Invite responses**: Accept (Match ÐX / Play free), Counter (once), Decline; `respond-match` Edge Function; expiry countdown on card.
 - **Game card** message renderer (states: invited, countered, your turn, their turn, finished with result and payout, expired/refunded).
 - **Game host shell** `g/[matchId]`: loads the renderer by slug (lazy import map), top bar (back to chat, ModeBadge, menu), opponent pill(s), turn timer, Waiting state, reconnecting/offline banners, forfeit sheet, rules sheet, in-game menu. Exposes a `useMatch()` hook to renderers: `{ view, me, isMyTurn, submit(action), predict(action) }`.
 - **Async match client**: `submit-move` Edge Function contract (you own the function; it uses `packages/games` and calls `settle_match` on terminal), optimistic prediction with rollback on rejection, Realtime subscription to the match row, version conflicts.

@@ -31,7 +31,7 @@ still needs a person. It is meant to be read by whoever submits the app, and kep
 |---|---|
 | Fixed in this review | 9 |
 | Open: blocks submission until a person does it | 7 |
-| Decisions needed | 5 |
+| Decisions (4 of 5 taken 2026-11-24; D4 push content stays as is for v1) | 5 |
 | Open: lower risk, schedule before launch | 8 |
 
 `pnpm release:check --store` lists the machine-checkable blockers (icon, splash, draft legal text, support and policy addresses) and fails
@@ -189,11 +189,11 @@ bar behaviour (the project rule keeps a custom bar; revisit if review objects), 
 
 | # | Question | Options | Recommendation |
 |---|---|---|---|
-| D1 | **Age rating and Pools on iPhone.** | (a) Rate **18+** and keep Pools (simplest, honest, nobody under 18). (b) Aim for 13+ or 16+ and **remove Pools from the iOS build**. (c) Rate 18+ now, revisit later. | (a) |
-| D2 | **The ₦ symbol and "Wallet" wording for virtual cash.** A naira sign on a virtual currency can read as real money to a reviewer or a regulator. | (a) Keep ₦ (the SPEC says ₦200k Dyce Cash) and rely on the "virtual" labels. (b) Show amounts as "200,000 DC" or with a Dyce Cash glyph everywhere; keep ₦ out of the UI. | (b) is safer for review, but it is a SPEC change |
-| D3 | **iPad.** Run as an iPhone app in compatibility mode (today), or make it a universal app (needs layouts and iPad screenshots). | compat mode / universal | compat mode for v1 |
+| D1 | **DECIDED 2026-11-24: rate 18+ and keep Pools.** **Age rating and Pools on iPhone.** | (a) Rate **18+** and keep Pools (simplest, honest, nobody under 18). (b) Aim for 13+ or 16+ and **remove Pools from the iOS build**. (c) Rate 18+ now, revisit later. | (a) |
+| D2 | **The ₦ symbol and "Wallet" wording for virtual cash.** A naira sign on a virtual currency can read as real money to a reviewer or a regulator. | **DECIDED 2026-11-24: use the sign Ð** ("Ð200,000"), done in this change (backend ADR-046). The tab is still called Wallet and money verbs (send, pay) are kept; the labels say virtual. | done |
+| D3 | **DECIDED 2026-11-24: compatibility mode for v1.** **iPad.** Run as an iPhone app in compatibility mode (today), or make it a universal app (needs layouts and iPad screenshots). | compat mode / universal | compat mode for v1 |
 | D4 | **Push content.** Keep names and amounts in push text, or add a setting "Hide details on the lock screen". | keep / add setting | keep for v1, add the setting soon |
-| D5 | **Consent default in store builds.** Off until the person agrees (built), or add a one-time "Help improve Dyce?" prompt after sign-up so more people opt in. | off + Settings only / off + prompt | add the prompt once there is a design for it |
+| D5 | **DECIDED 2026-11-24: Settings switch only for v1.** **Consent default in store builds.** Off until the person agrees (built), or add a one-time "Help improve Dyce?" prompt after sign-up so more people opt in. | off + Settings only / off + prompt | add the prompt once there is a design for it |
 
 ## 10. Lower-risk open items
 

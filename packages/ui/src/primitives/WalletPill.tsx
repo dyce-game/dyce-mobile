@@ -4,7 +4,7 @@ import { Text } from './Text.tsx';
 import { useTheme } from '../theme.tsx';
 import { brand, MIN_TOUCH } from '../tokens.ts';
 
-/** Coin + compact balance. Amounts always come from `formatNaira` (₦200k, ₦1,500, ₦12.5k). */
+/** Coin + compact balance. Amounts always come from `formatNaira` (Ð200k, Ð1,500, Ð12.5k). */
 export function WalletPill({ balance, onPress }: { balance: Kobo; onPress?: () => void }) {
   const { colors } = useTheme();
   const text = formatNaira(balance, { compact: true });

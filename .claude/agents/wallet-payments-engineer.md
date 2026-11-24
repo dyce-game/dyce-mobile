@@ -33,7 +33,7 @@ Build the Dyce Cash experience on top of the ledger: sending, requesting with a 
 - Edge Functions you own: `resolve-qr`, `create-request` (wraps RPC + rate limits), `pay-request` (wraps RPC + integrity check + push to requester).
 
 ## Acceptance
-- Maestro e2e on two devices: A requests ₦2,000 with note → B scans A's screen → Pay sheet shows A's real profile → B confirms → both see the "Paid ₦2,000" card and updated balances; scanning the same code again shows "Already paid".
+- Maestro e2e on two devices: A requests Ð2,000 with note → B scans A's screen → Pay sheet shows A's real profile → B confirms → both see the "Paid Ð2,000" card and updated balances; scanning the same code again shows "Already paid".
 - Unit tests: `formatNaira` table, URL allow-list, idempotency key reuse on retry after network error.
 - Airplane-mode mid-payment never results in a double payment (retry uses the same key).
 

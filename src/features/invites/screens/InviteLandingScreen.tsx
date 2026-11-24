@@ -75,7 +75,7 @@ export function InviteLandingScreen({ token }: { token: string }) {
           </Text>
           <Text color="sub" style={styles.center}>
             {inv.state === 'expired'
-              ? `Ask ${name} to send you a new one. Every new player still starts with ₦200k in Dyce Cash.`
+              ? `Ask ${name} to send you a new one. Every new player still starts with Ð200k in Dyce Cash.`
               : `${name} and you are friends now. Open Dyce to play.`}
           </Text>
         </View>
@@ -127,10 +127,10 @@ export function InviteLandingScreen({ token }: { token: string }) {
 
       <View style={[styles.bonus, { backgroundColor: colors.brandSoft }]}>
         <Text variant="headline" color="accent">
-          ₦200k
+          Ð200k
         </Text>
         <Text variant="footnote" style={styles.flex}>
-          Every new player starts with ₦200k in Dyce Cash to play with.
+          Every new player starts with Ð200k in Dyce Cash to play with.
         </Text>
       </View>
 

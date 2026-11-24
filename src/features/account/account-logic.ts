@@ -36,7 +36,7 @@ export function deletionRows(p: DeletionPreview): DeletionRow[] {
       body: `Someone else can claim @${p.username} once your account is erased.`,
     },
     {
-      mark: '₦',
+      mark: 'Ð',
       tone: 'money',
       title: 'Dyce Cash is cleared',
       body:

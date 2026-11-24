@@ -10,10 +10,10 @@ import { authApi, sessionStore } from '@/lib/api';
 import { askPushPermission, registerDevice } from './push';
 
 const SAMPLE = [
-  { t: 'Refund', d: '₦500 is back in your wallet', time: '1h', x: 30, y: 64, s: 0.9, op: 0.55 },
+  { t: 'Refund', d: 'Ð500 is back in your wallet', time: '1h', x: 30, y: 64, s: 0.9, op: 0.55 },
   {
-    t: 'Tunde matched ₦1,000',
-    d: 'Sea Battle pot is ₦2,000. Game on.',
+    t: 'Tunde matched Ð1,000',
+    d: 'Sea Battle pot is Ð2,000. Game on.',
     time: '5m',
     x: 22,
     y: 134,

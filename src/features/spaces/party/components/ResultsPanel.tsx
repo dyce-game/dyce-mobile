@@ -87,7 +87,7 @@ export function ResultsPanel({
                         : l.result === 'draw'
                           ? 'Draw'
                           : pool
-                            ? '₦0'
+                            ? 'Ð0'
                             : '')}
                   </Text>
                 </View>

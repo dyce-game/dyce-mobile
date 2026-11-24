@@ -13,10 +13,10 @@ tags: [web, phase1, money]
     env:
       PHONE: '${ALICE_PHONE}'
 - tapOn: 'Wallet'
-- assertVisible: 'Balance ₦200,000'
+- assertVisible: 'Balance Ð200,000'
 - tapOn: 'Request'
 - tapOn: 'Rematch stake'
-- tapOn: 'Request ₦2,000'
+- tapOn: 'Request Ð2,000'
 - extendedWaitUntil:
     visible: 'Waiting for payment.*'
     timeout: 10000
@@ -28,5 +28,5 @@ tags: [web, phase1, money]
 - tapOn: 'Done'
 # the new balance appears with no refresh
 - extendedWaitUntil:
-    visible: 'Balance ₦202,000'
+    visible: 'Balance Ð202,000'
     timeout: 10000

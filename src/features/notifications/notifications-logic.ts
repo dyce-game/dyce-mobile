@@ -43,12 +43,12 @@ export function kindTag(kind: NotificationKind): { mark: string; color: string }
     case 'pool_countered':
     case 'game_invite':
     case 'game_accepted':
-      return { mark: '₦', color: '#C93E1C' };
+      return { mark: 'Ð', color: '#C93E1C' };
     case 'pool_refunded':
     case 'money_received':
       return { mark: '↩', color: '#0E7C47' };
     case 'money_requested':
-      return { mark: '₦', color: '#B37A00' };
+      return { mark: 'Ð', color: '#B37A00' };
     case 'your_turn':
     case 'game_result':
       return { mark: '!', color: '#0E7C47' };

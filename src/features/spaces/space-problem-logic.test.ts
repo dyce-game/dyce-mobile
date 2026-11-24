@@ -23,7 +23,7 @@ describe('space edge states', () => {
     expect(p.kind).toBe('host_closed');
     expect(p.title).toBe('The host closed the space');
     expect(p.body).toContain('Ifeoma ended the space');
-    expect(p.money).toBe('₦500 refunded to your wallet');
+    expect(p.money).toBe('Ð500 refunded to your wallet');
   });
 
   it('says nothing was charged in a Free space', () => {
@@ -42,7 +42,7 @@ describe('space edge states', () => {
       space({ exit: { reason: 'removed', hostName: 'Tolu', refundedKobo: 30_000 } }),
     )!;
     expect(p.title).toBe('You were removed');
-    expect(p.money).toBe('Your ₦300 entry was refunded');
+    expect(p.money).toBe('Your Ð300 entry was refunded');
   });
 
   it('says a space timed out when nobody started it', () => {

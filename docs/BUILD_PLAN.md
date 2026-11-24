@@ -67,7 +67,7 @@ Read CLAUDE.md and docs/BUILD_PLAN.md Phase 0. Use the platform-architect agent 
 ## Phase 1 — Accounts, chat, wallet (week 3–6)
 
 Lanes: `auth-onboarding-engineer` ∥ `avatar-engineer` ∥ `messaging-engineer` ∥ `wallet-payments-engineer`; then `trust-safety-compliance` (block/report/request rules) ∥ `qa-engineer` flows.
-Done when: a new user signs up with a phone, builds an avatar, gets ₦200k, finds contacts, chats in realtime, handles Requests, sends money to a friend, **requests money with a QR code and gets paid by a second phone scanning it**, and can block/report. Both themes, both platforms.
+Done when: a new user signs up with a phone, builds an avatar, gets Ð200k, finds contacts, chats in realtime, handles Requests, sends money to a friend, **requests money with a QR code and gets paid by a second phone scanning it**, and can block/report. Both themes, both platforms.
 
 **Kickoff prompt:**
 
@@ -98,7 +98,7 @@ Phase 2 vertical slice. game-platform-engineer builds the platform against the _
 - [ ] Platform (drawer, modes, host shell, async, results, XP). **Slice 1 done (2026-11-15, ADR-016):** Free-mode async 1v1 against the `_example` (Pig) engine end to end, backend and app, and `docs/ADDING_A_GAME.md`. **Slice 2 done (2026-11-15, ADR-018):** Pool for async 1v1 (stakes, age gate, counter-offer, refunds on decline / cancel / expiry, payout on finish), backend and app. Left: turn timers and forfeit, XP/streaks, video tiles, push, Pool in Spaces.
 - [ ] Word Hunt · Cup Pong · Whot! engines
 - [ ] Renderers for the three. **Word Hunt done (2026-11-15, app ADR-018, backend ADR-019):** Free async 1v1 from a chat, played to a result in two browser sessions, light and dark. Left for Word Hunt: Pool, turn timer and forfeit, thumbnail video, a Skia renderer, touch testing on devices. **Cup Pong done (2026-11-19, app ADR-020):** async 1v1 Free with a 3D table (React Three Fiber), flick or sliders, prediction with server correction, opponent throw replayed from the stored input, played to a result in two browser sessions, light and dark. Left for Cup Pong: Pool, turn timer and forfeit, thumbnail video, a real-device frame-rate and touch run, a rendered rack preview for re-rack. Whot! renderer not started.
-- [ ] Spaces tab, lobby, CardRoom. **Done for Whot! (2026-11-19, backend ADR-022, app ADR-022):** create (Free or Pool, 2 to 4 seats, 50/30/20 and 60/40), join by code or link, lobby with seats and the host's start (host or when full), a 2D Whot! table (replaced by the 3D card table, ADR-027), results with payouts, reconnect after a dropped connection or a game-server restart; played to a result with 3 seats (Pool 50/30/20 paid from a ₦3,000 pot, ledger clean) and with a forfeit, in a browser, light and dark. Left: public Spaces, lobby chat, XP, a 4-device run and real-device touch checks. **3D table done (2026-11-21, ADR-027):** see Phase 3. Quick match: see Phase 3.
+- [ ] Spaces tab, lobby, CardRoom. **Done for Whot! (2026-11-19, backend ADR-022, app ADR-022):** create (Free or Pool, 2 to 4 seats, 50/30/20 and 60/40), join by code or link, lobby with seats and the host's start (host or when full), a 2D Whot! table (replaced by the 3D card table, ADR-027), results with payouts, reconnect after a dropped connection or a game-server restart; played to a result with 3 seats (Pool 50/30/20 paid from a Ð3,000 pot, ledger clean) and with a forfeit, in a browser, light and dark. Left: public Spaces, lobby chat, XP, a 4-device run and real-device touch checks. **3D table done (2026-11-21, ADR-027):** see Phase 3. Quick match: see Phase 3.
 - [ ] SMS invites + web guest. **Done for Word Hunt (2026-11-19, ADR-021):** invite from New chat or Find friends, the text carries the link, the link opens a landing page where a non-user plays a server-judged Word Hunt round in the browser (light and dark), "Get Dyce" signs them up with the invited number prefilled, and signing up joins them to the inviter (friends, chat, the game continues with their score kept). Left: Cup Pong for guests, real SMS delivery, store link association (needs store accounts), deferred deep links, the SMS thread in Chat.
 - [ ] Phase 2 sign-off
 
@@ -165,7 +165,7 @@ signup_started/completed (step), contacts_permission (granted/denied), avatar_sa
 
 - [x] Pool for every async game that is safe (16 games), the 24 hour Pool turn clock with forfeit and refund rules, collusion hooks on every settlement; Word Tiles and Darts' Around the clock stay Free (reasons in ADR-041).
 - [x] Per-match options: Mancala (Kalah) on the Ayo board, Darts Around the clock, Sea Battle salvo; the mode sheet's "Rules" row and the card's variant name.
-- [x] Ludo room for 3 to 4 players (`ludo-room`, Create a space, Pool at ₦500 a seat).
+- [x] Ludo room for 3 to 4 players (`ludo-room`, Create a space, Pool at Ð500 a seat).
 - [x] Streak lost and the streak saver (design StreakLost) with the `streak_lost` notification.
 - [ ] Needs a human: the money rules above, the saver rules, a 4-device Ludo run.
 

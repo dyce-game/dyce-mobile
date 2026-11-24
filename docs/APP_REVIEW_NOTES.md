@@ -32,7 +32,7 @@ If a code is refused after five wrong tries, wait five minutes. Both accounts ar
 **What the app is.** A messaging app where you send games to friends, like iMessage games. Games are played in the chat, or live in a
 **Space** (a room with a code) for groups. Open the **games** button in a chat to pick a game.
 
-**Dyce Cash is virtual.** Everyone starts with 200,000 Dyce Cash (shown with a ₦ sign). It is play money: it **cannot be bought, sold,
+**Dyce Cash is virtual.** Everyone starts with 200,000 Dyce Cash (shown with the sign Ð, not the naira sign). It is play money: it **cannot be bought, sold,
 transferred for real money or withdrawn**, and there are **no in-app purchases**. The Wallet tab says it is virtual cash for play and not withdrawable. Nothing in the app takes a
 card or a bank account.
 

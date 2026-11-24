@@ -30,11 +30,11 @@ describe('delete account', () => {
   it('says what happens to the money in real numbers, and never promises a payout', () => {
     const rows = deletionRows(preview);
     expect(rows.map((r) => r.title)).toContain('Dyce Cash is cleared');
-    const money = rows.find((r) => r.mark === '₦')!;
-    expect(money.body).toContain('₦200,000');
+    const money = rows.find((r) => r.mark === 'Ð')!;
+    expect(money.body).toContain('Ð200,000');
     expect(money.body).toContain('nothing is paid out');
     expect(
-      deletionRows({ ...preview, balanceKobo: 0 }).find((r) => r.mark === '₦')!.body,
+      deletionRows({ ...preview, balanceKobo: 0 }).find((r) => r.mark === 'Ð')!.body,
     ).toContain('already zero');
   });
 

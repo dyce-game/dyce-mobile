@@ -1,5 +1,5 @@
 # New person signs up with the test code, allows contacts (two of the address book are on Dyce), picks a look,
-# claims ₦200,000 and turns notifications on. On web the address book is the dev sample (device-contacts.ts)
+# claims Ð200,000 and turns notifications on. On web the address book is the dev sample (device-contacts.ts)
 # and the two on-Dyce numbers are seeded by scripts/seed/seed.mjs; on a device it is the emulator's book.
 appId: games.dyce.app
 name: onboarding contacts allowed

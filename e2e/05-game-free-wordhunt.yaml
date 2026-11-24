@@ -51,5 +51,5 @@ tags: [web, phase2, games]
 # (Back from the thread after a game goes to the chat list: e2e/11-back-after-game.yaml.)
 - openLink: 'dyce://wallet'
 - extendedWaitUntil:
-    visible: 'Balance ₦200,000'
+    visible: 'Balance Ð200,000'
     timeout: 15000

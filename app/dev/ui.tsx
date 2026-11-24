@@ -93,7 +93,7 @@ function SpecimenBody({ theme }: { theme: ThemeName }) {
         <Text color="sub">Secondary text</Text>
         <Text color="accent">Accent text</Text>
         <Text color="money" variant="callout">
-          +₦2,000 (virtual)
+          +Ð2,000 (virtual)
         </Text>
       </View>
 

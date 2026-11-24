@@ -87,7 +87,7 @@ export function authErrorMessage(err: unknown): string {
     case 'over_daily_limit':
       return "That would go over today's sending limit. Try again tomorrow.";
     case 'invalid_amount':
-      return 'Enter a whole-naira amount above zero.';
+      return 'Enter a whole amount above zero.';
     case 'amount_required':
       return 'Enter how much to pay.';
     case 'amount_mismatch':

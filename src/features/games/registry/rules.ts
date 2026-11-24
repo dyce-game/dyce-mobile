@@ -308,7 +308,7 @@ export function rulesFor(slug: string): GameRules | null {
   return (GAME_RULES as Record<string, GameRules | undefined>)[slug] ?? null;
 }
 
-/** "You both stake the same amount and the winner takes the pot. A draw gives both stakes back. Minimum ₦500." */
+/** "You both stake the same amount and the winner takes the pot. A draw gives both stakes back. Minimum Ð500." */
 export function poolRulesLine(rules: GameRules, serverMinKobo?: number | null): string {
   const min = serverMinKobo ?? rules.poolMinKobo;
   return min === null ? rules.pool : `${rules.pool} Minimum stake ${formatNaira(min)}.`;

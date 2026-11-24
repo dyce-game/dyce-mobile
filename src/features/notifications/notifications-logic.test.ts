@@ -49,7 +49,7 @@ describe('small helpers', () => {
     expect(badgeLabel(12)).toBe('9+');
   });
   it('gives every kind a tag', () => {
-    expect(kindTag('pool_result').mark).toBe('₦');
+    expect(kindTag('pool_result').mark).toBe('Ð');
     expect(kindTag('friend_request').mark).toBe('+');
   });
 });

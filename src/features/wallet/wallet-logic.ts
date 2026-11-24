@@ -15,11 +15,11 @@ export const AMOUNT_PRESETS = [500, 1_000, 2_000, 5_000] as const;
 const KOBO_PER_NAIRA = 100;
 
 /**
- * Reads what someone typed into an amount field ("1,500", "₦ 2000", "5000.") as whole naira and returns kobo.
+ * Reads what someone typed into an amount field ("1,500", "Ð 2000", "5000.") as whole naira and returns kobo.
  * Whole naira only (the keypad has no decimals); empty, zero and anything with letters or decimals is null.
  */
 export function parseNairaInput(text: string): number | null {
-  const cleaned = text.replace(/[₦\s,]/g, '').replace(/\.$/, '');
+  const cleaned = text.replace(/[Ð₦\s,]/g, '').replace(/\.$/, '');
   if (!/^\d{1,9}$/.test(cleaned)) return null;
   const naira = Number(cleaned);
   return naira > 0 ? naira * KOBO_PER_NAIRA : null;
@@ -120,7 +120,7 @@ export function initials(name: string): string {
 const EMBER = '#C93E1C';
 const BRASS = '#C98500';
 
-/** The coloured tile on a history row or receipt: initials for people, ₦ for cash events, P for Pools. */
+/** The coloured tile on a history row or receipt: initials for people, Ð for cash events, P for Pools. */
 export function historyTile(item: Pick<HistoryItem, 'kind' | 'counterparty'>): {
   mark: string;
   bg: string;
@@ -137,7 +137,7 @@ export function historyTile(item: Pick<HistoryItem, 'kind' | 'counterparty'>): {
     case 'refund':
       return { mark: 'P', bg: BRASS };
     default:
-      return { mark: '₦', bg: EMBER };
+      return { mark: 'Ð', bg: EMBER };
   }
 }
 

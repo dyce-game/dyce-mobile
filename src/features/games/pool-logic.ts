@@ -8,7 +8,7 @@ import { formatNaira, type GameCardPayload, type MatchView, type PoolInfo } from
 
 const NAIRA = 100;
 
-/** The stake chips in the mode sheet (design: ₦200, ₦500, ₦1k, ₦2k, ₦5k). */
+/** The stake chips in the mode sheet (design: Ð200, Ð500, Ð1k, Ð2k, Ð5k). */
 export const STAKE_PRESETS_KOBO = [200, 500, 1_000, 2_000, 5_000].map((n) => n * NAIRA);
 
 /**
@@ -24,13 +24,13 @@ export function stakeChoices(
   return STAKE_PRESETS_KOBO.filter((s) => s >= min && s <= max);
 }
 
-/** "₦1k" for a chip: whole thousands abbreviated, the rest in full. */
+/** "Ð1k" for a chip: whole thousands abbreviated, the rest in full. */
 export function stakeChipLabel(kobo: number): string {
   const naira = kobo / NAIRA;
-  return naira >= 1_000 && naira % 1_000 === 0 ? `₦${naira / 1_000}k` : formatNaira(kobo);
+  return naira >= 1_000 && naira % 1_000 === 0 ? `Ð${naira / 1_000}k` : formatNaira(kobo);
 }
 
-/** The default stake: ₦1,000 if it is on offer, else the first choice. */
+/** The default stake: Ð1,000 if it is on offer, else the first choice. */
 export function defaultStake(choices: number[]): number {
   return choices.includes(1_000 * NAIRA) ? 1_000 * NAIRA : (choices[0] ?? 1_000 * NAIRA);
 }
@@ -107,7 +107,7 @@ export function expiresIn(iso: string | null, now = Date.now()): string | null {
 }
 
 /**
- * The pot line on a card: "Pot ₦2,000 · locked until the game ends" while it is open or running, "Pot ₦2,000"
+ * The pot line on a card: "Pot Ð2,000 · locked until the game ends" while it is open or running, "Pot Ð2,000"
  * once it is over, nothing when it never started (the text above already says the stake came back) or in Free.
  * With a counter-offer waiting it shows the pot as it would be if the offer were accepted.
  */
@@ -129,7 +129,7 @@ export function potLine(
 
 export type PoolResult = {
   outcome: 'won' | 'lost' | 'draw';
-  /** The big number: "+₦1,000", "−₦1,000", "Pot split". */
+  /** The big number: "+Ð1,000", "−Ð1,000", "Pot split". */
   amount: string;
   /** The lines under it. */
   lines: { label: string; value: string }[];

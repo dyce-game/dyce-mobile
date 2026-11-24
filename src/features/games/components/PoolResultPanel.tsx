@@ -3,7 +3,7 @@ import { Text, useTheme } from '@dyce/ui';
 import type { PoolResult } from '../pool-logic';
 
 /**
- * What a finished Pool game did to your wallet (design: PoolResult): the big figure (+₦1,000, −₦1,000, "Pot
+ * What a finished Pool game did to your wallet (design: PoolResult): the big figure (+Ð1,000, −Ð1,000, "Pot
  * split") and the lines under it: pot, stakes, fee, new balance. Every figure comes from the server's payouts.
  */
 export function PoolResultPanel({ result }: { result: PoolResult }) {

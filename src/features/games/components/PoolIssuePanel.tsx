@@ -11,11 +11,11 @@ export type PoolIssueOption = {
 };
 
 export type PoolIssueProps = {
-  /** "₦" (low balance) or "!" (limit): a glyph in a coloured disc, as in the design. */
-  glyph: '₦' | '!';
+  /** "Ð" (low balance) or "!" (limit): a glyph in a coloured disc, as in the design. */
+  glyph: 'Ð' | '!';
   title: string;
   sub: string;
-  /** The two figures under the title and the bar between them: "Your balance ₦650" ... "Needed ₦1,000". */
+  /** The two figures under the title and the bar between them: "Your balance Ð650" ... "Needed Ð1,000". */
   left: { label: string; value: string };
   right: { label: string; value: string };
   /** 0 to 1: how full the bar is. */
@@ -39,7 +39,7 @@ export function PoolIssuePanel({
   foot,
 }: PoolIssueProps) {
   const { colors } = useTheme();
-  const disc = glyph === '₦' ? '#C2410C' : '#B33416';
+  const disc = glyph === 'Ð' ? '#C2410C' : '#B33416';
   const pct = `${Math.round(Math.min(1, Math.max(0, fill)) * 100)}%` as `${number}%`;
   return (
     <View style={styles.root} accessibilityLiveRegion="polite">
