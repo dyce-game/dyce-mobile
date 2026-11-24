@@ -9,6 +9,7 @@ import { authErrorMessage } from '@/features/auth/messages';
 import { useSession } from '@/features/auth/use-session';
 import { newMessageId } from '@/features/chat/chat-logic';
 import { useDisputeQuery } from '@/features/account/use-account';
+import { StreakPrompt } from '@/features/progress/StreakPrompt';
 import { useWalletQuery } from '@/features/wallet/use-wallet';
 import { PoolResultPanel } from '../components/PoolResultPanel';
 import { opponentOf, resultCopy } from '../games-logic';
@@ -35,8 +36,10 @@ export function GameResultScreen({ matchId }: { matchId: string }) {
     match?.status === 'finished' && match.mode === 'pool',
   ).data;
 
+  // Pop back to the thread this game was started from (not a second copy of it on top), so Back from the thread
+  // lands on the chat list or wherever the person came from: BUG-2.
   const chat = () =>
-    router.replace((match?.conversationId ? `/c/${match.conversationId}` : '/chat') as Href);
+    router.dismissTo((match?.conversationId ? `/c/${match.conversationId}` : '/chat') as Href);
 
   if (!match) {
     return (
@@ -100,6 +103,10 @@ export function GameResultScreen({ matchId }: { matchId: string }) {
         gameSlug: match.gameSlug,
         mode,
         stakeKobo: mode === 'pool' ? match.stakeKobo : 0,
+        // a Mancala game is rematched as Mancala
+        ...(match.options && Object.keys(match.options).length > 0
+          ? { options: match.options }
+          : {}),
       },
       {
         onSuccess: () => {
@@ -112,6 +119,8 @@ export function GameResultScreen({ matchId }: { matchId: string }) {
 
   return (
     <SafeAreaView style={[styles.root, { backgroundColor: colors.bg }]}>
+      {/* If a streak has just ended and can be saved, say so once (design: StreakLost) */}
+      <StreakPrompt enabled={finished && match.mode === 'free'} />
       <View style={styles.top}>
         <Pressable
           accessibilityRole="button"

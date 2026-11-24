@@ -61,6 +61,8 @@ export function kindTag(kind: NotificationKind): { mark: string; color: string }
       return { mark: '↑', color: '#B37A00' };
     case 'badge_earned':
       return { mark: '#', color: '#7C8597' };
+    case 'streak_lost':
+      return { mark: '!', color: '#FF7A1A' };
     case 'report_outcome':
     case 'moderation_notice':
       return { mark: '!', color: '#7C8597' };

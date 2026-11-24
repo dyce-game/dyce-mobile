@@ -13,6 +13,7 @@ import { GameStateCard, OfflineGlyph } from '../components/GameStateCard';
 import { MatchInvitePanel } from '../components/MatchInvitePanel';
 import { isNetworkFailure, offlineCopy } from '../games-edge-logic';
 import { opponentOf } from '../games-logic';
+import { forfeitIn } from '../pool-logic';
 import { gameEntry } from '../registry';
 import { useMatchQuery, useSubmitMove } from '../use-games';
 
@@ -68,7 +69,11 @@ export function GameHostScreen({ matchId }: { matchId: string }) {
       </Pressable>
       <View style={styles.title}>
         <Text variant="callout" numberOfLines={1}>
-          {match?.gameName ?? 'Game'}
+          {match
+            ? match.variantLabel
+              ? `${match.gameName} · ${match.variantLabel}`
+              : match.gameName
+            : 'Game'}
         </Text>
         {match ? <ModeBadge kind={match.mode === 'pool' ? 'POOL' : 'FREE'} /> : null}
       </View>
@@ -176,9 +181,23 @@ export function GameHostScreen({ matchId }: { matchId: string }) {
     void query.refetch();
   };
 
+  // Pool: a player who does not move in 24 hours forfeits (backend ADR-041), so say how long is left.
+  const left = match?.status === 'active' ? forfeitIn(match.turnDeadlineAt) : null;
+  const clockLine = left ? (
+    <Text
+      variant="footnote"
+      color="sub"
+      style={styles.clock}
+      accessibilityLabel={`${match?.currentTurn === myId ? 'You forfeit' : `${oppName} forfeits`} in ${left} if nobody moves`}
+    >
+      {match?.currentTurn === myId ? 'You forfeit' : `${oppName} forfeits`} in {left} without a move
+    </Text>
+  ) : null;
+
   return (
     <SafeAreaView style={[styles.root, { backgroundColor: colors.bg }]}>
       {header}
+      {clockLine}
       {body}
       {menuOpen && match ? (
         <GameMenuSheet
@@ -221,5 +240,6 @@ const styles = StyleSheet.create({
   scroll: { padding: 16, gap: 12, maxWidth: 520, width: '100%', alignSelf: 'center' },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 14, padding: 24 },
   text: { textAlign: 'center' },
+  clock: { textAlign: 'center', paddingVertical: 4 },
   row: { flexDirection: 'row', gap: 12 },
 });

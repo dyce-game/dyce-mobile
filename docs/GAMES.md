@@ -31,7 +31,15 @@ Every game supports **Free** and **Pool** (Pool hidden for under-18s). "Async" g
 Party games' Pool scoring: placements from points (Doodle, Charades teams, Imposter/Werewolf winning side split equally among the winning side).
 
 ## Word Hunt rules as built (backend ADR-017 and ADR-019)
-4x4 grid, the same seeded grid for both players, each on their own time. The grid is hidden until you press Start; the round is 80 s from Start (the server allows 10 s more for the network; a later submit scores 0). Words need 3+ letters, touching cells (diagonals too), each cell once per word, and must be in the word list; duplicates count once. Points: 3 letters 1, 4 letters 2, 5 letters 4, 6 letters 6, 7 letters 9, 8+ letters 12 (the design's "+400" is a mock-up). A player's score shows to the other as soon as they are done ("Zainab played, 41 pts"); words stay hidden until both have finished. Highest score wins; equal scores are a draw. Free only for now (Pool is off for this game until it is checked).
+4x4 grid, the same seeded grid for both players, each on their own time. The grid is hidden until you press Start; the round is 80 s from Start (the server allows 10 s more for the network; a later submit scores 0). Words need 3+ letters, touching cells (diagonals too), each cell once per word, and must be in the word list; duplicates count once. Points: 3 letters 1, 4 letters 2, 5 letters 4, 6 letters 6, 7 letters 9, 8+ letters 12 (the design's "+400" is a mock-up). A player's score shows to the other as soon as they are done ("Zainab played, 41 pts"); words stay hidden until both have finished. Highest score wins; equal scores are a draw. Free or Pool (see below).
+
+## Pool in async games (backend ADR-041)
+One rule for every async game: both players stake the same amount (at least ₦100 and the game's minimum in the table above); the winner takes the pot; a draw refunds both; resigning loses; **no move for 24 hours is a forfeit** (and if both players were due and nobody moved, every stake is refunded); an invite nobody answers in 24 hours is refunded. Free matches have no clock.
+
+Pool is on for 16 games, each played to settlement in a database test: Word Hunt, Cup Pong, Anagrams, Filler, Tanks, Mini Golf, Darts (501), Basketball, Archery, 8 Ball, Chess, Checkers, Ayo (and Mancala), Dots & Boxes, Ludo (2 players), Sea Battle (classic and salvo). **Free only:** Word Tiles (until a full word list is loaded on the server) and Darts' Around the clock (a free variant by design). Ludo for 3 or 4 is the live **Ludo room** (backend ADR-043), Pool at ₦500 a seat.
+
+## Variants chosen when a game is sent (backend ADR-041)
+Ayo or **Mancala (Kalah)** (same board), Darts **501** or **Around the clock** (free only), Sea Battle **Classic** or **Salvo**. The mode sheet shows a "Rules" row; the card and the game header carry the variant's name.
 
 ## Per-game deliverables (same for every game)
 1. `packages/games/src/<slug>/engine.ts` implementing `GameEngine` + zod action schema + unit tests + property test.

@@ -138,7 +138,7 @@ Launch gates: crash-free ≥ 99.5% in beta, ledger invariant clean for 14 days, 
 Sign-off reports for Phases 1 to 4 are in `docs/signoff/` (`PHASE-1.md` to `PHASE-4.md`): per phase the "done when" criteria, the evidence in tests and STATUS, what was shown by hand, what QA ran, and what a human must confirm. **No sign-off box above was ticked by QA.** What the reports say in one line each:
 
 - **Phase 1:** everything but "both platforms" is proven or shown on web; **not met or not proven:** the camera scan of a QR (the second phone pays by code), a real SMS, push, and the avatar builder (starter looks only). **BUG-1:** the Wallet shows the old balance after a QR request is paid.
-- **Phase 2:** Free Word Hunt, the Pool loop (on the reference game Pig only), a Whot space and the guest invite are shown; **Pool for Word Hunt and Cup Pong does not exist yet** (the criterion names it), no 4-device run, no real SMS. **BUG-0** puts async moves at risk.
+- **Phase 2:** Free Word Hunt, the Pool loop (on the reference game Pig only), a Whot space and the guest invite are shown; **Pool for Word Hunt and Cup Pong now exists (2026-11-24, backend ADR-041: played to settlement in a database test and in a browser with two signed-in users, balances checked)**, no 4-device run, no real SMS. **BUG-0** puts async moves at risk.
 - **Phase 3:** server logic, the party rooms, quick match and the card table are proven or shown; push has never run on a device, the 3D round table and campfire are not built, nothing was run on a phone.
 - **Phase 4:** engines are proven; all 15 boards were played by hand on web in Free; frame rate, touch, Hermes determinism, screen readers and Pool are unverified; Bots and thumbnails are not built. The Phase 4 checkbox line above is stale next to the per-renderer lines.
 - **BUG-0 (blocker, fixed 2026-11-23, `docs/qa/BUGS.md`; probe re-run at 20, 40 and 100 moves, all answered):** the API stops answering when about 20 game moves are in flight at once (`apps/api/src/matches/matches.service.ts` takes a second pool connection inside a move transaction). Re-run `scripts/load/pool-deadlock-probe.mjs` after the fix.
@@ -160,3 +160,11 @@ signup_started/completed (step), contacts_permission (granted/denied), avatar_sa
 - Anything that touches money, game outcomes or privacy also gets a second review pass focused only on that.
 - If two agents need the same file, sequence them; don't run them in parallel.
 - Keep a running `docs/STATUS.md` (date, done, in progress, blocked, next).
+
+## Game gaps closed (2026-11-24, backend ADR-041 to ADR-043)
+
+- [x] Pool for every async game that is safe (16 games), the 24 hour Pool turn clock with forfeit and refund rules, collusion hooks on every settlement; Word Tiles and Darts' Around the clock stay Free (reasons in ADR-041).
+- [x] Per-match options: Mancala (Kalah) on the Ayo board, Darts Around the clock, Sea Battle salvo; the mode sheet's "Rules" row and the card's variant name.
+- [x] Ludo room for 3 to 4 players (`ludo-room`, Create a space, Pool at ₦500 a seat).
+- [x] Streak lost and the streak saver (design StreakLost) with the `streak_lost` notification.
+- [ ] Needs a human: the money rules above, the saver rules, a 4-device Ludo run.

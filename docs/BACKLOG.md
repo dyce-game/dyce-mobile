@@ -66,8 +66,8 @@ Server side items are in `../dyce-backend/docs/BACKLOG.md` ("Groups, bots and me
 
 ## Board registry follow-ups (deferred from ADR-028; server items are in dyce-backend/docs/BACKLOG.md)
 
-- Ludo 3-4 players as a live room: its own slug, a Spaces table (the card table is the nearest model), "Ludo" and "Ludo room" tiles.
-- A mode switch for games with variants (Ayo or Kalah, Darts 501 or Around the clock, Sea Battle salvo): needs a per-match option at create on the server, then a row in the mode sheet.
+- Ludo room (done, backend ADR-043): still open are a 4-phone run and a Ludo-specific timeout run in a real room.
+- Per-match options (done, backend ADR-041): more variants (Dots & Boxes grid size, Ludo tokens, Chess from a position) are one registry entry each.
 - Lazy `Board` imports in the registry if eager bundling of many 3D boards slows start-up.
 - A "How to play" first-run overlay inside the board (today the rules are on the drawer tile and the mode sheet only), and per-game video thumbnails in place of `Art`.
 - A Maestro flow for the rules sheet and the update-required screen.
@@ -83,7 +83,7 @@ Server side items are in `../dyce-backend/docs/BACKLOG.md` ("Groups, bots and me
 ## Edge flows follow-ups (deferred from ADR-031; server items are in dyce-backend/docs/BACKLOG.md)
 
 - **Human gates:** the legal text in `src/features/account/legal-copy.ts` (terms, privacy, community guidelines, responsible play) is DRAFT with a banner on every page; a lawyer must review it (SPEC section 14, NDPA 2023) and it must be replaced or loaded from the web before launch. Dyce has no support channel: Help says so instead of a "Contact us" button; pick one (email, form) and add it. The money rule for an upheld dispute is open (see the backend backlog); the app tells the disputer only "the result is corrected".
-- StreakLost and the streak saver (needs the server rule in the backend backlog); the Moments "Level up" screen is separate and also unbuilt.
+- StreakLost and the streak saver (done, backend ADR-042); still open: the "streak at risk" push (SPEC §12), the Moments "Level up" screen, and the product's call on the saver rules (Free win only, once a week, streaks of 2+).
 - Game menu: a mute row (needs chat mute) and "Sound and haptics" (needs a settings store that the boards read; the boards call haptics directly today). GameForfeit's "you left, N seconds to come back" countdown and GameOffline's grace timer need async turn timers (`turn_deadline`, in the platform follow-ups) and a deadline in the live room's state.
 - GameDetail: the Free / Pool record tab and "Friends who play" (per-game stats, `Challenge` buttons), and the video preview with its play button.
 - PoolRules: the design's "Free-only mode" switch and "Daily pool limit ›" (lowering your own limit): not in the SPEC beyond "you can lower your own limits"; add with Pool limits in Settings. Settings rows still missing: who can see me online, Pool limits.
@@ -104,3 +104,10 @@ Server side items are in `../dyce-backend/docs/BACKLOG.md` ("Groups, bots and me
 - **App icon, adaptive icon, splash screen** (none in the repo) and the store screenshots (needs a running build). Camera, microphone, photo library and Face ID permissions come back with QR scanning, voice notes, photos and payment confirmation.
 - **Secret scanning in CI** (for example gitleaks), after the credential found in the backend history is rotated.
 - **A bundle size budget** for the web export (the guest game): to measure first.
+
+## Pool, options, Ludo room, streak saver (ADR-041 to ADR-043, 2026-11-24)
+- Word Tiles Pool: load a full word list on the server (`WORD_TILES_WORDLIST_FILE` and `_ID`), then one migration.
+- A shorter turn clock for fast games (a Cup Pong throw against 24 hours): `pool_turn_hours` is one number today.
+- Anti-cheat signals for Word Hunt and Anagrams ("a perfect score, found fast") and for engine-like Chess play; a push before a forfeit ("2 hours left to move").
+- A Pool forfeit still reads `loss` after `settle_match`; the card could say "forfeited" from `live_meta`.
+- A 4-device Ludo room run, and a Ludo room quick match.

@@ -5,8 +5,10 @@ import {
   dailyLimitHit,
   defaultStake,
   expiresIn,
+  forfeitIn,
   poolIssueOf,
   poolResult,
+  poolRuleLine,
   potLine,
   resetsIn,
   stakeChipLabel,
@@ -204,5 +206,22 @@ describe('poolResult', () => {
   it('is null for Free matches and unfinished ones', () => {
     expect(poolResult(finished({ mode: 'free' }), ME, 'Tunde', 0)).toBeNull();
     expect(poolResult(finished({ status: 'active' }), ME, 'Tunde', 0)).toBeNull();
+  });
+});
+
+describe('the Pool rule line and the forfeit clock', () => {
+  it('says what the pot does in plain words', () => {
+    expect(poolRuleLine(1_000 * N)).toBe(
+      'Winner takes ₦2,000. A draw refunds both. No reply in 24 hours refunds you. No move for 24 hours is a forfeit.',
+    );
+  });
+
+  it('counts down to a forfeit, and says nothing without a clock or after it', () => {
+    const now = Date.parse('2026-11-24T10:00:00Z');
+    expect(forfeitIn('2026-11-25T09:10:00Z', now)).toBe('23h 10m');
+    expect(forfeitIn('2026-11-24T10:20:00Z', now)).toBe('20m');
+    expect(forfeitIn('2026-11-24T09:59:00Z', now)).toBeNull();
+    expect(forfeitIn(null, now)).toBeNull();
+    expect(forfeitIn(undefined, now)).toBeNull();
   });
 });

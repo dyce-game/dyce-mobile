@@ -86,7 +86,9 @@ export function GameCard({ message }: { message: GameMessage }) {
         </View>
         <View style={styles.body}>
           <Text variant="headline" numberOfLines={1}>
-            {payload.gameName}
+            {payload.variantLabel
+              ? `${payload.gameName} · ${payload.variantLabel}`
+              : payload.gameName}
           </Text>
           <Text
             variant="footnote"

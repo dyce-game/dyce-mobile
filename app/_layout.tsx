@@ -29,6 +29,11 @@ function ThemedStack() {
           name="games/index"
           options={{ presentation: 'transparentModal', animation: 'fade' }}
         />
+        {/* Streak lost and the streak saver: a card over the result (design: StreakLost) */}
+        <Stack.Screen
+          name="streak"
+          options={{ presentation: 'transparentModal', animation: 'fade' }}
+        />
         <Stack.Screen
           name="wallet/request/index"
           options={{ presentation: 'transparentModal', animation: 'fade' }}

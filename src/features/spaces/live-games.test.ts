@@ -6,6 +6,7 @@ describe('the games a host can open', () => {
     expect(CREATE_GAMES.map((g) => g.slug)).toEqual([
       'whot',
       'crazy-cards',
+      'ludo-room',
       'imposter',
       'werewolf',
       'charades',
@@ -24,6 +25,13 @@ describe('the games a host can open', () => {
     expect(createGame('imposter').schemes).toEqual(['winner_all']);
     expect(createGame('werewolf').sidesWin).toBe(true);
     expect(createGame('doodle-guess').schemes).toContain('p50_30_20');
+  });
+
+  it('offers Ludo for 3 or 4, paying by progress (backend ADR-043)', () => {
+    const ludo = createGame('ludo-room');
+    expect([ludo.minSeats, ludo.maxSeats]).toEqual([3, 4]);
+    expect(ludo.schemes).toContain('p50_30_20');
+    expect(gameLine(ludo)).toBe('3–4 players · Race your tokens home');
   });
 
   it('describes a game in one line', () => {

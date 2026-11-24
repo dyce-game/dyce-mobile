@@ -346,3 +346,7 @@ export function wordHuntScoreLine(
     .map((id) => `${id === myId ? 'You' : nameOf(id)} ${view.scores[id] ?? 0}`)
     .join(' · ');
 }
+
+/** A match is only fetched with an id: a link missing its parameter must not call `GET /matches/undefined` (BUG-3). */
+export const canFetchMatch = (id: string | undefined | null, enabled = true): boolean =>
+  enabled && typeof id === 'string' && id.length > 0 && id !== 'undefined';

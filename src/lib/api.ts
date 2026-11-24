@@ -10,6 +10,7 @@ import { createDiscoveryApi } from '@/features/discovery/discovery-api';
 import { createGamesApi } from '@/features/games/games-api';
 import { createInvitesApi } from '@/features/invites/invites-api';
 import { createNotificationsApi } from '@/features/notifications/notifications-api';
+import { createStreakApi } from '@/features/progress/streak-api';
 import { createSafetyApi } from '@/features/safety/safety-api';
 import { createQuickMatchApi } from '@/features/quickmatch/quick-match-api';
 import { createSpacesApi } from '@/features/spaces/spaces-api';
@@ -39,6 +40,7 @@ export const discoveryApi = createDiscoveryApi(api);
 export const notificationsApi = createNotificationsApi(api);
 export const invitesApi = createInvitesApi(api, config.apiUrl);
 export const accountApi = createAccountApi(api);
+export const streakApi = createStreakApi(api);
 
 /**
  * An access token that is good for at least another minute, refreshing first if it isn't. Used before

@@ -13,12 +13,21 @@ import {
   dailyLimitHit,
   defaultStake,
   poolIssueOf,
+  poolRuleLine,
   potOf,
   resetsIn,
   stakeChipLabel,
   stakeChoices,
 } from '../pool-logic';
 import { useCreateMatch, usePoolInfoQuery } from '../use-games';
+import {
+  defaultPicks,
+  optionSpoken,
+  optionsOf,
+  poolAllowed,
+  requestOptions,
+  type Picks,
+} from '../variants-logic';
 import { AgeGatePanel } from './AgeGatePanel';
 import { GameArt } from './GameArt';
 import { PoolIssuePanel } from './PoolIssuePanel';
@@ -70,6 +79,10 @@ export function ModeSheetBody({
   const [showRules, setShowRules] = useState(false);
   const [stake, setStake] = useState(() => defaultStake(choices));
   const [allowCounter, setAllowCounter] = useState(true);
+  // The variant (Ayo or Mancala, 501 or Around the clock, Classic or Salvo): a mode of the same board.
+  const [picks, setPicks] = useState<Picks>(() => defaultPicks(game));
+  const variants = optionsOf(game);
+  const variantPool = poolAllowed(game, picks);
   // One id per attempt: tapping Send again after a network failure sends the same game, not a second one.
   const attempt = useRef<{ key: string; id: string } | null>(null);
 
@@ -79,7 +92,7 @@ export function ModeSheetBody({
   const balance = wallet.data?.balanceKobo ?? null;
 
   function pickPool() {
-    if (!game.supportsPool || minor) return;
+    if (!game.supportsPool || minor || !variantPool) return;
     if (info.data && !info.data.isAdult) {
       setStep('age'); // asked once; a "no" keeps Pool hidden
       return;
@@ -89,7 +102,8 @@ export function ModeSheetBody({
 
   function send() {
     if (!conversationId) return;
-    const key = `${conversationId}:${game.slug}:${mode}:${stake}:${allowCounter}`;
+    const options = requestOptions(game, picks);
+    const key = `${conversationId}:${game.slug}:${mode}:${stake}:${allowCounter}:${JSON.stringify(options ?? {})}`;
     if (attempt.current?.key !== key) attempt.current = { key, id: newMessageId() };
     create.mutate(
       {
@@ -99,6 +113,7 @@ export function ModeSheetBody({
         mode,
         stakeKobo: pool ? stake : 0,
         allowCounter: pool ? allowCounter : false,
+        ...(options ? { options } : {}),
       },
       {
         onSuccess: () => {
@@ -260,6 +275,51 @@ export function ModeSheetBody({
         </Pressable>
       ) : null}
 
+      {variants.map((o) => (
+        <View key={o.key} style={styles.variants}>
+          <Text variant="footnote" color="sub">
+            {o.label}
+          </Text>
+          <View
+            style={styles.chips}
+            accessibilityRole="radiogroup"
+            accessibilityLabel={optionSpoken(o)}
+          >
+            {o.choices.map((c) => {
+              const on = (picks[o.key] ?? o.default) === c.value;
+              return (
+                <Pressable
+                  key={String(c.value)}
+                  accessibilityRole="radio"
+                  accessibilityState={{ selected: on }}
+                  accessibilityLabel={c.note ? `${c.label}. ${c.note}` : c.label}
+                  onPress={() => {
+                    const next = { ...picks, [o.key]: c.value };
+                    setPicks(next);
+                    // A variant that cannot be played for stakes takes the game back to Free.
+                    if (!poolAllowed(game, next)) setMode('free');
+                  }}
+                  style={[
+                    styles.chip,
+                    {
+                      backgroundColor: on ? colors.brandSoft : colors.chip,
+                      borderColor: on ? colors.money : 'transparent',
+                    },
+                  ]}
+                >
+                  <Text variant="callout" color={on ? 'accent' : 'text'}>
+                    {c.label}
+                  </Text>
+                </Pressable>
+              );
+            })}
+          </View>
+          <Text variant="footnote" color="sub">
+            {o.choices.find((c) => c.value === (picks[o.key] ?? o.default))?.note ?? ''}
+          </Text>
+        </View>
+      ))}
+
       <View style={styles.modes} accessibilityRole="radiogroup" accessibilityLabel="Game mode">
         <Pressable
           accessibilityRole="radio"
@@ -281,19 +341,24 @@ export function ModeSheetBody({
         </Pressable>
         <Pressable
           accessibilityRole="radio"
-          accessibilityState={{ selected: pool, disabled: !game.supportsPool || minor }}
+          accessibilityState={{
+            selected: pool,
+            disabled: !game.supportsPool || minor || !variantPool,
+          }}
           accessibilityLabel={
             !game.supportsPool
               ? 'Pool. Not available for this game yet.'
-              : minor
-                ? 'Pool. For people 18 and older.'
-                : 'Pool. You both put in the same stake. Winner takes the pot.'
+              : !variantPool
+                ? 'Pool. Not available for this variant.'
+                : minor
+                  ? 'Pool. For people 18 and older.'
+                  : 'Pool. You both put in the same stake. Winner takes the pot.'
           }
-          disabled={!game.supportsPool || minor}
+          disabled={!game.supportsPool || minor || !variantPool}
           onPress={pickPool}
           style={[
             styles.mode,
-            !game.supportsPool || minor ? styles.dim : null,
+            !game.supportsPool || minor || !variantPool ? styles.dim : null,
             { backgroundColor: colors.bg2, borderColor: pool ? '#C93E1C' : 'transparent' },
           ]}
         >
@@ -304,9 +369,11 @@ export function ModeSheetBody({
           <Text variant="footnote" color="sub">
             {!game.supportsPool
               ? 'Not for this game yet'
-              : minor
-                ? 'For people 18 and older'
-                : 'You both put in the same stake. Winner takes the pot.'}
+              : !variantPool
+                ? 'Free only for this variant'
+                : minor
+                  ? 'For people 18 and older'
+                  : 'You both put in the same stake. Winner takes the pot.'}
           </Text>
         </Pressable>
       </View>
@@ -357,6 +424,10 @@ export function ModeSheetBody({
               {`${formatNaira(stake)} from you, ${formatNaira(stake)} from ${name}. Locked until the game ends.`}
             </Text>
           </View>
+
+          <Text variant="footnote" color="sub">
+            {poolRuleLine(stake)}
+          </Text>
 
           <View style={styles.toggle}>
             <View style={styles.flex}>
@@ -421,6 +492,7 @@ const styles = StyleSheet.create({
   pickedHead: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingBottom: 6 },
   pickedArt: { width: 52, height: 52, borderRadius: 14 },
   rulesToggle: { minHeight: 44, justifyContent: 'center', alignSelf: 'flex-start' },
+  variants: { gap: 8, paddingTop: 6 },
   modes: { flexDirection: 'row', gap: 10, paddingVertical: 8 },
   mode: {
     flex: 1,

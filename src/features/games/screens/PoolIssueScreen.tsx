@@ -34,8 +34,9 @@ export function PoolIssueScreen({ matchId, kind }: { matchId: string; kind: Pool
   const accept = useAcceptMatch();
   const decline = useDeclineMatch();
 
+  // Pop back to the thread this screen came from instead of stacking another copy of it (BUG-2).
   const chat = () =>
-    router.replace((match?.conversationId ? `/c/${match.conversationId}` : '/chat') as Href);
+    router.dismissTo((match?.conversationId ? `/c/${match.conversationId}` : '/chat') as Href);
   const back = () => (router.canGoBack() ? router.back() : chat());
 
   const them = match ? opponentOf(match, myId) : null;

@@ -12,6 +12,8 @@ import { PARTY_RESULT_DELAY_MS, hasPartyScreen } from '../party/common-logic';
 import { hasOwnTable } from '../party-logic';
 import { CardTable } from '../tables/CardTable';
 import { isCardGame } from '../tables/model';
+import { LudoTable } from '../tables/LudoTable';
+import { isLudoRoom } from '../tables/ludo-table-logic';
 import { LiveIssueOverlay } from '../components/LiveIssueOverlay';
 import { useLiveTable, type LiveTable } from '../use-live-table';
 
@@ -55,7 +57,7 @@ function TableBody({ space, table }: { space: SpaceView; table: LiveTable }) {
     void client.invalidateQueries({ queryKey: queryKeys.wallet });
     const id = setTimeout(
       () => router.replace(`/space/${space.id}/result` as Href),
-      hasPartyScreen(space.gameSlug) || isCardGame(space.gameSlug)
+      hasPartyScreen(space.gameSlug) || isCardGame(space.gameSlug) || isLudoRoom(space.gameSlug)
         ? PARTY_RESULT_DELAY_MS
         : RESULT_DELAY_MS,
     );
@@ -120,6 +122,26 @@ function TableBody({ space, table }: { space: SpaceView; table: LiveTable }) {
         onMove={table.move}
         onChat={table.chat}
         onForfeit={table.forfeit}
+        onBack={back}
+        onContinue={() => router.replace(`/space/${space.id}/result` as Href)}
+      />
+    );
+  }
+
+  // The Ludo room: the chat game's board with the room's seats and clock around it.
+  if (isLudoRoom(space.gameSlug)) {
+    return (
+      <LudoTable
+        space={space}
+        myId={myId}
+        live={state}
+        status={status}
+        receivedAt={table.receivedAt}
+        errorCode={table.error?.code ?? null}
+        onMove={table.move}
+        onForfeit={() => {
+          table.forfeit();
+        }}
         onBack={back}
         onContinue={() => router.replace(`/space/${space.id}/result` as Href)}
       />

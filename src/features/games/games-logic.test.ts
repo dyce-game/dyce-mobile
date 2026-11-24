@@ -1,5 +1,6 @@
 import type { GameCardPayload, GameInfo, MatchView } from '@dyce/shared';
 import {
+  canFetchMatch,
   cardLabel,
   cardState,
   categoryChips,
@@ -253,5 +254,16 @@ describe('results', () => {
   it('finds the other player', () => {
     expect(opponentOf(match(), ME)?.userId).toBe(AMAKA);
     expect(opponentOf(match(), AMAKA)?.userId).toBe(ME);
+  });
+});
+
+describe('canFetchMatch', () => {
+  it('asks the server for a match only when there is an id', () => {
+    expect(canFetchMatch('4f3c')).toBe(true);
+    expect(canFetchMatch(undefined)).toBe(false);
+    expect(canFetchMatch(null)).toBe(false);
+    expect(canFetchMatch('')).toBe(false);
+    expect(canFetchMatch('undefined')).toBe(false);
+    expect(canFetchMatch('4f3c', false)).toBe(false);
   });
 });

@@ -39,6 +39,26 @@ export function defaultStake(choices: number[]): number {
 export const potOf = (stakeKobo: number) => stakeKobo * 2;
 
 /**
+ * The rule line on the mode sheet (SPEC section 9): who gets what, in plain words. The 24 hours are the server's
+ * `pool_turn_hours` (backend ADR-041): an invite nobody answers is refunded, and a player who does not move in
+ * that time forfeits.
+ */
+export function poolRuleLine(stakeKobo: number, hours = 24): string {
+  return `Winner takes ${formatNaira(potOf(stakeKobo))}. A draw refunds both. No reply in ${hours} hours refunds you. No move for ${hours} hours is a forfeit.`;
+}
+
+/**
+ * "23h 10m" until a Pool match's turn clock runs out (the player to move forfeits), from an ISO time; null for a
+ * match with no clock or one that has already run out.
+ */
+export function forfeitIn(iso: string | null | undefined, now = Date.now()): string | null {
+  if (!iso) return null;
+  const secs = Math.floor((new Date(iso).getTime() - now) / 1000);
+  if (secs <= 0) return null;
+  return resetsIn(secs);
+}
+
+/**
  * The counter-offers on offer for an invite of `stakeKobo`: up to two smaller stakes from the presets
  * (largest first) and "Free" (0). Never more than the invite, never below the minimum.
  */

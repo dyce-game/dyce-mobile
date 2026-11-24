@@ -170,7 +170,7 @@ export function CountdownRing({
           />
         </Svg>
       </View>
-      <Text variant="footnote" style={{ color: textColor }} maxFontSizeMultiplier={1.15}>
+      <Text variant="footnote" style={{ color: textColor }} maxFontSizeMultiplier={MAX_FONT_SCALE}>
         {seconds === null ? '–' : seconds}
       </Text>
     </View>

@@ -46,6 +46,9 @@ export function applyRealtimeEvent(
       );
       if (m.senderId !== myId) typing.setTyping(m.conversationId, false); // they sent it, so they're done typing
       void client.invalidateQueries({ queryKey: queryKeys.conversationsAll });
+      // A money card (someone paid you, or your request was paid) means the balance and history changed.
+      if (m.kind === 'money_sent' || m.kind === 'money_request')
+        void client.invalidateQueries({ queryKey: queryKeys.wallet });
       return;
     }
 

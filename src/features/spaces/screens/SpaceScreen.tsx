@@ -9,6 +9,7 @@ import { authErrorMessage } from '@/features/auth/messages';
 import { useSession } from '@/features/auth/use-session';
 import { UserAvatar } from '@/features/avatar/UserAvatar';
 import { PARTY_RESULT_DELAY_MS, hasPartyScreen } from '../party/common-logic';
+import { isLudoRoom } from '../tables/ludo-table-logic';
 import { SpaceProblemView } from '../components/SpaceProblemView';
 import { problemForSpace } from '../space-problem-logic';
 import { lobbyAction, modeLine, visibilityLabel } from '../spaces-logic';
@@ -35,7 +36,9 @@ export function SpaceScreen({ spaceId }: { spaceId: string }) {
   // A party game ends on a reveal people read (the imposters, the roles, the word), and a card game on the
   // table's results panel (every hand turned over): the table stays up for a while after the space ends, and
   // its own "See results" button moves on sooner.
-  const party = !!space && (hasPartyScreen(space.gameSlug) || isCardGame(space.gameSlug));
+  const party =
+    !!space &&
+    (hasPartyScreen(space.gameSlug) || isCardGame(space.gameSlug) || isLudoRoom(space.gameSlug));
   useEffect(() => {
     if (space?.status !== 'ended') return;
     const to = () => router.replace(`/space/${spaceId}/result` as Href);

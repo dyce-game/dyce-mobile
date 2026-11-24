@@ -56,6 +56,13 @@ const COPY: Record<string, Copy> = {
     blurb: 'Match the colour or number',
     defaultSeats: 4,
   },
+  'ludo-room': {
+    name: 'Ludo',
+    mark: 'L',
+    tile: '#2E8F64',
+    blurb: 'Race your tokens home',
+    defaultSeats: 4,
+  },
   imposter: {
     name: 'Imposter',
     mark: 'I',
@@ -124,7 +131,15 @@ const COPY: Record<string, Copy> = {
 };
 
 /** In the order the picker shows them. */
-const ORDER = ['whot', 'crazy-cards', 'imposter', 'werewolf', 'charades', 'doodle-guess'];
+const ORDER = [
+  'whot',
+  'crazy-cards',
+  'ludo-room',
+  'imposter',
+  'werewolf',
+  'charades',
+  'doodle-guess',
+];
 
 export const CREATE_GAMES: CreateGame[] = ORDER.flatMap((slug) => {
   const live = LIVE_GAMES[slug];

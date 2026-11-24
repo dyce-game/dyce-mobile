@@ -142,6 +142,28 @@ describe('applyRealtimeEvent', () => {
     expect(invalidated).toContainEqual(queryKeys.conversationsAll);
   });
 
+  it('refreshes the wallet when a money card arrives, and only then', () => {
+    const { client, typing, invalidated } = setup();
+    const card = (kind: 'money_sent' | 'money_request'): Message =>
+      ({
+        ...msg('m', THEM, '2026-11-14T10:00:00.000Z'),
+        kind,
+        payload: {},
+      }) as unknown as Message;
+    applyRealtimeEvent(
+      client,
+      { type: 'message', message: msg('t', THEM, '2026-11-14T10:00:00.000Z') },
+      ME,
+      typing,
+    );
+    expect(invalidated).not.toContainEqual(queryKeys.wallet);
+    applyRealtimeEvent(client, { type: 'message', message: card('money_sent') }, ME, typing);
+    expect(invalidated).toContainEqual(queryKeys.wallet);
+    invalidated.length = 0;
+    applyRealtimeEvent(client, { type: 'message', message: card('money_request') }, ME, typing);
+    expect(invalidated).toContainEqual(queryKeys.wallet);
+  });
+
   it('keeps your own view of a match, never an older one', () => {
     const { client, typing } = setup();
     const view = (stateVersion: number, status: MatchView['status']): MatchView => ({

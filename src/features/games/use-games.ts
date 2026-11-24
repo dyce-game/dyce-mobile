@@ -7,7 +7,7 @@ import {
 } from '@dyce/shared';
 import { ApiError } from '@/features/auth/api-client';
 import { gamesApi } from '@/lib/api';
-import { newerMatch } from './games-logic';
+import { canFetchMatch, newerMatch } from './games-logic';
 
 /** The games on offer (the Games drawer). */
 export function useGamesQuery() {
@@ -24,7 +24,7 @@ export function useMatchQuery(id: string, enabled = true) {
     queryKey: queryKeys.match(id),
     queryFn: () => gamesApi.get(id),
     refetchOnMount: 'always',
-    enabled,
+    enabled: canFetchMatch(id, enabled),
   });
 }
 
@@ -70,7 +70,7 @@ export function useCreateMatch() {
   return useMutation({
     mutationFn: (
       input: Pick<CreateMatchRequest, 'id' | 'conversationId' | 'gameSlug'> &
-        Partial<Pick<CreateMatchRequest, 'mode' | 'stakeKobo' | 'allowCounter'>>,
+        Partial<Pick<CreateMatchRequest, 'mode' | 'stakeKobo' | 'allowCounter' | 'options'>>,
     ) => gamesApi.create({ ...input, mode: input.mode ?? 'free' }),
     onSuccess: (match) => {
       store(client, match);
