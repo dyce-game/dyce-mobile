@@ -14,6 +14,7 @@ location, a new SDK) changes these answers in the same pull request.
 | Data | Where it comes from | What is stored | Source of truth |
 |---|---|---|---|
 | **Phone number** | typed at sign-in | **only a keyed hash** (`users.phone_hash`, `otp_challenges.phone_hash`); the raw number exists in memory to send the code and is passed to the SMS provider; it is never logged | backend CLAUDE.md, `auth.service.ts`, redaction in logs |
+| **Email address** | typed at sign-up or log-in with email, or added in Settings (optional) | **only a keyed hash** (`users.email_hash`, `otp_challenges.email_hash`) and a **masked hint** (`t••••@gmail.com`) for Settings; the raw address exists in memory to send the code and is passed to the email provider (Resend); it is never logged (redaction removes addresses) and never shown to other people | backend ADR-044, `auth.service.ts`, `redact.ts` |
 | **Contacts** | the phone's address book, only if the user allows it | numbers are normalised on the phone, sent over TLS, hashed with a server secret and matched; **raw numbers are not stored**; what is kept is who-matched-whom among existing users (`contact_links`) and a per-day lookup count | SPEC section 4, `contacts.service.ts`, `contact_lookups` |
 | **Username, display name, avatar choice** | the user | stored; public to other users (a stranger sees username, display name, avatar, level) | `profiles` |
 | **Birth year** | asked when first entering a Pool | stored (`profiles.birth_year`, `is_adult`); used to hide Pools from under 18s | SPEC section 4, `profiles` |
@@ -39,6 +40,7 @@ The app has **no ads and no tracking** (no App Tracking Transparency prompt is n
 | Apple data type | Collected? | Linked to the user's identity? | Used for | Source |
 |---|---|---|---|---|
 | Contact Info: **Phone Number** | Yes | Yes | App functionality (sign-in and contact matching) | hash of the number |
+| Contact Info: **Email Address** | Yes (only if the person signs in or adds one with email) | Yes | App functionality (sign-in) | hash of the address and a masked hint |
 | Contact Info: **Name** | Yes (display name) | Yes | App functionality | profile |
 | Contacts: **Contacts** | Yes (numbers are sent to the server for matching, then discarded; only matches are kept) | Yes | App functionality | contacts matching |
 | User Content: **Emails or Text Messages** | Yes (in-app messages) | Yes | App functionality | messages |
@@ -63,6 +65,7 @@ The app has **no ads and no tracking** (no App Tracking Transparency prompt is n
 | Personal info: **Name** (display name, username) | Yes | No | Required | App functionality, account management |
 | Personal info: **User IDs** | Yes | No | Required | App functionality |
 | Personal info: **Phone number** | Yes (hash retained; raw number passes through the SMS provider) | **VERIFY**: the SMS provider processes it on our behalf (see section 5) | Required | Account management |
+| Personal info: **Email address** | Yes (hash and masked hint retained; the raw address passes through the email provider) | **VERIFY**: Resend processes it on our behalf (see section 5) | Optional (a person can use a phone instead) | Account management |
 | Personal info: **Other info** (birth year) | Yes | No | Required to play Pools | App functionality, age check |
 | Contacts | Yes (matching) | No | **Optional** (the app works without it: "Find by username") | App functionality |
 | Messages: **Other in-app messages** | Yes | No | Required | App functionality |
@@ -96,6 +99,7 @@ When the camera ships, add the permission and its text, add Photos/Audio rows to
 | Vendor | What it receives | Why | Account state |
 |---|---|---|---|
 | **Termii** and **Twilio** (SMS) | the phone number and the one-time code text | deliver the sign-in code and invite texts | **HUMAN**: not set up (H5) |
+| **Resend** (email) | the email address and the one-time code email | deliver the sign-in code | **HUMAN**: not set up (H12); name it in the Privacy Policy, check its data-processing terms and the region chosen for the domain |
 | **Expo** (push service), **Apple APNs**, **Google FCM** | push token, notification title and body | deliver push | **HUMAN** (H3) |
 | **Sentry** | scrubbed crash and error reports, only if a DSN is set | fix crashes | **HUMAN** (M1). Choose the data region |
 | **PostHog** | anonymous events, only if a key is set | product analytics | **HUMAN** (M2). Choose EU or US; turn on "Discard client IP data" |

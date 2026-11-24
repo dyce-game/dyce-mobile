@@ -169,6 +169,8 @@ What exists and how to run it is in `e2e/README.md` (flows), `scripts/load/READM
 - **Load and concurrency** (`scripts/load/`, Node, no k6): login churn, chat fan-out over `/realtime`, concurrent moves on one match (the version rule held on 75 contended rounds), quick match (100 strangers, all paired correctly), 50 Whot seats in 17 live rooms, the Doodle canvas stream, and a probe that found **BUG-0: the API stops answering when about 20 game moves are in flight at once** (a pool of 20 connections, each move holds one and asks for a second). Numbers, the machine and the list to re-measure on staging: `scripts/load/RESULTS.md`.
 - **Device matrix, 3G and low-end Android plan, Dynamic Type 1.3x, screen reader and contrast checks, the regression order:** `docs/qa/`. **None of it has been run on a device.**
 
+- **Email sign-in** (backend ADR-044, 2026-11-24): app unit tests for the address rules and the screen copy (`email-logic.test.ts`); flow `12-email-signup-login` (sign up with a bad address, a wrong code, the right code, Settings shows the masked address, log out, log in with email); flows 00, 01, 07 and 08 re-run after the phone screen was refactored into shared parts: all pass on the web runner. Backend: 29 PostgreSQL tests (`email-auth.test.ts`), provider, address and env unit tests, and `pnpm -F @dyce/api e2e:email` (the real Resend driver against a mock of Resend's API: request shape, idempotency, retries, error mapping, no address or code in logs or the database, throttles, switched off, production refusal). **Not tested:** a real email to a real inbox (no Resend account), spam-folder placement, bounce handling, the screens on a device or with a screen reader.
+
 ## 5. Status
 
 See `docs/STATUS.md`.

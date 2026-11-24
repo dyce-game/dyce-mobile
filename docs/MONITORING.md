@@ -53,6 +53,7 @@ Severity: **P1** pages a person now (any hour); **P2** goes to the channel and i
 | A16 | **Game-server forfeits spike** | forfeits caused by disconnects above *(to measure)* the baseline | 15 min | P2 | log-based metric | RUNBOOK section 8 (was it our restart?) |
 | A17 | **Certificate / domain expiry** | less than 21 days | daily | P3 | the registrar and certificate manager | renew |
 | A18 | **Backup missing** | no successful snapshot in the last 24 h | daily | P1 | the database host | RUNBOOK section 5 |
+| A19 | **Email sign-in failing** | `email otp send failed` lines above *(to measure)* per 15 minutes, or a Resend bounce or complaint rate above a few percent | 15 min | P2 | log-based metric, plus the Resend dashboard weekly | RUNBOOK section 15 (Resend) |
 
 Notes
 - **A3 exists because every other alert needs the job to run.** The in-process alert cannot report its own absence.

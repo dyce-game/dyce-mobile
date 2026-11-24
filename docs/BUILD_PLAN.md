@@ -168,3 +168,9 @@ signup_started/completed (step), contacts_permission (granted/denied), avatar_sa
 - [x] Ludo room for 3 to 4 players (`ludo-room`, Create a space, Pool at ₦500 a seat).
 - [x] Streak lost and the streak saver (design StreakLost) with the `streak_lost` notification.
 - [ ] Needs a human: the money rules above, the saver rules, a 4-device Ludo run.
+
+## Email sign-in (2026-11-24, backend ADR-044)
+
+- [x] "Sign up with email" and "Log in with email" on the Welcome screen, "Use email instead" on the phone screen, one emailed six-digit code for both (the address is never stored in the clear), Resend as the provider behind a switch (`EMAIL_AUTH_ENABLED`).
+- [x] Add an email to a phone account, or a phone to an email account, from Settings > Account.
+- [ ] Needs a human: a Resend account with a verified domain and a real inbox test (`SETUP_GUIDE.md` section 4, RELEASE_CHECKLIST H12); bounce webhooks (BACKLOG).

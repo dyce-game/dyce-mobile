@@ -299,3 +299,33 @@ furthest we can see. Adding receipt reading is the first improvement if push del
 
 An alert exists for a rising failure rate (MONITORING A14). The **first real test on a device** is a launch gate (H3): until a real build
 has received a real push on both platforms, this whole path is untested. `EXPO_ACCESS_TOKEN` (optional) turns on Expo's enhanced push security.
+
+## 15. Email sign-in failures (Resend)
+
+Email sign-in and sign-up (backend ADR-044) send a six-digit code through **Resend** (`EMAIL_DRIVER=resend`). Phone sign-in does not depend
+on it, so an email outage never locks out people who have a phone on their account. What the code does (`apps/api/src/email`): one `POST /emails`
+per code with `Idempotency-Key: otp-<challenge id>` (a retry cannot send two), 8 s timeout, two retries on HTTP 429, 5xx and network errors,
+and **no address, code or key in any error message**. When the send fails for good the person sees "We couldn't send the email" and the
+challenge is deleted, so a failed send does not use up their limit. The API log line is
+`email otp send failed via resend HTTP <status> to t••••@gmail.com` (the address is masked).
+
+| Symptom | Likely cause | Action |
+|---|---|---|
+| Every send fails, status 401 or 403 | the `RESEND_API_KEY` is wrong, revoked, or not a sending key | create a new key in Resend (Sending access, domain `mail.dyce.games`), update the secret, restart the API (SETUP_GUIDE section 4.2) |
+| Every send fails, status 422 | `EMAIL_FROM` is on a domain Resend has not verified, or the address is invalid | make `EMAIL_FROM` use the verified domain; check the domain still shows **Verified** (a DNS record may have been removed) |
+| Status 429 | Resend's rate limit or the plan's daily quota | upgrade the plan; our own limits already cap one address at 3 codes in 10 minutes and one IP at 5 requests a minute |
+| Status 5xx or timeouts | Resend outage (their status page) | the API retried twice; **switch email off** (below) until it recovers |
+| Sends succeed but people do not get the email | spam folder, a typo, DKIM or SPF not verified, a corporate filter | the Resend **Emails** list shows Delivered, Bounced or Complained; fix DNS (SETUP_GUIDE 4.1); suggest phone sign-in meanwhile |
+| A burst of sends to many addresses from few IPs | someone mail-bombing or testing for accounts | the per-address and per-IP limits already apply; look at the log by IP, block at the edge if needed |
+| Bounce or complaint rate rising in Resend | typos, abuse, or a spam-trap address | investigate the same day: Resend can suspend a sender; there is no automatic suppression yet (BACKLOG) |
+
+**Switch email sign-in off:** set `EMAIL_AUTH_ENABLED=false` and restart the API. The email routes answer 404, `GET /auth/methods` says
+`{"phone":true,"email":false}` and the app hides "Sign up with email", "Log in with email" and "Use email instead" the next time it asks (when it
+opens). People who already have an email account can still use their phone **only if they added one** (Settings > Account); say so in the
+status message. **Switch it back on** the same way once a test code reaches an inbox.
+
+**Production will not start** with email on and `EMAIL_DRIVER=console` (and `OTP_TEST_CODE` must be unset): a message naming the variable is
+printed. Do not work around it; set the driver and key.
+
+An alert on `email otp send failed` lines exists in MONITORING (A19). The first real test to Gmail, Outlook, Yahoo and iCloud inboxes is a
+launch item (RELEASE_CHECKLIST H12): until it is done, delivery is only proved against a mock of Resend's API.
