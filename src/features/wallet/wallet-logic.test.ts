@@ -6,6 +6,7 @@ import {
   newMoneyKey,
   parseNairaInput,
   parseRequestCode,
+  requestJustPaid,
   requestUrl,
 } from './wallet-logic';
 
@@ -187,5 +188,16 @@ describe('keypadPress', () => {
     expect(keypadPress('0', '00', 200_000)).toBe('0');
     expect(keypadPress('190000', '0', 200_000)).toBe('200000');
     expect(keypadPress('0', '7', 200_000)).toBe('7');
+  });
+});
+
+describe('requestJustPaid', () => {
+  it('is true only when a request we were watching flips to paid', () => {
+    expect(requestJustPaid('open', 'paid')).toBe(true);
+    expect(requestJustPaid('paid', 'paid')).toBe(false);
+    expect(requestJustPaid(undefined, 'paid')).toBe(false); // first load of an already-paid request
+    expect(requestJustPaid('open', 'open')).toBe(false);
+    expect(requestJustPaid('open', 'cancelled')).toBe(false);
+    expect(requestJustPaid('open', undefined)).toBe(false);
   });
 });

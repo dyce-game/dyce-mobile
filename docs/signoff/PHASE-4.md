@@ -31,8 +31,9 @@ done. **The summary line is stale and should be reconciled by the lead.** Marks 
 
 - **BUG-0 (blocker)**: the API wedges at about 20 simultaneous moves, and **every Phase 4 async game goes through the same `submitMove`**.
   Fifteen new games raise the number of players who can move in the same second.
-- **BUG-2 (major)**: Back after a game returns to the game screens; the resign confirm and menu row share the label "Resign".
-- **BUG-3 (minor)**: `/games/issue` without a `matchId` requests `/matches/undefined`.
+- **BUG-2 (major), fixed 2026-11-24**: Back after a game did not reach the chat list (flow 11 is the regression test; confirm on a
+  device). Still open: the resign confirm and menu row share the label "Resign".
+- **BUG-3 (minor), fixed 2026-11-24**: `/games/issue` without a `matchId` requested `/matches/undefined`; it no longer calls the API.
 - Backend findings recorded in STATUS and not re-verified by QA: `db/tests/game-catalogue.test.ts` fails two cases as soon as any
   `0021_enable_*.sql` migration is applied; `db/tests/invites.test.ts` has a flaky case (a UUID containing "234"); the match service
   refuses a resignation from a player who is not on turn.

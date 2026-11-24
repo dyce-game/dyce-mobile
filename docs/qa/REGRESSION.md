@@ -85,10 +85,26 @@ request, a receipt, a live and a finished match, a Whot space, an SMS invite). F
 Title with the number or the symptom ("Back from a thread after a game returns to the game"). Body: build (profile and commit),
 device and OS, theme, account state, **steps**, expected, actual, a screen recording, the log line, and the flow or script that
 reproduces it if there is one. Add a reproduction to `e2e/known-bugs/` when a flow can show it: it fails until the bug is fixed,
-then moves into the numbered flows as its regression test. Severity: **blocker** (money wrong, hidden information shown,
+then moves into the numbered flows as its regression test (BUG-1 and BUG-2 are now flows 10 and 11). Severity: **blocker** (money wrong, hidden information shown,
 data lost, the app or the API unusable), **major** (a core flow broken or a budget missed), **minor** (a wrong state,
 copy, layout), **polish**.
 
-## 6. Open bugs found by this work (2026-11-23)
+## 6. Bugs found by this work (2026-11-23)
 
-See `BUGS.md`.
+See `BUGS.md`. BUG-0 to BUG-3 are fixed (2026-11-23 and 2026-11-24); the re-run after the fixes is in section 7.
+
+## 7. Re-run after the fixes of BUG-1 to BUG-3 (2026-11-24)
+
+Same machine, same private stack and Expo web build as section 3, the working tree of the day (the fixes uncommitted).
+
+- **App gates:** lint, typecheck (app and `@dyce/ui`) and format check clean; unit tests **824 (58 suites) + 13 (ui)** passing, 3 more
+  than the 821 + 13 of 2026-11-23 (`requestJustPaid`, the money-card refresh, `canFetchMatch`). Run as `eslint`, `tsc`, `prettier` and
+  `jest` directly: `pnpm` 11.12.0 is a broken release on this machine, so the package scripts could not be run through it.
+- **Flows lint:** clean (19 flow files). **Web runner, all 13 flows: pass** (00 to 09, 06b, and the new **10** and **11**, which are the
+  former known-bug flows; `known-bugs/` is empty). 7 steps are skipped by the runner as before (01 and 02: OS permission prompts).
+- **Route walk (`ROUTE_WALK_2026-11-24.md`):** 60 routes, 120 page loads, **0 with a problem, 0 not walked**. `/games/issue` is now clean in light and dark
+  (BUG-3). Contrast: 51 of 1,868 text elements below AA on 22 loads: unchanged, not touched by these fixes.
+- **Static accessibility audit (`A11Y_AUDIT_2026-11-24.md`):** 0 unnamed touchables, 0 images, 0 small targets, **0 `maxFontSizeMultiplier`
+  below 1.3** (was 1); 17 `allowFontScaling={false}` as before.
+- Not re-run: the backend gates (nothing in the backend was changed), the load tests, Maestro itself, anything on a device.
+

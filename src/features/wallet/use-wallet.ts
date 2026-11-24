@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import {
   useInfiniteQuery,
   useMutation,
@@ -7,6 +8,7 @@ import {
 } from '@tanstack/react-query';
 import { queryKeys, type HistoryFilter } from '@dyce/shared';
 import { walletApi } from '@/lib/api';
+import { requestJustPaid } from './wallet-logic';
 
 export const walletRequestsKey = ['wallet', 'requests'] as const;
 
@@ -52,12 +54,21 @@ export function useMyRequestsQuery() {
  * code sees it turn "Paid" without doing anything.
  */
 export function useRequestQuery(code: string, opts: { watch?: boolean } = {}) {
-  return useQuery({
+  const client = useQueryClient();
+  const query = useQuery({
     queryKey: queryKeys.paymentRequest(code),
     queryFn: () => walletApi.request(code),
     refetchInterval: opts.watch ? 3_000 : false,
     refetchOnMount: 'always',
   });
+  // The wallet tab stays mounted under this screen: when the request turns paid, its balance is stale.
+  const status = query.data?.status;
+  const seen = useRef<string | undefined>(undefined);
+  useEffect(() => {
+    if (requestJustPaid(seen.current, status)) refreshMoney(client);
+    seen.current = status;
+  }, [status, client]);
+  return query;
 }
 
 /** After money moves: balance, history, requests, and the chat cards all change. */

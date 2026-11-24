@@ -16,7 +16,7 @@ tags: [web, phase2, games]
     element: 'Word Hunt, .*'
 - tapOn: 'Word Hunt, .*'
 - assertVisible: 'Word Hunt vs Ben QA'
-- assertVisible: 'Not for this game yet' # Pool is not offered for Word Hunt
+- assertVisible: 'You both put in the same stake. Winner takes the pot.' # Pool is offered for Word Hunt now (backend ADR-041)
 - tapOn: 'Send Word Hunt'
 - takeScreenshot: wordhunt-card-sent
 - runScript:
@@ -48,7 +48,7 @@ tags: [web, phase2, games]
 - takeScreenshot: wordhunt-result
 - tapOn: 'Back to chat'
 - assertVisible: 'Word Hunt.*'
-# (Back from the thread after a game loops through the game screens: BUG-2, e2e/known-bugs/.)
+# (Back from the thread after a game goes to the chat list: e2e/11-back-after-game.yaml.)
 - openLink: 'dyce://wallet'
 - extendedWaitUntil:
     visible: 'Balance ₦200,000'

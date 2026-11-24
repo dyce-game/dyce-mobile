@@ -24,8 +24,8 @@ how each one is checked, what is automated, and what has to be done with a perso
   `DotsBoard.tsx:207`, `WordHuntArt.tsx:53`, `WordHuntGrid.tsx:158`, `WordTilesArt.tsx:33`, `WordTilesBoard.tsx:604,644,654`). Dynamic Type
   cannot be honoured inside a fixed-size tile, so these need the **device check in section 4**: is the information they carry
   also in the screen-reader labels and the move lists? (Per STATUS the boards have labelled squares and "Move list" / "Line list".)
-- **1** `maxFontSizeMultiplier` under 1.3: `src/features/spaces/party/components/PartyChrome.tsx:173` is 1.15. Either raise it to
-  1.3 or record the exception.
+- **1** `maxFontSizeMultiplier` under 1.3: `src/features/spaces/party/components/PartyChrome.tsx:173` was 1.15. **Raised to 1.3 on
+  2026-11-24** (the audit now reports 0; `A11Y_AUDIT_2026-11-24.md`). Check on a device that the countdown number still fits its ring at 1.3x.
 
 ## 2. Colour contrast
 

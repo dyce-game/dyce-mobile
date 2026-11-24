@@ -15,12 +15,13 @@ as in `README.md`. "Flow" means a Maestro flow executed on the web build by our 
 
 ## 2. What QA ran here
 
-- Route walk of every Phase 3 route, light and dark (`docs/qa/REGRESSION.md`). The first full walk found **BUG-3**; no other page
+- Route walk of every Phase 3 route, light and dark (`docs/qa/REGRESSION.md`). The first full walk found **BUG-3** (fixed 2026-11-24); no other page
   threw or failed a request.
 - Load: Doodle stream, quick-match queue, Whot rooms (50 seats), chat fan-out.
 - Flow 09 (Spaces and the card table), flow 08 (Settings).
 - Static accessibility audit: the party and table screens have **no unlabelled touchable**; one `maxFontSizeMultiplier` of
-  1.15 on `PartyChrome.tsx:173` (the app promises 1.3).
+  1.15 on `PartyChrome.tsx:173` (the app promises 1.3), **raised to 1.3 on 2026-11-24** (the countdown ring's number; check on a device
+  with text at 1.3x that it still fits the ring).
 
 ## 3. Bugs and observations that touch Phase 3 (`docs/qa/BUGS.md`)
 

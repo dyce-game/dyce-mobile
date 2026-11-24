@@ -6,7 +6,7 @@ real money exists. Nothing here touches a shared dev database.
 
 > **What has actually been run.** Maestro and a device are not installed on the machine these were written on. The
 > flows were **linted** (`scripts/e2e/lint-flows.mjs`, clean) and **executed on the Expo web build in headless Chrome by
-> a small runner of ours** (`scripts/e2e/web-runner.mjs`, a documented subset of Maestro), where the eleven numbered
+> a small runner of ours** (`scripts/e2e/web-runner.mjs`, a documented subset of Maestro), where the thirteen numbered
 > flows pass. They have **not been run by Maestro itself, on an emulator, a simulator or a phone**. Section 6 lists what
 > is executed and what is not, flow by flow.
 
@@ -25,7 +25,9 @@ real money exists. Nothing here touches a shared dev database.
 | `07-block-report.yaml` | report a stranger from Requests (reason, "also block them" on by default), find them in Blocked people, unblock | 1 | yes |
 | `08-settings-logout.yaml` | Settings: "Who can add and message me" (Nobody and back), Help and legal, **log out**, a second person logs in on the same device | 1 | yes |
 | `09-space-whot.yaml` | **Spaces**: create a Free Whot! space for two, Ben joins by code (API), the lobby updates live, the host starts, the 3D card table opens and shows that Ben never connected | 2 | yes |
-| `known-bugs/*.yaml` | reproductions of open bugs. They **fail until the bug is fixed** and are not picked up by `maestro test e2e/` | - | yes |
+| `10-wallet-balance-after-qr-paid.yaml` | after Ben pays Alice's QR request, her **Wallet tab shows ₦202,000 with no refresh** (regression test of BUG-1) | 1 | yes |
+| `11-back-after-game.yaml` | resign a Free Pig game, "Back to chat" on the result, then the thread's back arrow reaches the **chat list** (regression test of BUG-2) | 2 | yes |
+| `known-bugs/*.yaml` | reproductions of open bugs. They **fail until the bug is fixed**, then move into the numbered flows; none is open today (the folder is empty) | - | yes |
 | `subflows/*.yaml` | login, pick Nigeria, sign-up, finish onboarding, the OS permission prompts | - | - |
 | `scripts/*.js` | the "second phone": Ben, as an API client, pays, requests, accepts, counters, joins, plays Word Hunt, sends a message; reads both wallets | - | - |
 
@@ -105,9 +107,9 @@ steps are skipped, and a flow header `env: WEB_LOCAL_STORAGE: 'dev.contacts=deny
   no `testID`s (the one exception is in `TextField`); Maestro matches an accessibility label as text on both platforms.
 - Escape regular-expression characters in text: `'Resign this game\?'`, `'₦500 each'`. The app uses a real minus sign (U+2212) in
   "−₦500" and curly apostrophes in some copy.
-- A control whose label is not unique needs `index`: `Request ₦2,000` is both an amount chip and the button, `Resign` is
+- A control whose label is not unique needs `index`: `Resign` is
   both the menu row and the confirm button, and `Wallet` is the tab and the heading.
-- Text fields: tap the **placeholder** (`'803 412 7781'`), not the label: the label is a plain `Text` that cannot take focus.
+- Text fields: tap the **placeholder** (`'803 412 7781'`) (the label focuses the field too since 2026-11-24, but the placeholder is what the flows use).
 - A flow that logs in as alice uses `subflows/login.yaml`. Anything that depends on another person goes through the
   scripts in `scripts/`, not a second device.
 - Keep `node scripts/e2e/lint-flows.mjs` clean: it checks commands, files, variables, scripts and that every text selector
@@ -117,8 +119,7 @@ steps are skipped, and a flow header `env: WEB_LOCAL_STORAGE: 'dev.contacts=deny
 
 | Flow | Linted | Executed on web (our runner, headless Chrome, light) | Executed by Maestro | On a device |
 | ---- | ------ | ---------------------------------------------------- | ------------------- | ----------- |
-| 00 to 09 and 06b | yes | **yes, pass** (see `STATUS.md` for the dated run) | no | no |
-| known-bugs 1 and 2 | yes | yes, **fail as intended** (they reproduce BUG-1 and BUG-2) | no | no |
+| 00 to 11 and 06b | yes | **yes, pass** (see `STATUS.md` for the dated run) | no | no |
 
 Not covered by anything that has run:
 
@@ -134,9 +135,10 @@ Not covered by anything that has run:
 A static audit of every touchable in the app (`node scripts/qa/a11y-audit.mjs`) finds **no touchable without an accessible
 name**. These were hard to select, and are worth a `testID` or a distinct label:
 
-- `Request ₦2,000` is the label of both the amount chip and the submit button (`RequestScreen`); `Resign` / `Resign and lose ₦500`
-  is the label of both the game-menu row and the confirm button (`GameMenuSheet`, the resign card).
-- The `TextField` label ("Phone", "Display name", "Username") is a separate `Text`, so tapping it does not focus the input.
+- ~~`Request ₦2,000` is the label of both the amount chip and the submit button~~ (fixed 2026-11-24: the chips read `Amount ₦2,000`).
+  `Resign` / `Resign and lose ₦500` is still the label of both the game-menu row and the confirm button (`GameMenuSheet`, the resign card).
+- ~~The `TextField` label is a separate `Text`, so tapping it does not focus the input~~ (fixed 2026-11-24: tapping the label focuses
+  the field; placeholders still work and are what the flows tap).
 - The tab bar labels carry the badge (`Chat, 1 unread`), so the text `Chat` only matches the inner label on some platforms.
 - On the QR request screen the code ("Code LPPQQ 4VQTI") is plain text with no copy button, so a flow cannot take the code
   from the screen without OCR; the flows read it from the API instead.

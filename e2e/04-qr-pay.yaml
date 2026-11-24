@@ -17,9 +17,7 @@ tags: [web, phase1, money]
 - tapOn: 'Request'
 - assertVisible: 'Anyone can scan the QR'
 - tapOn: 'Rematch stake'
-- tapOn:
-    text: 'Request ₦2,000'
-    index: 1 # the amount chip has the same label; the big button is the last one
+- tapOn: 'Request ₦2,000'
 - extendedWaitUntil:
     visible: 'Waiting for payment.*'
     timeout: 10000
@@ -33,7 +31,7 @@ tags: [web, phase1, money]
 - assertVisible: 'by Ben QA'
 - takeScreenshot: qr-pay-paid
 - tapOn: 'Done'
-# The history is refetched on open, so it shows the payment (see BUG-1 about the balance on the Wallet tab).
+# The history is refetched on open, so it shows the payment (the balance on the Wallet tab: flow 10).
 - tapOn: 'History'
 - assertVisible: '.*received ₦2,000.*'
 - back

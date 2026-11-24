@@ -1,0 +1,32 @@
+# Money: after a QR request is paid by a second person, the Wallet tab shows the new balance with no refresh.
+# (This was BUG-1: the Wallet tab kept the old balance. Fixed 2026-11-24, see docs/qa/BUGS.md.)
+# "Second phone": Ben is a script that pays the request as Ben. Run it with:
+#   node scripts/e2e/web-runner.mjs e2e/10-wallet-balance-after-qr-paid.yaml
+appId: games.dyce.app
+name: wallet balance after qr paid
+tags: [web, phase1, money]
+---
+- launchApp:
+    clearState: true
+- runFlow:
+    file: subflows/login.yaml
+    env:
+      PHONE: '${ALICE_PHONE}'
+- tapOn: 'Wallet'
+- assertVisible: 'Balance ₦200,000'
+- tapOn: 'Request'
+- tapOn: 'Rematch stake'
+- tapOn: 'Request ₦2,000'
+- extendedWaitUntil:
+    visible: 'Waiting for payment.*'
+    timeout: 10000
+- runScript:
+    file: scripts/ben-pays-alice-request.js
+- extendedWaitUntil:
+    visible: 'Paid'
+    timeout: 15000
+- tapOn: 'Done'
+# the new balance appears with no refresh
+- extendedWaitUntil:
+    visible: 'Balance ₦202,000'
+    timeout: 10000

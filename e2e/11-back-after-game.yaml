@@ -1,15 +1,15 @@
-# BUG-2 (open): after a game ends, "Back to chat" on the result screen puts the thread on screen, but the
-# thread's back arrow then returns to the game screens instead of the chat list. Expected: the chat list.
-# This flow FAILS until the bug is fixed. Run it with:
-#   node scripts/e2e/web-runner.mjs e2e/known-bugs/bug-2-back-after-game.yaml
+# Navigation: after a game ends, "Back to chat" on the result screen shows the thread, and the thread's back arrow
+# goes to the chat list (not back into the game screens). (This was BUG-2. Fixed 2026-11-24, see docs/qa/BUGS.md.)
+# Run it with:
+#   node scripts/e2e/web-runner.mjs e2e/11-back-after-game.yaml
 appId: games.dyce.app
-name: bug 2 back after game
-tags: [web, known-bug]
+name: back after game
+tags: [web, phase2]
 ---
 - launchApp:
     clearState: true
 - runFlow:
-    file: ../subflows/login.yaml
+    file: subflows/login.yaml
     env:
       PHONE: '${ALICE_PHONE}'
 - tapOn: 'Ben QA.*'
@@ -19,7 +19,7 @@ tags: [web, known-bug]
 - tapOn: 'Pig, .*'
 - tapOn: 'Send Pig'
 - runScript:
-    file: ../scripts/ben-game.js
+    file: scripts/ben-game.js
     env:
       BEN_ACTION: accept
 - tapOn: 'Play Pig'
@@ -37,7 +37,7 @@ tags: [web, known-bug]
 - tapOn: 'Back to chat'
 - assertVisible: 'Ben QA, chat info'
 - tapOn: 'Back to chats'
-# expected: the chat list. Actual: the thread (or a game screen) is still on screen.
+# the chat list, not the thread or a game screen
 - extendedWaitUntil:
     visible: 'New in Chat'
     timeout: 5000

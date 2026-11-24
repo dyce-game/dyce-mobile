@@ -47,13 +47,18 @@ code with the stranger warning, history, receipts, daily top-up, money cards in 
 - Login churn and chat fan-out load tests.
 - Static accessibility audit: no touchable without an accessible name.
 - App and backend gates (README table).
+- **Re-run 2026-11-24 after the BUG-1 to BUG-3 fixes** (`docs/qa/REGRESSION.md` section 7): the app gates and every flow, including the
+  new 10 (balance after a QR request is paid) and 11 (Back after a game).
 
 ## 5. Bugs found that touch Phase 1 (`docs/qa/BUGS.md`)
 
-- **BUG-1 (major)**: after a QR request is paid, the Wallet tab still shows the old balance and no new activity row until the tab
-  remounts. The money is right on the server. This is the headline criterion of the phase. Reproduction: `e2e/known-bugs/bug-1-...yaml`.
+- **BUG-1 (major), fixed 2026-11-24**: after a QR request was paid, the Wallet tab kept the old balance and showed no new activity
+  row until the tab remounted (the money was right on the server). The Request screen and a money card arriving over the socket now
+  refresh the wallet. Regression test: flow `e2e/10-wallet-balance-after-qr-paid.yaml` (pass on the web runner) and two unit tests.
+  **Seen on a browser with the API as the second phone only**: a human still confirms it with two real phones (item 4 below).
 - **BUG-0 (blocker, not a Phase 1 feature but found with it)**: the API wedges at 20 simultaneous game moves.
-- **BUG-2 (major)**: Back from a thread after a game returns to the game screens (chat navigation).
+- **BUG-2 (major), fixed 2026-11-24**: Back from a thread after a game returned to a thread, not the chat list (chat navigation).
+  Flow 11 is its regression test (web runner).
 - Hard-to-select controls and the missing `testID`s: `e2e/README.md` section 7.
 
 ## 6. Unverified: what a human must confirm before the box is ticked
@@ -61,7 +66,8 @@ code with the stranger warning, history, receipts, daily top-up, money cards in 
 1. A real SMS arrives on iOS and Android in Nigeria (Termii on the DND route, Twilio fallback); the code fills itself in.
 2. Sign-up, contacts (allow, deny, limited), avatar, bonus, notifications **on an iPhone and on a 3 to 4 GB Android**, light and dark.
 3. A QR request scanned **with the camera** of a second phone and paid; a bad and an expired code; the stranger warning.
-4. Send money to a friend with the real confirm step; the wallet shows the right balance on both phones at once (after BUG-1 is fixed).
+4. Send money to a friend with the real confirm step; the wallet shows the right balance on both phones at once (BUG-1 is fixed in the
+   app and passes on the web runner: confirm on two phones, including a request paid while the Wallet tab is open).
 5. Realtime chat between an iPhone and an Android phone, including backgrounding, lock screen and reconnect; **push** for a
    message and a friend request.
 6. Block and report from a thread, a profile and Requests on a device.

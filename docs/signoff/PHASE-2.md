@@ -41,9 +41,12 @@ store link association (needs store accounts), deferred deep links, the SMS thre
 - **BUG-0 (blocker)**: with about 20 game moves in flight at once the API's database pool deadlocks and the whole API stops
   answering until restarted. Cause in `MatchesService.submitMove` (a second pool connection taken inside a transaction).
   Reproduced deterministically. **The phase's core mechanic, async moves, is exposed to it.**
-- **BUG-2 (major)**: after a game ends, Back from the thread returns to the game screens, not the chat list. `e2e/known-bugs/bug-2-...yaml`.
-- **BUG-3 (minor)**: `/games/issue` opened without a `matchId` calls `GET /matches/undefined` (422).
-- Minor: the resign confirm button has the same label as the game-menu row behind it (an automated or screen-reader user meets two "Resign"s).
+- **BUG-2 (major), fixed 2026-11-24**: after a game ended, Back from the thread did not reach the chat list (the result screen put a
+  second copy of the thread on the stack). It now pops to the existing thread. Regression test: flow `e2e/11-back-after-game.yaml` (web runner).
+  **Confirm on an iPhone and an Android phone**: the web history is not a native stack.
+- **BUG-3 (minor), fixed 2026-11-24**: `/games/issue` opened without a `matchId` called `GET /matches/undefined` (422). A match is only
+  fetched with an id; the route walk shows no event on that page.
+- Minor, still open: the resign confirm button has the same label as the game-menu row behind it (an automated or screen-reader user meets two "Resign"s; a copy decision in `resignCopy`).
 
 ## 5. Unverified: what a human must confirm before the box is ticked
 

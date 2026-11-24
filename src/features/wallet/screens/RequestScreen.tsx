@@ -78,7 +78,7 @@ export function RequestScreen() {
           <Pressable
             key={q}
             accessibilityRole="button"
-            accessibilityLabel={`Request ${formatNaira(q * 100)}`}
+            accessibilityLabel={`Amount ${formatNaira(q * 100)}`}
             accessibilityState={{ selected: mode === 'quick' && naira === q }}
             onPress={() => {
               setMode('quick');

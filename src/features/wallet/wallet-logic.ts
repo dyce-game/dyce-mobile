@@ -1,6 +1,14 @@
 import type { HistoryItem } from '@dyce/shared';
 import { dayLabel, newMessageId } from '../chat/chat-logic';
 
+/** A request we were already watching has just turned paid (not a first load of one that was paid before). */
+export function requestJustPaid(
+  previous: string | undefined,
+  current: string | undefined,
+): boolean {
+  return previous !== undefined && previous !== 'paid' && current === 'paid';
+}
+
 /** Quick amounts on the Send and Request screens, in whole naira. */
 export const AMOUNT_PRESETS = [500, 1_000, 2_000, 5_000] as const;
 

@@ -1,6 +1,7 @@
-import { useState, type ReactNode } from 'react';
+import { useRef, useState, type ElementRef, type ReactNode } from 'react';
 import {
   Platform,
+  Pressable,
   StyleSheet,
   TextInput,
   View,
@@ -56,16 +57,28 @@ export function TextField({
 }: TextFieldProps) {
   const { colors } = useTheme();
   const [focused, setFocused] = useState(false);
+  const inputRef = useRef<ElementRef<typeof TextInput>>(null);
   const borderColor = error ? colors.accent : focused ? brand.ember.fill : 'transparent';
   return (
     <View style={styles.wrap}>
-      <Text variant="footnote" color="sub">
-        {label}
-      </Text>
+      {/* Tapping the visible label focuses the field. The input already carries the label for screen readers,
+          so this tap target is hidden from them (and from the tab order) rather than read twice. */}
+      <Pressable
+        accessible={false}
+        importantForAccessibility="no-hide-descendants"
+        aria-hidden
+        focusable={false}
+        onPress={() => inputRef.current?.focus()}
+      >
+        <Text variant="footnote" color="sub">
+          {label}
+        </Text>
+      </Pressable>
       <View style={[styles.field, { backgroundColor: colors.chip, borderColor }]}>
         {leading}
         <TextInput
           {...input}
+          ref={inputRef}
           accessibilityLabel={accessibilityLabel ?? label}
           accessibilityHint={error ?? hint}
           placeholderTextColor={colors.sub}

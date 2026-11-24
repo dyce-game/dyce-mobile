@@ -1,6 +1,6 @@
 # Bugs found by the QA work (2026-11-23)
 
-None of these is fixed from here: they are in other lanes' code. Each has a way to reproduce it. Severity as in
+BUG-0 to BUG-3 are fixed (see each). The rest of the list is open. Each has a way to reproduce it. Severity as in
 `REGRESSION.md` section 5. The app and API were at the working tree of 2026-11-23 (uncommitted work of several sessions).
 
 ## BUG-0 (blocker, **FIXED 2026-11-23**): the API stops answering when about 20 game moves are in flight at once
@@ -27,44 +27,59 @@ None of these is fixed from here: they are in other lanes' code. Each has a way 
 - **Why the tests missed it:** every unit and database test sends one request at a time.
 - A longer write-up is in the shared notes folder (`qa-engineer-critical-pool-deadlock.md`).
 
-## BUG-1 (major): the Wallet tab keeps the old balance after your QR request is paid
+## BUG-1 (major, **FIXED 2026-11-24**): the Wallet tab keeps the old balance after your QR request is paid
 
-- **Where:** the app. The Request screen (`wallet/request/[code]`) polls the request every 3 s and turns "Paid by Ben QA", but
-  nothing invalidates the wallet query (`queryKeys.wallet`, `useWalletQuery` refetches only on mount) when the request flips to
-  paid, and the Wallet tab stays mounted under the screens pushed over it. The chat card did update (the realtime message event), the
-  wallet did not.
-- **What the person sees:** "Paid by Ben QA" on the request screen, **Done**, and then Wallet still says ₦200k and the activity list has
-  no new row, with the same state ten seconds later. History (a different query, refetched on open) shows the payment. The server is right:
-  `GET /wallet` returns the new balance.
-- **Reproduce:** `node scripts/e2e/web-runner.mjs e2e/known-bugs/bug-1-wallet-stale-after-qr-paid.yaml` (fails at `Balance ₦202,000`).
-- **Fix idea:** `refreshMoney(client)` (already in `use-wallet.ts`) when `useRequestQuery` sees `status` change to `paid`, and when a
-  money card arrives over the socket.
-- The headline criterion of Phase 1 ("gets paid by a second phone"): the money moves, the display lies.
+- **Fix:** `useRequestQuery` (`wallet/use-wallet.ts`) calls `refreshMoney(client)` when the request it is watching turns `paid`
+  (`requestJustPaid(previous, current)` in `wallet-logic.ts`, so the first load of an already-paid request does not refresh), and
+  `applyRealtimeEvent` (`chat/realtime-cache.ts`) invalidates the wallet queries when a `money_sent` or `money_request` message
+  arrives over the socket (only the wallet: the event itself already updates the thread and the chat list, so it does not call the
+  whole `refreshMoney`).
+- **Evidence:** unit tests `requestJustPaid` (`wallet-logic.test.ts`) and "refreshes the wallet when a money card arrives, and only
+  then" (`chat-state.test.ts`) failed before the change and pass; flow `e2e/10-wallet-balance-after-qr-paid.yaml` (the old
+  `known-bugs/bug-1` flow, moved) was recorded failing at `Balance ₦202,000` by QA on 2026-11-23 (not re-run unfixed here) and **passes** on the web runner (the balance reads
+  ₦202,000 right after Done); flow 04 (which also pays a code) passes.
+- **Not checked:** on a device, or with two real phones. The wallet also refreshes on mount and when the app returns, as before.
+- **Original report.** The Request screen (`wallet/request/[code]`) polls the request every 3 s and turns "Paid by Ben QA", but
+  nothing invalidated the wallet query (`queryKeys.wallet`, `useWalletQuery` refetches only on mount) and the Wallet tab stays mounted
+  under the screens pushed over it. The chat card did update (the realtime message event), the wallet did not. After **Done**, Wallet
+  said ₦200k and the activity list had no new row. The server was right: `GET /wallet` returned the new balance.
 
-## BUG-2 (major): Back from a thread after a game returns to the game screens
+## BUG-2 (major, **FIXED 2026-11-24**): Back from a thread after a game returns to the game screens
 
-- **Where:** `ThreadScreen.tsx` `goBack` is `router.back()` when there is history. After a game ends, the result screen's "Back to
-  chat" does `router.replace('/c/<id>')`, so the history is thread, game host, thread. **Observed:** after "Back to chats" the
-  screen is still a thread (the URL changes to a `/c/<id>` again) and the chat list is not reached. **Hypothesis, not confirmed:**
-  Back goes to the game host entry, which redirects to the thread, so the person goes round a loop.
-- **Reproduce:** `node scripts/e2e/web-runner.mjs e2e/known-bugs/bug-2-back-after-game.yaml` (fails: still on the thread after "Back to
-  chats"). Seen on web; a native stack that keeps the earlier entries is expected to behave the same: confirm on a device.
-- **Fix idea:** leave the game flow with `router.dismissTo('/c/<id>')` / pop to the existing thread instead of pushing a new one, or have
-  `goBack` go to the chat list when the previous entry is a game route.
+- **Cause (confirmed):** the result screen's "Back to chat" did `router.replace('/c/<id>')`, which swaps the result for a **second copy**
+  of the thread. The history was chat list, thread, thread, so Back from the second thread showed the first, a thread again (the next
+  Back would reach the list). The loop through the game host was only a hypothesis and was not what happens.
+- **Fix:** `GameResultScreen` and `PoolIssueScreen` leave with `router.dismissTo('/c/<id>')` (pop to the thread the game was
+  started from) instead of `replace`. Back from that thread goes to wherever the person came from (chat list, search, a profile).
+  The host's own `goBack` was already `router.back()` and is unchanged.
+- **Evidence:** flow `e2e/11-back-after-game.yaml` (the old `known-bugs/bug-2` flow, moved). With the old `router.replace` put back it
+  **fails** on the web runner (still on the thread after "Back to chats": "Ben QA | FREE | Pig | Ben QA won"); with `dismissTo` it
+  **passes** (chat list, "New in Chat"). Flows 05, 06 and 06b (which leave through the same screens) pass.
+- **Not checked:** on a device (a native stack should behave as the web one: confirm). A game opened from a link with no thread in
+  the history: `dismissTo` then opens the thread as a new screen, which is the old behaviour.
 
-## BUG-3 (minor): `/games/issue` without a `matchId` calls `GET /matches/undefined`
+## BUG-3 (minor, **FIXED 2026-11-24**): `/games/issue` without a `matchId` calls `GET /matches/undefined`
 
-- Opening `/games/issue` directly (or any link missing the parameter) sends `GET /matches/undefined`, which answers 422 and puts an error
-  in the console; the screen should not call the API without an id. Found by the route walk (`/games/issue`, light and dark).
+- **Fix:** `useMatchQuery` only runs with an id (`canFetchMatch` in `games/games-logic.ts`: not empty, not `undefined`), so any screen
+  opened by a link missing the parameter makes no API call.
+- **Evidence:** unit test `canFetchMatch`; the route walk of 2026-11-24 (`ROUTE_WALK_2026-11-24.md`) loads `/games/issue` in light and
+  dark with **0** events (the 2026-11-23 walk had a 422 and a console error on each).
+- The screen itself (what it shows with no match) was not changed.
 
 ## Smaller findings and things to know
 
-- **Duplicate labels** make flows and screen-reader navigation ambiguous: `Request ₦2,000` (amount chip and submit button), `Resign`
-  (menu row and confirm button), `Wallet` (tab and heading). See `e2e/README.md` section 7.
-- **TextField labels are not focusable**: tapping "Phone" or "Username" does not focus the input (on web a real `<label for>` or
-  `accessibilityLabelledBy` would fix it and help screen readers).
-- **`allowFontScaling={false}` on 17 board glyph texts** and a `maxFontSizeMultiplier` of 1.15 in `PartyChrome.tsx:173`, against the "Dynamic
-  Type up to 1.3x" rule: `docs/qa/ACCESSIBILITY.md` section 1.
+- **Duplicate labels** make flows and screen-reader navigation ambiguous. **Fixed 2026-11-24 for `Request ₦2,000`:** the amount chips
+  now read `Amount ₦2,000` and only the submit button reads `Request ₦2,000` (flows 04 and 10 no longer need an `index`). **Still open:**
+  `Resign` (the menu row of a Free game and its confirm button share the label, `games-edge-logic.ts` `resignCopy`: a copy decision for
+  the games lane) and `Wallet` (tab and heading). See `e2e/README.md` section 7.
+- **TextField labels are not focusable** (**fixed 2026-11-24**): tapping the visible "Phone", "Username" ... label now focuses the input
+  (`packages/ui/src/primitives/TextField.tsx`). The input already carried the label for screen readers, so the tap target is hidden from
+  them and from the tab order rather than read twice. Checked by the web flows only (they tap placeholders): not with a screen reader.
+- **Controls without an accessible name:** the QA audits found **none** (static audit: 0 touchables, 0 images; route walk: 0 unlabelled
+  controls on 120 page loads), so there was nothing of that kind to fix. What they did list, and what changed: `maxFontSizeMultiplier`
+  1.15 on the party countdown ring (`PartyChrome.tsx:173`) is now `MAX_FONT_SCALE` (1.3); the static audit reports 0 below 1.3.
+- **`allowFontScaling={false}` on 17 board glyph texts** (unchanged, deliberate: text inside a fixed-size tile of a drawing; needs the
+  device check in `docs/qa/ACCESSIBILITY.md` section 4).
 - **A login code is limited to one per number every 30 s**: logging out and back in as the same person within 30 s shows "Please
   wait Ns" and no way forward until it passes. Reasonable as a rule, but check the copy and the Resend timing on devices.
 - **Web default country is "US +1"** in a headless en-US browser (a device in Nigeria is expected to pick NG from its locale; the

@@ -37,3 +37,12 @@ plan to close it.
 connections each held by a move transaction that needs a second one). Found by the load tests, reproduced deterministically,
 not fixed from here (`apps/api` belongs to another lane). It is a blocker for any launch gate that involves concurrent players,
 and it is why the "concurrent moves in one match" test in `scripts/load/` runs below that line by default.
+
+## Update 2026-11-24: BUG-1, BUG-2 and BUG-3 fixed
+
+The three app bugs the QA work found are fixed and re-tested (`docs/qa/BUGS.md`, `docs/qa/REGRESSION.md` section 7): the Wallet tab
+refreshes when a QR request is paid and when a money card arrives (flow 10), Back after a game reaches the chat list (flow 11), and
+`/games/issue` without an id makes no API call. All 13 web flows pass and the route walk is clean. **No box is ticked by this
+update.** What a human still has to confirm for these three: the QR payment between two real phones with the Wallet tab open, and
+Back after a game on an iPhone and an Android phone (the flows ran on a browser, with the API as the second phone).
+
