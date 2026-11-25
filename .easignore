@@ -23,7 +23,10 @@ e2e/
 .github/
 assets/avatar-reference/
 assets/marketing/
-assets/avatar-stickers/*
-!assets/avatar-stickers/webp512/
-assets/avatar-profiles/*
-!assets/avatar-profiles/thumb/
+# Spell exclusions out (no "everything but" rules: EAS's matcher does not honour re-including a folder).
+assets/avatar-stickers/*.png
+assets/avatar-stickers/*.md
+assets/avatar-stickers/*.jpg
+assets/avatar-profiles/img/
+assets/avatar-profiles/contact_sheet.jpg
+assets/avatar-profiles/README.md
