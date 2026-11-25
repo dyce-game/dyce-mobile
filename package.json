@@ -4,7 +4,7 @@
   "private": true,
   "description": "Dyce: chat-first games with friends. The Expo app (iOS, Android, web guest). The backend is the sibling repo dyce-backend.",
   "main": "expo-router/entry",
-  "packageManager": "pnpm@11.12.0",
+  "packageManager": "pnpm@11.29.0",
   "engines": {
     "node": ">=22"
   },
