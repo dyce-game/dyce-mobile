@@ -9,4 +9,7 @@ verifyDepsBeforeRun: false
 
 allowBuilds:
   '@swc/core': true
-  msgpackr-extract: set this to true or false
+  # optional native speed-up for a messaging library; the pure JavaScript fallback is used without it
+  msgpackr-extract: false
+  # downloads the sentry-cli binary that uploads source maps and native symbols (only used when SENTRY_ORG is set)
+  '@sentry/cli': true
