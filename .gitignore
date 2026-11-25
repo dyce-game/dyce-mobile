@@ -13,3 +13,5 @@ ios/
 android/
 web-build/
 *.tsbuildinfo
+dist-native/
+.native-check/

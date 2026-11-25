@@ -109,6 +109,13 @@ jobs:
           APP_ENV: production
           EXPO_PUBLIC_API_URL: https://api.dyce.games
           EXPO_PUBLIC_GAME_SERVER_URL: wss://game.dyce.games
+      # The NATIVE bundles compile too (Hermes bytecode for iOS and Android). The web export alone missed a package that
+      # only fails on native (the first EAS build found it), so this is the cheap early warning.
+      - run: pnpm exec expo export --platform ios --platform android --output-dir dist-native
+        env:
+          APP_ENV: production
+          EXPO_PUBLIC_API_URL: https://api.dyce.games
+          EXPO_PUBLIC_GAME_SERVER_URL: wss://game.dyce.games
       # Boot smoke: the export is serveable, has a script entry, and points at the API it was told to.
       - run: node tools/release/check-web-export.mjs
         env:
