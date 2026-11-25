@@ -1,0 +1,29 @@
+node_modules/
+dist/
+coverage/
+.expo/
+.expo-shared/
+expo-env.d.ts
+*.log
+.DS_Store
+.env
+.env.*
+!.env.example
+ios/
+android/
+web-build/
+*.tsbuildinfo
+
+# ---- Not needed to BUILD the app (EAS uploads everything git would not ignore: this file REPLACES .gitignore for
+# uploads, so the patterns above are repeated). Keep what the app require()s: avatar-profiles/thumb, avatar-stickers/webp512.
+design/
+docs/
+e2e/
+.claude/
+.github/
+assets/avatar-reference/
+assets/marketing/
+assets/avatar-stickers/*
+!assets/avatar-stickers/webp512/
+assets/avatar-profiles/*
+!assets/avatar-profiles/thumb/
