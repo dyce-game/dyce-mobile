@@ -53,6 +53,11 @@ The app links the backend packages by path (ADR-011), so every job checks out bo
 current backend work into them (`feat/email-auth` into `staging`, then `staging` into `main`, and tag a version), or until then set
 `BACKEND_REF_STAGING` to `feat/email-auth` so the app's CI has a backend that matches it.
 
+The backend deploys itself the same way (`dyce-backend/.github/workflows/deploy-fly.yml`): a merge into the backend `staging` deploys the staging
+Fly apps and a merge into `main` deploys production after an approval; production never migrates the database by itself. See
+`dyce-backend/deploy/FLY.md` section 7. Order for a release: deploy the backend first (and migrate), then pin `BACKEND_REF_PRODUCTION` to the commit it
+deployed, then merge the app.
+
 ## 4. Environments and secrets
 
 Create these once (GitHub: Settings > Environments, and Settings > Secrets and variables > Actions).
