@@ -1,0 +1,36 @@
+name: Branch policy
+
+# Two long-lived branches (docs/CI_CD.md):
+#   staging  where work is integrated and tried by testers (preview builds and the `preview` update channel)
+#   main     what is in production (the `production` channel and the store builds)
+# Work reaches `staging` by pull request from a feature branch. `main` only ever receives `staging`, by pull request,
+# so what ships was first on staging. Make this check REQUIRED on both branches (Settings > Branches).
+on:
+  pull_request:
+    branches: [staging, main]
+
+permissions:
+  contents: read
+
+jobs:
+  policy:
+    name: Branch policy
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Only staging may be merged into main
+        if: ${{ github.base_ref == 'main' && github.head_ref != 'staging' }}
+        run: |
+          echo "::error::Pull requests into main must come from the staging branch (this one is from '${{ github.head_ref }}'). Merge your work into staging first."
+          exit 1
+      - name: Main must not be merged back into staging
+        if: ${{ github.base_ref == 'staging' && github.head_ref == 'main' }}
+        run: |
+          echo "::error::Do not merge main into staging through a pull request; staging is ahead of main by design."
+          exit 1
+      - name: Pull requests from forks are not deployed
+        if: ${{ github.event.pull_request.head.repo.full_name != github.repository }}
+        run: |
+          echo "::error::This repository does not take pull requests from forks (the pipeline holds deploy credentials)."
+          exit 1
+      - run: echo "Branch policy satisfied (${{ github.head_ref }} -> ${{ github.base_ref }})"

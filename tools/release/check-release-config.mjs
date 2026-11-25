@@ -22,7 +22,17 @@ function appConfig(appEnv) {
     console.log(JSON.stringify(m.default({ config: {} })));`;
   const r = spawnSync(process.execPath, ['--input-type=module', '-e', script], {
     encoding: 'utf8',
-    env: { PATH: process.env.PATH, APP_ENV: appEnv, EAS_PROJECT_ID: 'check-project-id' },
+    env: {
+      PATH: process.env.PATH,
+      APP_ENV: appEnv,
+      EAS_PROJECT_ID: 'check-project-id',
+      // the store gate reads these (set from repository variables in the production deploy)
+      ...Object.fromEntries(
+        ['EXPO_PUBLIC_SUPPORT_EMAIL', 'EXPO_PUBLIC_PRIVACY_URL', 'EXPO_PUBLIC_TERMS_URL']
+          .filter((k) => process.env[k])
+          .map((k) => [k, process.env[k]]),
+      ),
+    },
   });
   if (r.status !== 0) throw new Error(`app.config.ts failed for ${appEnv}: ${r.stderr}`);
   return JSON.parse(r.stdout.trim().split('\n').pop());

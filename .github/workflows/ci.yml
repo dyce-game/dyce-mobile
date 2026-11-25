@@ -1,10 +1,13 @@
 name: CI
 
+# Runs on every pull request into `staging` or `main`, and is called (not triggered separately) by the two deploy
+# workflows after a merge, so a merge is tested once and the deploy only runs when it passes.
 on:
   pull_request:
-  push:
-    branches: [main]
-  # The backend repo's CI calls this to prove a backend change does not break the app (see its `app-compat` job).
+    branches: [staging, main]
+  workflow_dispatch:
+  # Called by deploy-staging.yml and deploy-production.yml, and by the backend repo's CI (its `app-compat` job) to prove
+  # a backend change does not break the app.
   workflow_call:
     inputs:
       backend_ref:
@@ -22,11 +25,14 @@ concurrency:
 # The app links @dyce/shared and @dyce/games from the sibling dyce-backend repo (ADR-011), so every job checks
 # out both side by side. Configure in the repository settings (Settings > Secrets and variables > Actions):
 #   variable BACKEND_REPO        owner/name of the backend repository   (default dyce-game/dyce-backend)
-#   variable BACKEND_REF         branch, tag or commit to test against  (default main; pin it on release branches)
+#   variable BACKEND_REF_STAGING     backend branch for staging and for pull requests into it   (default staging)
+#   variable BACKEND_REF_PRODUCTION  backend TAG OR COMMIT for `main` (a production build is pinned, never a branch)
+#   variable BACKEND_REF             one ref for both, if you do not need the two above
 #   secret   BACKEND_REPO_TOKEN  read-only token, REQUIRED while the backend repository is private
 env:
   BACKEND_REPO: ${{ vars.BACKEND_REPO || 'dyce-game/dyce-backend' }}
-  BACKEND_REF: ${{ inputs.backend_ref || vars.BACKEND_REF || 'main' }}
+  # The app on `main` is tested against the pinned production backend; everything else against the staging backend.
+  BACKEND_REF: ${{ inputs.backend_ref || ((github.base_ref || github.ref_name) == 'main' && (vars.BACKEND_REF_PRODUCTION || vars.BACKEND_REF || 'main') || (vars.BACKEND_REF_STAGING || vars.BACKEND_REF || 'staging')) }}
 
 jobs:
   check:
@@ -61,6 +67,8 @@ jobs:
       - run: pnpm test
       # eas.json, the three app.config variants, and "no permission without the library that uses it".
       - run: pnpm release:check
+      # The release scripts themselves (native-change detection decides whether a deploy starts a store build).
+      - run: pnpm test:tools
 
   web-export:
     name: App bundles (web export) and the bundle is sane

@@ -22,7 +22,8 @@
     "format:check": "prettier --check \"**/*.{ts,tsx,js,cjs,mjs,json,md,yml}\"",
     "prepare": "husky",
     "eas-build-pre-install": "node tools/release/fetch-backend.mjs",
-    "release:check": "node tools/release/check-release-config.mjs"
+    "release:check": "node tools/release/check-release-config.mjs",
+    "test:tools": "node --test tools/release/native-changed.test.mjs"
   },
   "dependencies": {
     "@dyce/games": "link:../dyce-backend/packages/games",

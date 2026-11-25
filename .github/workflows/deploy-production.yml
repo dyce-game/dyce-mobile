@@ -1,0 +1,213 @@
+name: Deploy production
+
+# A push (a merged `staging` -> `main` pull request) to `main`:
+#   1. CI (ci.yml) must pass, against the PINNED production backend (variable BACKEND_REF_PRODUCTION: a tag or commit).
+#   2. A person approves (the `production` GitHub environment has required reviewers: docs/CI_CD.md). Nothing below runs
+#      before that.
+#   3. The JavaScript is published over the air to the `production` channel.
+#   4. If anything that can change the native app changed, the production store builds are started on EAS. They are
+#      submitted to the stores only when the variable STORE_AUTO_SUBMIT is "true" (the Play track is a draft on purpose,
+#      eas.json); otherwise a person submits from the EAS dashboard after trying the build.
+#   5. The guest web game is exported with the production URLs and kept as an artifact (and sent to your host if you set a hook).
+#
+# NEEDS ACCOUNTS: EXPO_TOKEN, the EAS project, store credentials in EAS (for builds), the `production` EAS environment.
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - 'docs/**'
+      - '**/*.md'
+      - 'e2e/**'
+      - '.claude/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  ci:
+    name: CI
+    uses: ./.github/workflows/ci.yml
+    secrets: inherit
+
+  guard:
+    name: Production guards
+    needs: ci
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: The backend must be pinned to a tag or a commit
+        env:
+          REF: ${{ vars.BACKEND_REF_PRODUCTION }}
+        run: |
+          if [ -z "$REF" ]; then echo "::error::Set the BACKEND_REF_PRODUCTION variable to the backend tag or commit this release was built against (e.g. v0.1.0)."; exit 1; fi
+          if ! echo "$REF" | grep -Eq '^(v[0-9][0-9A-Za-z._-]*|[0-9a-f]{7,40})$'; then echo "::error::BACKEND_REF_PRODUCTION must be a version tag (v1.2.3) or a commit sha, not a branch name ('$REF')."; exit 1; fi
+          echo "Production backend: $REF" >> "$GITHUB_STEP_SUMMARY"
+
+  publish:
+    name: Publish to the production channel
+    needs: guard
+    # Skipped (not failed) until the EAS project is connected: set the EAS_PROJECT_ID variable (docs/CI_CD.md).
+    if: ${{ vars.EAS_PROJECT_ID != '' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: production # required reviewers = the manual approval
+    defaults:
+      run:
+        working-directory: Dyce
+    env:
+      EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+      EAS_PROJECT_ID: ${{ vars.EAS_PROJECT_ID }}
+      APP_ENV: production
+      BACKEND_REPO: ${{ vars.BACKEND_REPO || 'dyce-game/dyce-backend' }}
+      BACKEND_REF: ${{ vars.BACKEND_REF_PRODUCTION }}
+    outputs:
+      native: ${{ steps.native.outputs.changed }}
+    steps:
+      - name: Stop with a clear message if the Expo account is not connected
+        working-directory: .
+        run: |
+          if [ -z "$EXPO_TOKEN" ]; then echo "::error::EXPO_TOKEN is not set (repository or 'production' environment secret)."; exit 1; fi
+      - uses: actions/checkout@v4
+        with:
+          path: Dyce
+          fetch-depth: 0
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ env.BACKEND_REPO }}
+          ref: ${{ env.BACKEND_REF }}
+          path: dyce-backend
+          token: ${{ secrets.BACKEND_REPO_TOKEN || github.token }}
+      - uses: pnpm/action-setup@v4
+        with:
+          package_json_file: Dyce/package.json
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: Dyce/pnpm-lock.yaml
+      - uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+      - run: pnpm install --frozen-lockfile
+      # The store gate: fails while the icon, splash, final legal text or the support and policy addresses are missing.
+      # EXPO_PUBLIC_SUPPORT_EMAIL, _PRIVACY_URL and _TERMS_URL are read from the production EAS environment by the build;
+      # here they are set from repository variables of the same name so the gate can see them.
+      - name: Store-submission gate
+        run: pnpm release:check --store
+        env:
+          EXPO_PUBLIC_SUPPORT_EMAIL: ${{ vars.EXPO_PUBLIC_SUPPORT_EMAIL }}
+          EXPO_PUBLIC_PRIVACY_URL: ${{ vars.EXPO_PUBLIC_PRIVACY_URL }}
+          EXPO_PUBLIC_TERMS_URL: ${{ vars.EXPO_PUBLIC_TERMS_URL }}
+      - name: Did the native app change?
+        id: native
+        run: node tools/release/native-changed.mjs "${{ github.event.before }}" "${{ github.sha }}"
+      - name: Publish the update (production channel)
+        env:
+          SHA: ${{ github.sha }}
+        run: |
+          subject="$(git log -1 --format=%s)"
+          eas update --channel production --environment production --message "production ${SHA::7}: ${subject}" --non-interactive
+      - name: Record what shipped
+        run: |
+          {
+            echo "App ${GITHUB_SHA::7} built against backend ${BACKEND_REPO}@${BACKEND_REF}"
+            echo "Roll back: docs/RUNBOOK.md section 5 (republish the previous update, or roll the channel back)"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  build:
+    name: Start the production store builds (native code changed)
+    needs: publish
+    if: ${{ needs.publish.outputs.native == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: production
+    defaults:
+      run:
+        working-directory: Dyce
+    env:
+      EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+      BACKEND_REF: ${{ vars.BACKEND_REF_PRODUCTION }}
+      SUBMIT: ${{ vars.STORE_AUTO_SUBMIT }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: Dyce
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ vars.BACKEND_REPO || 'dyce-game/dyce-backend' }}
+          ref: ${{ env.BACKEND_REF }}
+          path: dyce-backend
+          token: ${{ secrets.BACKEND_REPO_TOKEN || github.token }}
+      - uses: pnpm/action-setup@v4
+        with:
+          package_json_file: Dyce/package.json
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: Dyce/pnpm-lock.yaml
+      - uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+      - run: pnpm install --frozen-lockfile
+      - name: Pin the backend ref for this build
+        run: eas env:create --environment production --name BACKEND_REF --value "$BACKEND_REF" --visibility plaintext --force --non-interactive
+      - name: Start the builds
+        run: |
+          if [ "$SUBMIT" = "true" ]; then extra="--auto-submit"; else extra=""; fi
+          eas build --non-interactive --no-wait --profile production --platform all $extra
+
+  web:
+    name: Guest web game (production export)
+    needs: guard
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    environment: production
+    defaults:
+      run:
+        working-directory: Dyce
+    env:
+      BACKEND_REF: ${{ vars.BACKEND_REF_PRODUCTION }}
+      WEB_DEPLOY_HOOK_URL: ${{ secrets.WEB_DEPLOY_HOOK_URL }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: Dyce
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ vars.BACKEND_REPO || 'dyce-game/dyce-backend' }}
+          ref: ${{ env.BACKEND_REF }}
+          path: dyce-backend
+          token: ${{ secrets.BACKEND_REPO_TOKEN || github.token }}
+      - uses: pnpm/action-setup@v4
+        with:
+          package_json_file: Dyce/package.json
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: Dyce/pnpm-lock.yaml
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm export:web
+        env:
+          APP_ENV: production
+          EXPO_PUBLIC_API_URL: https://api.dyce.games
+          EXPO_PUBLIC_GAME_SERVER_URL: wss://game.dyce.games
+      - run: node tools/release/check-web-export.mjs
+        env:
+          EXPECT_API_URL: https://api.dyce.games
+      - uses: actions/upload-artifact@v4
+        with:
+          name: web-production-${{ github.sha }}
+          path: Dyce/dist
+          retention-days: 90
+      - name: Tell the web host to deploy
+        if: ${{ env.WEB_DEPLOY_HOOK_URL != '' }}
+        run: curl -fsS -X POST "$WEB_DEPLOY_HOOK_URL"

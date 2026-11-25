@@ -46,6 +46,8 @@ Whatever is chosen must (a) send SIGTERM and wait before killing (`stop_grace_pe
 
 Deploys are small and boring. The order matters: **image, backup point, migrate, API, game server, verify.**
 
+> The **mobile app** has its own pipeline (two branches, `staging` and `main`, with a named approval before production): `docs/CI_CD.md`. This section is the server.
+
 ### Before you start
 1. CI is green on the commit (`main`), including the `docker` job. Note the commit sha: `SHA=<12 chars>`.
 2. The release workflow produced the images: `ghcr.io/<owner>/dyce-api:$SHA` and `.../dyce-game-server:$SHA`

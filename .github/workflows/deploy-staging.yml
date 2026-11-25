@@ -1,0 +1,184 @@
+name: Deploy staging
+
+# A push (a merged pull request) to `staging`:
+#   1. CI (ci.yml) must pass.
+#   2. The JavaScript is published over the air to the `preview` channel (testers' preview builds pick it up).
+#   3. If anything that can change the native app changed (tools/release/native-changed.mjs), a new preview build is
+#      started on EAS (iOS and Android), because an over-the-air update only reaches a build with the same native code.
+#   4. The guest web game is exported with the staging URLs and kept as an artifact (and sent to your host if you set a hook).
+#
+# NEEDS ACCOUNTS (docs/CI_CD.md): EXPO_TOKEN, the EAS project, the `preview` EAS environment. Until the EAS_PROJECT_ID
+# variable is set the publish and build jobs are SKIPPED, and CI plus the web export still run without any account.
+on:
+  push:
+    branches: [staging]
+    paths-ignore:
+      - 'docs/**'
+      - '**/*.md'
+      - 'e2e/**'
+      - '.claude/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-staging
+  cancel-in-progress: false # a second merge waits; two publishes never interleave
+
+jobs:
+  ci:
+    name: CI
+    uses: ./.github/workflows/ci.yml
+    secrets: inherit
+
+  publish:
+    name: Publish to the preview channel
+    needs: ci
+    # Skipped (not failed) until the EAS project is connected: set the EAS_PROJECT_ID variable (docs/CI_CD.md).
+    if: ${{ vars.EAS_PROJECT_ID != '' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: staging
+    defaults:
+      run:
+        working-directory: Dyce
+    env:
+      EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+      EAS_PROJECT_ID: ${{ vars.EAS_PROJECT_ID }}
+      APP_ENV: preview
+      BACKEND_REPO: ${{ vars.BACKEND_REPO || 'dyce-game/dyce-backend' }}
+      BACKEND_REF: ${{ vars.BACKEND_REF_STAGING || vars.BACKEND_REF || 'staging' }}
+    outputs:
+      native: ${{ steps.native.outputs.changed }}
+    steps:
+      - name: Stop with a clear message if the Expo account is not connected yet
+        working-directory: .
+        run: |
+          if [ -z "$EXPO_TOKEN" ]; then echo "::error::EXPO_TOKEN is not set (repository or 'staging' environment secret). CI passed; nothing was published."; exit 1; fi
+          if [ -z "$EAS_PROJECT_ID" ]; then echo "::error::The EAS_PROJECT_ID variable is not set."; exit 1; fi
+      - uses: actions/checkout@v4
+        with:
+          path: Dyce
+          fetch-depth: 0 # native-changed.mjs diffs against the previous tip of the branch
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ env.BACKEND_REPO }}
+          ref: ${{ env.BACKEND_REF }}
+          path: dyce-backend
+          token: ${{ secrets.BACKEND_REPO_TOKEN || github.token }}
+      - uses: pnpm/action-setup@v4
+        with:
+          package_json_file: Dyce/package.json
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: Dyce/pnpm-lock.yaml
+      - uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+      - run: pnpm install --frozen-lockfile
+      - name: Did the native app change?
+        id: native
+        run: node tools/release/native-changed.mjs "${{ github.event.before }}" "${{ github.sha }}"
+      - name: Publish the update (preview channel)
+        env:
+          SHA: ${{ github.sha }}
+        run: |
+          subject="$(git log -1 --format=%s)"
+          eas update --channel preview --environment preview --message "staging ${SHA::7}: ${subject}" --non-interactive
+      - name: Record what the backend was
+        run: echo "App ${GITHUB_SHA::7} built against backend ${BACKEND_REPO}@${BACKEND_REF}" >> "$GITHUB_STEP_SUMMARY"
+
+  build:
+    name: Start a preview build (native code changed)
+    needs: publish
+    if: ${{ needs.publish.outputs.native == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: staging
+    defaults:
+      run:
+        working-directory: Dyce
+    env:
+      EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+      BACKEND_REF: ${{ vars.BACKEND_REF_STAGING || vars.BACKEND_REF || 'staging' }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: Dyce
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ vars.BACKEND_REPO || 'dyce-game/dyce-backend' }}
+          ref: ${{ env.BACKEND_REF }}
+          path: dyce-backend
+          token: ${{ secrets.BACKEND_REPO_TOKEN || github.token }}
+      - uses: pnpm/action-setup@v4
+        with:
+          package_json_file: Dyce/package.json
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: Dyce/pnpm-lock.yaml
+      - uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+      - run: pnpm install --frozen-lockfile
+      # The EAS builder fetches the backend packages itself (tools/release/fetch-backend.mjs); tell it which ref.
+      - name: Pin the backend ref for this build
+        run: eas env:create --environment preview --name BACKEND_REF --value "$BACKEND_REF" --visibility plaintext --force --non-interactive
+      - name: Start the builds (they finish on EAS; the link is in the log)
+        run: eas build --non-interactive --no-wait --profile preview --platform all
+
+  web:
+    name: Guest web game (staging export)
+    needs: ci
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    environment: staging
+    defaults:
+      run:
+        working-directory: Dyce
+    env:
+      BACKEND_REF: ${{ vars.BACKEND_REF_STAGING || vars.BACKEND_REF || 'staging' }}
+      WEB_DEPLOY_HOOK_URL: ${{ secrets.WEB_DEPLOY_HOOK_URL }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: Dyce
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ vars.BACKEND_REPO || 'dyce-game/dyce-backend' }}
+          ref: ${{ env.BACKEND_REF }}
+          path: dyce-backend
+          token: ${{ secrets.BACKEND_REPO_TOKEN || github.token }}
+      - uses: pnpm/action-setup@v4
+        with:
+          package_json_file: Dyce/package.json
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: Dyce/pnpm-lock.yaml
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm export:web
+        env:
+          APP_ENV: preview
+          EXPO_PUBLIC_API_URL: https://api-staging.dyce.games
+          EXPO_PUBLIC_GAME_SERVER_URL: wss://game-staging.dyce.games
+      - run: node tools/release/check-web-export.mjs
+        env:
+          EXPECT_API_URL: https://api-staging.dyce.games
+      - uses: actions/upload-artifact@v4
+        with:
+          name: web-staging-${{ github.sha }}
+          path: Dyce/dist
+          retention-days: 14
+      # Optional: a deploy hook of your web host (Settings > Environments > staging > secret WEB_DEPLOY_HOOK_URL).
+      - name: Tell the web host to deploy
+        if: ${{ env.WEB_DEPLOY_HOOK_URL != '' }}
+        run: curl -fsS -X POST "$WEB_DEPLOY_HOOK_URL"

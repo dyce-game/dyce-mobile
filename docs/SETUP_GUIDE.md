@@ -278,7 +278,7 @@ State today: the EAS project exists and `app.config.ts` carries its id and owner
 - [ ] **Submit:** `eas submit --profile production --platform ios` and `android`. The Play submit profile is set to the **internal** track as a **draft** on purpose.
 - [ ] **Over-the-air updates** are on for non-development builds (channel = profile name, runtime version = native fingerprint). Test one OTA and one OTA rollback on `preview` (rehearsal 7).
 - [ ] **Version policy:** bump `VERSION` in `app.config.ts` by hand for each store release; the build number is automatic (`eas.json` remote version source).
-- [ ] **CI:** add the repo secret `EXPO_TOKEN` (a robot token from the `kymsoft` account, not a person's) and the repo variable `EAS_PROJECT_ID`, so `eas-build.yml` and `eas-update.yml` can run.
+- [ ] **CI/CD (`CI_CD.md`):** the pipeline has two branches, `staging` and `main`. Add the secrets `EXPO_TOKEN` (a robot token from `kymsoft`) and `BACKEND_REPO_TOKEN`, the variables `EAS_PROJECT_ID`, `BACKEND_REF_STAGING` and `BACKEND_REF_PRODUCTION`, create the GitHub environments `staging` and `production` (reviewers on production), make `main` the default branch and protect both branches.
 - [ ] Check `pnpm release:check` passes before every build.
 
 ---
