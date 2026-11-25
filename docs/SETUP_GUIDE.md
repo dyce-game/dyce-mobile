@@ -164,6 +164,8 @@ Copy `deploy/production.env.example` (in `dyce-backend`) into the host's configu
 
 ### 3.4 Running the containers
 
+> **If you use Fly.io:** the Fly configuration, secrets, deploy order, migrations, domains and rollback are in `dyce-backend/deploy/FLY.md` (two apps: the API and the game server, one machine each, built from the repository root).
+
 - [ ] Images are built by `.github/workflows/release-images.yml` (tag by commit sha). Point the host at them (`apps/api/Dockerfile`, `apps/game-server/Dockerfile`).
 - [ ] Health probes: liveness `GET /health`, readiness `GET /health/ready` (it reports `draining` on shutdown). Set the load balancer to use readiness.
 - [ ] Set `SHUTDOWN_DRAIN_MS` so the load balancer stops sending traffic before the process closes (RUNBOOK section 5).
